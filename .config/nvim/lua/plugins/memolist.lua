@@ -1,0 +1,5 @@
+return {
+  {
+    "glidenote/memolist.vim"
+  }
+}

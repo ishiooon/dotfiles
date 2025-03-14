@@ -16,3 +16,6 @@
 
 !/README.md
 !.gitignore
+.config/github-copilot
+.config/composer
+.config/psysh
