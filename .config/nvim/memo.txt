@@ -1,0 +1,67 @@
+〇linux 
+
+--nvim本体のインストール
+sha256sum -c nvim-linux64.tar.gz.sha256sum
+tar xvzf nvim-linux64.tar.gz -C /usr/share/
+cd /usr/share/
+ln -sf /usr/share/nvim-linux64/bin/nvim nvim
+
+--上記では動かなかったため、linuxでビルドした
+git clone https://github.com/neovim/neovim
+cd neovim
+git checkout stable
+make CMAKE_BUILD_TYPE=Release
+./build/bin/nvim --version | grep ^Build
+make CMAKE_INSTALL_PREFIX=$HOME/local/nvim install
+./build/bin/nvim --version | grep ^Build
+ln -s ~/.local/share/neovim/build/bin/nvim /usr/local/bin/nvim
+
+-- telescopeでのgrep用
+sudo dnf install ripgrep -y
+
+-- php-debug用dap
+git clone https://github.com/xdebug/vscode-php-debug.git
+
+--lazy gitのinstall
+
+
+
+〇.vscode/launch.jsonについて
+・xdebugの設定をvscodeと同様のjsonで行う
+->同様の設定で問題ないかと思ったが${workspaceRoot}がうまく読めないため
+書き換えが必要に
+    
+"configurations": [
+    "name"...
+    ...
+    "hostname": localhost,
+    "notUsed_4_vscode_pathMappings": {
+        "var/www/local.its....": "${workspaceRoot}"
+    },
+    "pathMappings": {
+        "/var/www/local.its....": ""
+    }
+]
+
+
+〇xdebug.iniについて
+・「xdebug.client_host=」についてはdocker内から見るかリモートで見るかで値を変更する
+    --リモートから見る場合
+    RUN for v in 72 73 74 80 81 82 83; do echo 'xdebug.client_host=host.docker.internal' >> /etc/opt/remi/php$v/php.d/15-xdebug.ini ; done
+
+    --docker内から見る場合
+    #xdebug.client_host=host.docker.internal
+    xdebug.client_host=localhost
+    xdebug.discover_client_host=true
+
+
+ーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーー
+nvimとは関係ないmemo
+ーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーー
+〇wsl2でネットワーク上のドライブをマウントする方法
+sudo apt install cifs-utils --cifs-utilsをインストール
+sudo  mkdir /mnt/[mnt_dir_name]  --マウントする場所を作成
+sudo mount -t cifs //[ip_address]/[share_dir_name] /mnt/[mnt_dir_name]/ -o username=[user_name],password=[password],vers=3.0,iocharset=utf8
+
+共有ディレクトリの設定方法(win_server)
+https://docs.microsoft.com/ja-jp/windows-server/administration/windows-commands/cifs-share-directory

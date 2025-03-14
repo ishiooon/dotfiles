@@ -1,0 +1,17 @@
+{
+  "diagnostics": {
+    // 明示的に定義されていない vim モジュールをよしとする場合
+    "globals": ["vim",
+            "toggleLazygitTerminal",
+            "_w3m_toggle",
+            "_lazygit_toggle",
+            "_wttr_toggle",
+            "capabilities"]
+    // 細かい助言がいらない場合
+    // "hint.enable": false
+  },
+    "diagnostics.disable": [
+        "redundant-value",
+        "unused-local"
+    ]
+}
