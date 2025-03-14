@@ -1,9 +1,14 @@
 lastupdatecheck: 0
 recentrepos:
-- /home/dev_local/dotfiles
-- /var/projects/net.itsj-draft.its-subsc
-- /var/www/local.its.its-subsc/laravel
+    - /home/ishio/dotfiles
 startuppopupversion: 5
+lastversion: 0.44.1
 customcommandshistory: []
 hidecommandlog: false
 ignorewhitespaceindiffview: false
+diffcontextsize: 3
+renamesimilaritythreshold: 50
+localbranchsortorder: recency
+remotebranchsortorder: alphabetical
+gitlogorder: topo-order
+gitlogshowgraph: always
