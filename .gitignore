@@ -1,0 +1,18 @@
+# ホワイトリスト方式で管理(/yutkat/dotfilesを参考)
+
+# すべての階層のファイルを無視します
+### all ignore ###
+/*
+/.**
+
+# 管理したいファイルやディレクトリを指定します
+### not ignore ###
+!/.zshrc
+!/.zshenv
+!/.zfunc/
+/.zfunc/**  # ディレクトリは管理したいけど中身はいらないときはこんな感じ
+!/.config/
+!/.config/**
+
+!/README.md
+!.gitignore
