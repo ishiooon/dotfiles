@@ -19,3 +19,6 @@
 .config/github-copilot
 .config/composer
 .config/psysh
+
+# wezterm
+!/.wezterm.lua
