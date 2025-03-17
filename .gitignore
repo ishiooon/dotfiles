@@ -19,6 +19,7 @@
 .config/github-copilot
 .config/composer
 .config/psysh
+.config/starship.toml
 
 # wezterm
 !/.wezterm.lua
