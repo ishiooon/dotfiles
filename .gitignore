@@ -22,8 +22,8 @@
 .config/github-copilot
 .config/composer
 .config/psysh
-.config/starship.toml
-.config/wezterm/
+!.config/starship.toml
+!.config/wezterm/
 
 # .bin
 !/.bin/
