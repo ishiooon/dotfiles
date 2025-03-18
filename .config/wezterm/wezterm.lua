@@ -8,16 +8,19 @@ if wezterm.config_builder then
   config = wezterm.config_builder()
 end
 
--- This is where you actually apply your config choices
-
--- For example, changing the color scheme:
-config.color_scheme = 'MaterialDesignColors'
-
 -- Changing the default program: wsl
 config.default_prog = { "wsl.exe", "--distribution", "ubuntu", "--cd", "~" }
 
 -- リロード
 config.automatically_reload_config = true
+
+-- 最初からフルスクリーンで起動
+local mux = wezterm.mux
+wezterm.on("gui-startup", function(cmd)
+---@diagnostic disable-next-line: unused-local
+    local tab, pane, window = mux.spawn_window(cmd or {})
+    window:gui_window():toggle_fullscreen()
+end)
 
 -- IMEを有効にする
 config.use_ime = true
@@ -48,17 +51,12 @@ config.window_padding = {
   left = '0.5cell',
   right = '0.5cell',
   top = '0cell',
-  bottom = '-0.5cell',
+  bottom = '0cell',
 }
 
 -- タブバー設定
--- タブが一つの時は非表示
-config.hide_tab_bar_if_only_one_tab = true
--- config.show_new_tab_button_in_tab_bar = false
--- config.tab_bar_at_bottom = true
--- config.tab_max_width = 5
--- config.show_close_tab_button_in_tabs = false
-
+-- 非表示
+config.enable_tab_bar = false
 
 -- 最後に、設定をweztermに返す
 return config
