@@ -25,16 +25,8 @@ config.use_ime = true
 -- ========================================
 -- キーバインド設定
 -- ========================================
-
-config.keys = {
-  -- Ctrl+Shift系
-  -- paneの分割
-  {key = 'd', mods = 'SHIFT|CTRL', action = wezterm.action.SplitHorizontal { domain = 'CurrentPaneDomain' }, },
-  -- paneの削除
-  { key = 'w', mods = 'SHIFT|CTRL', action = wezterm.action.CloseCurrentPane { confirm = true } },
-  -- ランチャーを開く
-  { key = "f", mods = "SHIFT|CTRL", action = wezterm.action.ShowLauncherArgs({ flags = "FUZZY" }) }
-}
+config.keys = require('keybinds').keys
+config.key_tables = require('keybinds').key_tables
 
 -- ========================================
 -- デザイン設定
