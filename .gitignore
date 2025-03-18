@@ -11,19 +11,15 @@
 !/.zshenv
 !/.zfunc/
 /.zfunc/**  # ディレクトリは管理したいけど中身はいらないときはこんな感じ
-!/.config/
-!/.config/**
 
 !/README.md
 !.gitignore
 
 
 # .config
-.config/github-copilot
-.config/composer
-.config/psysh
-!.config/starship.toml
-!.config/wezterm/
+!/.config/starship.toml
+!/.config/wezterm/
+!/.config/nvim/
 
 # .bin
-!/.bin/
+!/.bin/install.sh
