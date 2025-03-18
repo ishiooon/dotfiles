@@ -21,9 +21,12 @@ sudo dnf install ripgrep -y
 
 -- php-debug用dap
 git clone https://github.com/xdebug/vscode-php-debug.git
+npm install
+npm run build
 
 --lazy gitのinstall
-
+sudo dnf copr enable atim/lazygit -y
+sudo dnf install lazygit
 
 
 〇.vscode/launch.jsonについて
