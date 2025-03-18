@@ -52,6 +52,13 @@ config.window_background_opacity = 0.0
 config.macos_window_background_blur = 30
 config.win32_system_backdrop = 'Mica'
 
+config.window_padding = {
+  left = '0.5cell',
+  right = '0.5cell',
+  top = '0cell',
+  bottom = '-0.5cell',
+}
+
 -- タブバー設定
 -- タブが一つの時は非表示
 config.hide_tab_bar_if_only_one_tab = true
@@ -62,5 +69,4 @@ config.hide_tab_bar_if_only_one_tab = true
 
 
 -- 最後に、設定をweztermに返す
->>>>>>> a0156ab (weztermにIMEの使用を追加)
 return config
