@@ -23,3 +23,6 @@
 
 # wezterm
 !/.wezterm.lua
+
+# .bin
+!/.bin
