@@ -16,13 +16,14 @@
 
 !/README.md
 !.gitignore
+
+
+# .config
 .config/github-copilot
 .config/composer
 .config/psysh
 .config/starship.toml
-
-# wezterm
-!/.wezterm.lua
+.config/wezterm/
 
 # .bin
-!/.bin
+!/.bin/
