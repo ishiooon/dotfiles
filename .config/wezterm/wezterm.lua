@@ -52,12 +52,8 @@ config.window_padding = {
 }
 
 -- タブバー設定
--- タブが一つの時は非表示
-config.hide_tab_bar_if_only_one_tab = true
--- config.show_new_tab_button_in_tab_bar = false
--- config.tab_bar_at_bottom = true
--- config.tab_max_width = 5
--- config.show_close_tab_button_in_tabs = false
+-- 非表示
+config.enable_tab_bar = false
 
 
 -- 最後に、設定をweztermに返す

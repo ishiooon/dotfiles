@@ -7,8 +7,10 @@ return {
     {key = 'd', mods = 'SHIFT|CTRL', action = wezterm.action.SplitHorizontal { domain = 'CurrentPaneDomain' }, },
     -- paneの削除
     { key = 'w', mods = 'SHIFT|CTRL', action = wezterm.action.CloseCurrentPane { confirm = true } },
-    -- ランチャーを開く
-    { key = "f", mods = "SHIFT|CTRL", action = wezterm.action.ShowLauncherArgs({ flags = "FUZZY" }) }
+    -- ランチャー(タブ)を開く
+    { key = "t", mods = "SHIFT|CTRL", action = wezterm.action.ShowLauncherArgs({ flags = "TABS" }) },
+    -- ランチャー(ペイン)を開く
+    { key = "r", mods = "SHIFT|CTRL", action = wezterm.action.ShowLauncherArgs({ flags = "COMMANDS" }) }
   },
   key_tables = {
     copy_mode = {
