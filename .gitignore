@@ -30,3 +30,13 @@
 /.bin/*
 
 !/.bin/install.sh
+
+
+
+
+
+
+# ===================================
+# add ignore files
+# ===================================
+.config/nvim/lazy-lock.json

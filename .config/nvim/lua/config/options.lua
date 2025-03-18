@@ -36,39 +36,13 @@ vim.g.memo_dir = '~/.config/memolist'
 --   end
 -- })
 
-if vim.fn.has("wsl") then
-  vim.g.clipboard = {
-    name = "win32yank-wsl",
-    copy = {
-      ["+"] = "win32yank.exe -i --crlf",
-      ["*"] = "win32yank.exe -i --crlf"
-    },
-    paste = {
-      ["+"] = "win32yank.exe -o --crlf",
-      ["*"] = "win32yank.exe -o --crlf"
-    },
-    cache_enable = 0,
-  }
-end
--- クリップボードの設定
-vim.g.clipboard = {
-  name = 'OSC 52',
-  copy = {
-    ['+'] = require('vim.ui.clipboard.osc52').copy('+'),
-    ['*'] = require('vim.ui.clipboard.osc52').copy('*'),
-  },
-  paste = {
-    ['+'] = require('vim.ui.clipboard.osc52').paste('+'),
-    ['*'] = require('vim.ui.clipboard.osc52').paste('*'),
-  },
-}
 
 vim.lsp.set_log_level("debug")
 
 -- -- ウィンドウの不透明度
--- vim.opt.termguicolors = true
--- vim.opt.winblend = 0 -- ウィンドウの不透明度
--- vim.opt.pumblend = 0 -- ポップアップメニューの不透明度
+vim.opt.termguicolors = true
+vim.opt.winblend = 0 -- ウィンドウの不透明度
+vim.opt.pumblend = 0 -- ポップアップメニューの不透明度
 
 -- lsp設定
 local mason = require('mason')
