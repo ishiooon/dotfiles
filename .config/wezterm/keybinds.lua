@@ -4,9 +4,11 @@ return {
   keys = {
     -- Ctrl+Shift系
     -- paneの分割
-    {key = 'd', mods = 'SHIFT|CTRL', action = wezterm.action.SplitHorizontal { domain = 'CurrentPaneDomain' }, },
+    { key = 'd', mods = 'SHIFT|CTRL', action = wezterm.action.SplitHorizontal { domain = 'CurrentPaneDomain' }, },
     -- paneの削除
     { key = 'w', mods = 'SHIFT|CTRL', action = wezterm.action.CloseCurrentPane { confirm = true } },
+    -- paneの移動(選択)
+    { key = 'p', mods = 'SHIFT|CTRL', action = wezterm.action.PaneSelect },
     -- ランチャーを開く
     { key = "r", mods = "SHIFT|CTRL", action = wezterm.action.ShowLauncherArgs({ flags = "COMMANDS" }) },
     -- タブを開く
