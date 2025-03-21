@@ -9,6 +9,7 @@
 # ===================================
 !/.zshrc
 !/.zshenv
+!/.bashrc
 !/README.md
 !.gitignore
 
@@ -30,3 +31,4 @@
 /.bin/*
 
 !/.bin/install.sh
+.config/nvim/lazy-lock.json

@@ -15,6 +15,15 @@ ln -s $HOME/dotfiles/.zshrc $HOME/.zshrc
 
 
 # ===================================================
-# 2. nvimのインストール
+# 2. bashのインストール
 # ===================================================
+# $HOMEに.bashrcがある場合はdotbackupディレクトリを作成して.bashrcを退避
+if [ -e $HOME/.bashrc ]; then
+  echo "Backup .bashrc to $HOME/dotbackup"
+  mkdir -p $HOME/dotbackup
+  mv $HOME/.bashrc $HOME/dotbackup/.bashrc
+fi
 
+# .bashrcを$HOMEにシンボリックリンク
+echo "Create symbolic link to $HOME/.bashrc"
+ln -s $HOME/dotfiles/.bashrc $HOME/.bashrc
