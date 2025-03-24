@@ -108,7 +108,11 @@ if ! shopt -oq posix; then
 fi
 eval "$(starship init bash)"
 
-# functions
-hf(){
-	history | awk '{$1=""; print $0}' | fzf
+# コマンドの履歴を検索し、そのまま実行する
+hf() {
+    local cmd
+    cmd=$(history | awk '{$1=""; print substr($0, 2)}' | fzf --height 40% --layout=reverse --border)
+    if [ -n "$cmd" ]; then
+        eval "$cmd"
+    fi
 }
