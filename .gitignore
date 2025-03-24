@@ -32,3 +32,4 @@
 
 !/.bin/install.sh
 .config/nvim/lazy-lock.json
+.config/lazygit/state.yml

@@ -65,10 +65,10 @@ vim.g.clipboard = {
 
 vim.lsp.set_log_level("debug")
 
--- -- ウィンドウの不透明度
--- vim.opt.termguicolors = true
--- vim.opt.winblend = 0 -- ウィンドウの不透明度
--- vim.opt.pumblend = 0 -- ポップアップメニューの不透明度
+-- ウィンドウの不透明度
+vim.opt.termguicolors = true
+vim.opt.winblend = 0 -- ウィンドウの不透明度
+vim.opt.pumblend = 0 -- ポップアップメニューの不透明度
 
 -- lsp設定
 local mason = require('mason')
