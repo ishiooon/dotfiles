@@ -15,6 +15,7 @@ format = "[$symbol](bold white)"
 disabled = false
 [os.symbols]
 RockyLinux = "\ue891  " #RockyLinuxのicon
+Ubuntu = "\uf31b  " #Ubuntuのicon
 
 [directory]
 truncation_length = 5
