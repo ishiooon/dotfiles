@@ -29,10 +29,10 @@ return {
         },
         -- providers-setting
         copilot = {
-            -- model = "claude-3.5-sonnet",
+            model = "claude-3.7-sonnet",
             -- model = "gpt-4o",
             -- model = "gpt-4o-mini",
-            max_tokens = 4096,
+            max_tokens = 8192,
         },
     },
     -- if you want to build from source then do `make BUILD_FROM_SOURCE=true`
