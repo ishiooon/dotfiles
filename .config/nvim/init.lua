@@ -1,4 +1,4 @@
 require("config.lazy")
 require("config.keymaps")
 require("config.options")
-require("keymaps-avante")
+require("config.keymaps_avante")
