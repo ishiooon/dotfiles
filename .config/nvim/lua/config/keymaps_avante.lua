@@ -32,10 +32,12 @@ local avante_code_readability_analysis = [[
   問題がない場合は褒めてください。
 ]]
 local avante_optimize_code = "次のコードを最適化してください。"
-local avante_fix_bugs = "次のコード内のバグを修正してください。"
+local avante_fix_bugs = "次のコード内でバグが起こる可能性のある箇所を特定し、修正してください。"
 local avante_add_tests = "次のコードのテストを実装してください。"
 local avante_add_docstring = "次のコードにdocstringを追加してください。"
 local avante_divide_code = "次のコードを可読性を考慮していくつかのファイルに分割してください。"
+local avante_read= "初学者向けに何のためのファイルで何がどのように実装され動くのかを丁寧に説明してください。"
+local avante_code_review = "プロの開発者として、気になる部分を加味しつつコードレビューをしてください。"
 
 -- avante.nvim
 local avante_ask = require("avante.api").ask
@@ -44,42 +46,30 @@ vim.keymap.set("n", "<leader>al", function()
     avante_ask({ question = avante_code_readability_analysis })
 end, { noremap = true, silent = true, desc = "[avante]可読性" })
 
-vim.keymap.set("n", "<leader>aL", function()
-    prefill_edit_window(avante_code_readability_analysis)
-end, { noremap = true, silent = true, desc = "[avante]可読性(Edit)" })
-
 vim.keymap.set("n", "<leader>ao", function()
     avante_ask({ question = avante_optimize_code })
 end, { noremap = true, silent = true, desc = "[avante]最適化" })
-
-vim.keymap.set("n", "<leader>aO", function()
-    prefill_edit_window(avante_optimize_code)
-end, { noremap = true, silent = true, desc = "[avante]最適化(Edit)" })
 
 vim.keymap.set("n", "<leader>ab", function()
     avante_ask({ question = avante_fix_bugs })
 end, { noremap = true, silent = true, desc = "[avante]バグ修正" })
 
-vim.keymap.set("n", "<leader>aB", function()
-    prefill_edit_window(avante_fix_bugs)
-end, { noremap = true, silent = true, desc = "[avante]バグ修正(Edit)" })
-
 vim.keymap.set("n", "<leader>au", function()
     avante_ask({ question = avante_add_tests })
 end, { noremap = true, silent = true, desc = "[avante]テスト実装" })
-
-vim.keymap.set("n", "<leader>aU", function()
-    prefill_edit_window(avante_add_tests)
-end, { noremap = true, silent = true, desc = "[avante]テスト実装(Edit)" })
 
 vim.keymap.set("n", "<leader>ad", function()
     avante_ask({ question = avante_add_docstring })
 end, { noremap = true, silent = true, desc = "[avante]docstring" })
 
-vim.keymap.set("n", "<leader>aD", function()
-    prefill_edit_window(avante_add_docstring)
-end, { noremap = true, silent = true, desc = "[avante]docstring(Edit)" })
-
 vim.keymap.set("n", "<leader>af", function()
     avante_ask({ question = avante_divide_code })
 end, { noremap = true, silent = true, desc = "[avante]ファイル分割" })
+
+vim.keymap.set("n", "<leader>ar", function()
+    avante_ask({ question = avante_read })
+end, { noremap = true, silent = true, desc = "[avante]読み解き" })
+
+vim.keymap.set("n", "<leader>ac", function()
+    avante_ask({ question = avante_code_review })
+end, { noremap = true, silent = true, desc = "[avante]コードレビュー" })

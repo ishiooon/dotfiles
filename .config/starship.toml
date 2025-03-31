@@ -88,4 +88,4 @@ format = "[   $duration]($style)" # nf-pl-right_soft_divider, nf-mdi-clock
 disabled = false
 format = '[   $time]($style)' # nf-pl-right_soft_divider, nf-fa-clock_o
 time_format = '%T'
-utc_time_offset = '+9'
+utc_time_offset = '+10'
