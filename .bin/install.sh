@@ -27,3 +27,16 @@ fi
 # .bashrcを$HOMEにシンボリックリンク
 echo "Create symbolic link to $HOME/.bashrc"
 ln -s $HOME/dotfiles/.bashrc $HOME/.bashrc
+
+# ===================================================
+# 3. startshipの設定
+# ===================================================
+# $HOMEに.config/.starship.tomlがある場合はdotbackupディレクトリを作成して.config/.starship.tomlを退避
+if [ -e $HOME/.config/starship.toml ]; then
+  echo "Backup .config/starship.toml to $HOME/dotbackup"
+  mkdir -p $HOME/dotbackup
+  mv $HOME/.config/starship.toml $HOME/dotbackup/starship.toml
+fi
+# .config/.starship.tomlを$HOMEにシンボリックリンク
+echo "Create symbolic link to $HOME/.config/starship.toml"
+ln -s $HOME/dotfiles/.config/starship.toml $HOME/.config/starship.toml
