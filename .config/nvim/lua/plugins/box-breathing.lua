@@ -1,6 +1,7 @@
 return {
   {
-    "ishiooon/box-breathing.nvim",
+    -- "ishiooon/box-breathing.nvim",
+    dir = "~/dev_plugin/box-breathing.nvim",
     config = {
       -- オプションの設定（省略可能）
       -- Optional configuration

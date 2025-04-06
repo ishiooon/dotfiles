@@ -39,7 +39,7 @@ if os_name:find('darwin') then
   config.window_background_opacity = 0.8
   
   -- macOS用フォントサイズ設定（macOS特有のDPI対応）
-  config.font_size = 24
+  config.font_size = 14
   
   -- macOS用ウィンドウサイズ設定
   config.initial_cols = 120
@@ -67,7 +67,7 @@ config.color_scheme = 'Gruvbox Material (Gogh)'
 config.font = wezterm.font_with_fallback({
   {family="UDEV Gothic NFLG", weight="Regular"},
 })
--- フォントサイズを設定（macOS以外のデフォルト値）
+-- デフォルトフォントサイズ設定
 config.font_size = 14
 
 config.window_padding = {
