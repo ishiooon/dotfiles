@@ -20,6 +20,7 @@
 /.config/*
 
 !/.config/nvim
+!/.config/mcphub
 !/.config/wezterm
 !/.config/starship.toml
 
