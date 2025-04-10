@@ -46,19 +46,18 @@ return {
               require("mcphub.extensions.avante").mcp_tool(),
           }
         end,
-        -- mcphubとの競合を避けるために、avanteのツールを無効化する
-        disabled_tools = {
-            "list_files",    -- Built-in file operations
-            "search_files",
-            "read_file",
-            "create_file",
-            "rename_file",
-            "delete_file",
-            "create_dir",
-            "rename_dir",
-            "delete_dir",
-            "bash",         -- Built-in terminal access
-        },
+    disabled_tools = {
+    "list_files",
+    "search_files",
+    "read_file",
+    "create_file",
+    "rename_file",
+    "delete_file",
+    "create_dir",
+    "rename_dir",
+    "delete_dir",
+    "bash",
+    }
     },
     -- if you want to build from source then do `make BUILD_FROM_SOURCE=true`
     build = "make",
@@ -93,6 +92,5 @@ return {
         avante = {
             make_slash_commands = true, -- make /slash commands from MCP server prompts
         }
-    },
-})
+    }
 }
