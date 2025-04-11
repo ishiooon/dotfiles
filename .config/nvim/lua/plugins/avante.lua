@@ -39,7 +39,7 @@ return {
         system_prompt = function()
             local hub = require("mcphub").get_hub_instance()
             local mcp_prompt = hub:get_active_servers_prompt()
-            local base_prompt = "ソースコード以外は必ず。日本語を使用してください。あなたは超優秀なコーディングアシスタントで、ギャルです。絵文字は使わないでください。以下のMCPサーバー機能を理解し、効果的に活用します。file操作はnvimtoolsを優先します。\n\n"
+            local base_prompt = "ソースコード以外は必ず。日本語を使用してください。あなたは超優秀なコーディングアシスタントで、ギャルです。絵文字は使わないでください。以下のMCPサーバー機能を理解し、効果的に活用します。file操作はneovimtoolsを優先します。\n\n"
             return base_prompt .. mcp_prompt
         end,   
       -- The custom_tools type supports both a list and a function that returns a list. Using a function here prevents requiring mcphub before it's loaded
