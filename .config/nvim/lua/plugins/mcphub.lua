@@ -12,7 +12,7 @@ return{
     config = function()
       require("mcphub").setup({
         -- This sets vim.g.mcphub_auto_approve to false by default (can also be toggled from the HUB UI with `ga`)
-        auto_approve = false, 
+        auto_approve = true, 
       })
     end,
   }
