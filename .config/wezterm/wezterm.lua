@@ -18,9 +18,10 @@ config.automatically_reload_config = true
 if os_name:find('windows') then
   -- Changing the default program: wsl
   config.default_prog = { "wsl.exe", "--distribution", "ubuntu", "--cd", "~" }
-  
-  -- Windows専用の背景設定
-  config.win32_system_backdrop = 'Mica'
+
+  -- ぼかし効果を有効にする
+  config.window_background_opacity = 0
+  config.win32_system_backdrop = "Acrylic"
 
   -- 最初からフルスクリーンで起動
   local mux = wezterm.mux
@@ -37,15 +38,16 @@ if os_name:find('darwin') then
   config.macos_window_background_blur = 30
   -- macOS専用の背景透過設定
   config.window_background_opacity = 0.8
-  
+
   -- macOS用フォントサイズ設定（macOS特有のDPI対応）
   config.font_size = 14
-  
+
   -- macOS用ウィンドウサイズ設定
   config.initial_cols = 120
   config.initial_rows = 40
-  
+
 end
+
 
 
 -- IMEを有効にする
@@ -63,6 +65,9 @@ config.key_tables = require('keybinds').key_tables
 
 -- テーマを変更する:
 config.color_scheme = 'Gruvbox Material (Gogh)'
+
+-- 全環境共通の透過設定
+config.window_background_opacity = 0.8
 -- フォントを変更する:
 config.font = wezterm.font_with_fallback({
   {family="UDEV Gothic NFLG", weight="Regular"},
@@ -71,8 +76,8 @@ config.font = wezterm.font_with_fallback({
 config.font_size = 14
 
 config.window_padding = {
-  left = '0.5cell',
-  right = '0.5cell',
+  left = '0.25cell',
+  right = '0.25cell',
   top = '0cell',
   bottom = '0cell',
 }
@@ -83,4 +88,8 @@ config.enable_tab_bar = false
 
 -- 最後に、設定をweztermに返す
 return config
+
+
+
+
 
