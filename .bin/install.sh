@@ -40,3 +40,18 @@ fi
 # .config/.starship.tomlを$HOMEにシンボリックリンク
 echo "Create symbolic link to $HOME/.config/starship.toml"
 ln -s $HOME/dotfiles/.config/starship.toml $HOME/.config/starship.toml
+
+
+# ===================================================
+# 4. mcphubのインストール
+# ===================================================
+# $HOMEに.config/mcphub/がある場合はdotbackupディレクトリを作成して.config/mcphubを退避
+if [ -e $HOME/.config/mcphub ]; then
+  echo "Backup .config/mcphub to $HOME/dotbackup"
+  mkdir -p $HOME/dotbackup
+  mv $HOME/.config/mcphub $HOME/dotbackup/mcphub
+fi
+# .config/mcphubを$HOMEにシンボリックリンク
+echo "Create symbolic link to $HOME/.config/mcphub"
+ln -s $HOME/dotfiles/.config/mcphub $HOME/.config/mcphub
+
