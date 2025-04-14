@@ -48,7 +48,7 @@ return {
               end,
             }
           },
-			    lualine_x = {'encoding', 'fileformat', 'filetype', {function() return require('mcphub.extensions.lualine') end}},
+			    lualine_x = {'encoding', 'fileformat', 'filetype'},
 			    lualine_y = {'progress'},
                 -- 時計アイコンと時分を表示
                 lualine_z = {
