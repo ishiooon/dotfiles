@@ -67,8 +67,8 @@ vim.lsp.set_log_level("debug")
 
 -- ウィンドウの不透明度
 vim.opt.termguicolors = true
-vim.opt.winblend = 0 -- ウィンドウの不透明度
-vim.opt.pumblend = 0 -- ポップアップメニューの不透明度
+vim.opt.winblend = 3 -- ウィンドウの不透明度
+vim.opt.pumblend = 3 -- ポップアップメニューの不透明度
 
 -- lsp設定
 local mason = require('mason')
@@ -186,11 +186,11 @@ require("mason-nvim-dap").setup({
 })
 local dap = require("dap")
 -- バグが出ているため一時的にコメントアウト
--- local dapui = require("dapui")
--- dapui.setup()
--- dap.listeners.after.event_initialized["dapui_config"] = function()
---     dapui.open()
--- end
+local dapui = require("dapui")
+dapui.setup()
+dap.listeners.after.event_initialized["dapui_config"] = function()
+    dapui.open()
+end
 -- PHP用アダプターの設定
 dap.adapters.php = {
     type = 'executable',
