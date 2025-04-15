@@ -30,19 +30,3 @@ delete_from_history() {
     return 1
   fi
 }
-# 履歴管理に関連する関数
-
-# 履歴から特定のコマンドを削除する関数
-delete_from_history() {
-  local cmd="$1"
-  # 履歴ファイルから特定のコマンドを含む行を削除
-  if [ -f "$HISTFILE" ]; then
-    awk -v cmd="$cmd" '!index($0, cmd)' "$HISTFILE" > "${HISTFILE}.tmp"
-    mv "${HISTFILE}.tmp" "$HISTFILE"
-    
-    # 現在のセッションからも履歴を削除
-    # history -cは内部メモリの履歴をクリアし、history -rはファイルから読み込み直す
-    history -c
-    history -r "$HISTFILE"
-  fi
-}

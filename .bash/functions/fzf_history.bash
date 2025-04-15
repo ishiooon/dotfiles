@@ -37,8 +37,10 @@ hf() {
     --header-first \
     --query="" \
     --color=bg+:#3B4252,bg:#2E3440,spinner:#81A1C1,hl:#88C0D0,fg:#D8DEE9,header:#616E88,info:#81A1C1,pointer:#81A1C1,marker:#A3BE8C,fg+:#D8DEE9,prompt:#81A1C1,hl+:#88C0D0 \
-    --bind "ctrl-d:execute(source ~/.bash/functions/history_management.bash && delete_from_history {} > /dev/null 2>&1)+execute(echo -e '\033[1;31m履歴から削除: {}\033[0m' >&2)+reload(cat \"$history_temp_file\" | awk '!seen[$0]++')" \
-    --bind "ctrl-r:execute(echo -e '\033[1;32m履歴を更新しました\033[0m' >&2)+reload(refresh_history_file)" \
+    --bind "ctrl-d:execute(source ~/.bash/functions/history_management.bash && delete_from_history {})" \
+    --bind "ctrl-d:+execute-silent(echo -e '\033[1;31m履歴から削除: {}\033[0m' >&2)" \
+    --bind "ctrl-d:+reload(refresh_history_file)" \
+    --bind "ctrl-r:execute-silent(echo -e '\033[1;32m履歴を更新しました\033[0m' >&2)+reload(refresh_history_file)" \
     --expect=tab,enter)
   
   # fzfの出力から押されたキーと選択されたコマンドを取得
@@ -49,20 +51,25 @@ hf() {
   # 一時ファイルを削除（エラー出力は無視）
   rm "$history_temp_file" 2>/dev/null
   
-  # 押されたキーに応じた処理を実行
-  if [[ $pressed_key == "tab" && -n "$selected_command" ]]; then
-    # TABキーの場合: コマンドをコマンドラインに挿入するだけ（実行はしない）
-    history -s "$selected_command"
-    # コマンドを現在のコマンドラインに挿入
-    READLINE_LINE="$selected_command"
-    # カーソルを最後に配置
-    READLINE_POINT=${#READLINE_LINE}
-  elif [[ -n "$selected_command" ]]; then
-    # ENTERキーの場合: コマンドを実行する
-    echo -e "\033[1;36mExec \033[0m➡ \033[1;33m$selected_command\033[0m"
-    # コマンドを履歴に追加
-    history -s "$selected_command"
-    # コマンドを実行
-    eval "$selected_command"
+  # 何か選択されていた場合のみ処理を実行
+  if [[ -n "$selected_command" ]]; then
+    # 押されたキーに応じた処理を実行
+    if [[ "$pressed_key" == "tab" ]]; then
+      # TABキーの場合: コマンドをコマンドラインに挿入するだけ（実行はしない）
+      echo -e "\033[1;36mInsert \033[0m➡ \033[1;33m$selected_command\033[0m"
+      # コマンドを履歴に追加
+      history -s "$selected_command"
+      # コマンドをコマンドラインに挿入
+      READLINE_LINE="$selected_command"
+      # カーソルを最後に配置
+      READLINE_POINT=${#READLINE_LINE}
+    elif [[ "$pressed_key" == "enter" ]]; then
+      # ENTERキーの場合: コマンドを実行する
+      echo -e "\033[1;36mExec \033[0m➡ \033[1;33m$selected_command\033[0m"
+      # コマンドを履歴に追加
+      history -s "$selected_command"
+      # コマンドを実行
+      eval "$selected_command"
+    fi
   fi
 }

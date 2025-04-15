@@ -39,7 +39,17 @@ return {
         system_prompt = function()
             local hub = require("mcphub").get_hub_instance()
             local mcp_prompt = hub:get_active_servers_prompt()
-            local base_prompt = "ソースコード以外は必ず日本語を使用してください。あなたは優秀なコーディングアシスタントです。関数及びファイルはできるだけ小さく作成し、依存関係に気を使います。以下のMCPサーバー機能を理解し、効果的に活用します。file操作はMCP Filesystemを優先します。\n\n"
+            local base_prompt = "以下のルールは必ず守ってください。\n"..
+              "===================================================\n"..
+               "ソースコード以外は日本語を使用します。\n"..
+               "あなたは優秀なコーディングアシスタントです。\n"..
+               "関数及びファイルはできるだけ小さく作成し、依存関係に気を使います。\n"..
+               "sequentialthinking tool を用いて思考を進めます。\n"..
+               "file操作はMCP Filesystemを優先します。\n"..
+               "gitのコミットは行いません。\n"..
+              "====================================================\n"..
+                "以下のMCPサーバー機能を理解し、効果的に活用します。\n"..
+                "仕様の前後で仕様tool名と理由を表示します。\n\n"
             return base_prompt .. mcp_prompt
         end,   
       -- The custom_tools type supports both a list and a function that returns a list. Using a function here prevents requiring mcphub before it's loaded
