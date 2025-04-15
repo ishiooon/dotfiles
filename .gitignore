@@ -10,6 +10,7 @@
 !/.zsh
 !/.zshrc
 !/.zshenv
+!/.bash
 !/.bashrc
 !/README.md
 !.gitignore
