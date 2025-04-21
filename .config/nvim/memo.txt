@@ -1,13 +1,7 @@
 〇linux 
 
---nvim本体のインストール
-sha256sum -c nvim-linux64.tar.gz.sha256sum
-tar xvzf nvim-linux64.tar.gz -C /usr/share/
-cd /usr/share/
-ln -sf /usr/share/nvim-linux64/bin/nvim nvim
-
---上記では動かなかったため、linuxでビルドした
-git clone https://github.com/neovim/neovim
+--nvim本体のインストール(Rocky Linux)
+git clone https://github.com/neovim/neovim(Rocky)
 cd neovim
 git checkout stable
 make CMAKE_BUILD_TYPE=Release
