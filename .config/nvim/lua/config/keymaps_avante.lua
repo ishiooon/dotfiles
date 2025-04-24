@@ -38,6 +38,8 @@ local avante_add_docstring = "次のコードにdocstringを追加してくだ�
 local avante_divide_code = "次のコードを可読性を考慮していくつかのファイルに分割してください。"
 local avante_read= "初学者向けに何のためのファイルで何がどのように実装され動くのかを丁寧に説明してください。"
 local avante_code_review = "プロの開発者として、気になる部分を加味しつつコードレビューをしてください。"
+local avante_delete_duplicate = "プロジェクト内で重複しているコードを必ず一組だけ特定し、振る舞いや機能が一切変わらないよう気を付けて統合してください。不要になったファイルは削除してください。"
+local avante_delete_dead_code = "プロジェクト内で使用されていない関数およびクラスを必ず1つだけ特定し、振る舞いは一切変わらないよう気を付けて削除してください。"
 
 -- avante.nvim
 local avante_ask = require("avante.api").ask
@@ -73,3 +75,11 @@ end, { noremap = true, silent = true, desc = "[avante]読み解き" })
 vim.keymap.set("n", "<leader>ac", function()
     avante_ask({ question = avante_code_review })
 end, { noremap = true, silent = true, desc = "[avante]コードレビュー" })
+
+vim.keymap.set("n", "<leader>ae", function()
+    avante_ask({ question = avante_delete_duplicate })
+end, { noremap = true, silent = true, desc = "[avante]重複削除" })
+
+vim.keymap.set("n", "<leader>ap", function()
+    avante_ask({ question = avante_delete_dead_code })
+end, { noremap = true, silent = true, desc = "[avante]デッドコード削除" })
