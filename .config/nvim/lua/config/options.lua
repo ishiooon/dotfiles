@@ -38,16 +38,15 @@ vim.g.memo_dir = '~/.config/memolist'
 
 if vim.fn.has("wsl") then
   vim.g.clipboard = {
-    name = "win32yank-wsl",
+    name = 'OSC 52',
     copy = {
-      ["+"] = "win32yank.exe -i --crlf",
-      ["*"] = "win32yank.exe -i --crlf"
+      ['+'] = require('vim.ui.clipboard.osc52').copy('+'),
+      ['*'] = require('vim.ui.clipboard.osc52').copy('*'),
     },
     paste = {
-      ["+"] = "win32yank.exe -o --crlf",
-      ["*"] = "win32yank.exe -o --crlf"
+      ['+'] = require('vim.ui.clipboard.osc52').paste('+'),
+      ['*'] = require('vim.ui.clipboard.osc52').paste('*'),
     },
-    cache_enable = 0,
   }
 end
 -- クリップボードの設定
