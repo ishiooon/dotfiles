@@ -86,19 +86,6 @@ mason_lspconfig.setup_handlers({
             capabilities = capabilities
         })
     end,
-    -- laravelの「Route」で「undefinedTypes」エラーが出るため Intelephenseのdiagnostics.undefinedTypesをfalseにする
-    ["intelephense"] = function()
-        lspconfig.intelephense.setup({
-            capabilities = capabilities,
-            settings = {
-                intelephense = {
-                    diagnostics = {
-                        undefinedTypes = false,
-                    }
-                }
-            }
-        })
-    end
 })
 
 
@@ -107,7 +94,12 @@ vim.opt.completeopt = "menu,menuone,noselect"
 
 -- lsp_linesを使用するためデフォルトのvirtual_textを無効にする
 vim.diagnostic.config({
-  virtual_text = false,
+  virtual_text = {
+    format = function(diagnostic)
+      return string.format("(%s: %s)",diagnostic.source, diagnostic.code)
+    end,
+  },
+  virtual_lines = true,
 })
 
 local cmp = require"cmp"

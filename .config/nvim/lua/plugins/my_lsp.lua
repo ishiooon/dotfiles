@@ -64,11 +64,6 @@ return{
         },
 	    event = { "BufRead", "BufNewFile" },
 	},
-    -- lsplines
-    {
-      "ErichDonGubler/lsp_lines.nvim",
-        opts = {}
-    }
 }
 
 
