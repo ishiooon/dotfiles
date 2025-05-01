@@ -17,6 +17,7 @@ end
 -- NOTE: most templates are inspired from ChatGPT.nvim -> chatgpt-actions.json
 local avante_code_readability_analysis = [[
   以下の点を考慮しコードの可読性の問題を特定、リファクタリングしてください。
+  なお後方互換性を考慮し、振る舞いや機能は一切変わらないよう気を付けてください。
   考慮すべき可読性の問題:
   - 不明瞭な命名
   - 不明瞭な目的
