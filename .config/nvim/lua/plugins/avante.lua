@@ -30,27 +30,27 @@ return {
         -- providers-setting
         copilot = {
             model = "claude-3.7-sonnet",
-            -- model = "gpt-4o",
+            -- model = "gpt-4.1",
             -- model = "gpt-4o-mini",
-            max_tokens = 8192,
+            -- max_tokens = 8192,
         },
         -- other config
         -- The system_prompt type supports both a string and a function that returns a string. Using a function here allows dynamically updating the prompt with mcphub
         system_prompt = function()
             local base_prompt = "以下のルールは必ず守ってください。\n"..
               "===================================================\n"..
-               "ソースコード以外は日本語を使用します。\n"..
-               "あなたは優秀なコーディングアシスタントです。\n"..
-               "関数及びファイルはできるだけ小さく作成し、関心の分離を心がけます。\n"..
-               "すでに同様の機能がないか常に確認し、再利用を優先します。\n"..
-               "関数は呼び出し順に並べて配置します。\n"..
-               "sequentialthinking使用を使用して処理を進めます。また、内容を都度全て報告します。\n"..
-               "ファイル修正はfilesystemを使用して行います。\n"..
-               "ファイルを修正した場合はコミットしませんが、最後にコミット用のメッセージを表示します。\n"..
-              "====================================================\n"..
-                "以下のMCPサーバー機能を理解し、効果的に活用します。\n"..
-                "tool使用の前後で端的な処理内容を必ず表示します。\n\n"
-            
+               "このファイルが読めている場合は処理の開始前に[read_system_prompt]と表示。\n"..
+               "処理の開始前にmcp_tool [sequentialthinking]と[file_system]が使用可能か確認。\n"..
+               "処理がループしないように注意しながらsequentialthinkingを使用して進捗管理を行う。\n"..
+               "ファイル操作はfilesystemを使用。\n"..
+               "ソースコード以外は日本語を使用。\n"..
+               "必要以上の処理は行わず、最小限のコードを生成。\n"..
+               "関数及びファイルはできるだけ小さく作成し、関心は分離する。\n"..
+               "すでに同様の機能がないか常に確認し、再利用を優先。\n"..
+               "関数は呼び出し順に並べて配置。\n"..
+               "ファイルを修正した場合はコミットせず、最後にコミット用のメッセージを表示。\n"..
+               "====================================================\n\n"..
+               "以下のMCPサーバー機能を理解し、効果的に活用します。\n\n"
             -- mcphubが存在するか確認してからプロンプトを取得
             local mcp_prompt = ""
             local ok, mcphub = pcall(require, "mcphub")
