@@ -15,10 +15,10 @@ return {
             support_paste_from_clipboard = true,
         },
         windows = {
-            position = "center",
+            position = "right",
             width = 30,
             sidebar_header = {
-                align = "right",
+                align = "center",
                 rounded = false,
             },
             ask = {
