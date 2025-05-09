@@ -23,19 +23,6 @@ vim.opt.helplang = 'ja' -- ヘルプの言語を日本語に設定
 vim.g.memolist_path = '~/.config/memolist'
 vim.g.memo_dir = '~/.config/memolist'
 
--- local filetype_tabstop = {php = 4} -- filetype毎のインデント幅
--- local usrftcfg = vim.api.nvim_create_augroup("UserFileTypeConfig", { clear = true})
--- vim.api.nvim_create_autocmd("FileType", {
---   group = usrftcfg,
---   callback = function (args)
---     local ftts = filetype_tabstop[args.match]
---     if ftts then
---       vim.opt.tabstop = ftts
---       vim.opt.shiftwidth = ftts
---     end
---   end
--- })
-
 if vim.fn.has("wsl") then
   vim.g.clipboard = {
     name = 'OSC 52',
@@ -80,14 +67,6 @@ local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
 mason.setup()
 mason_lspconfig.setup()
-mason_lspconfig.setup_handlers({
-    function(server_name)
-        lspconfig[server_name].setup({
-            capabilities = capabilities
-        })
-    end,
-})
-
 
 -- lspの設定後に追加
 vim.opt.completeopt = "menu,menuone,noselect"
@@ -104,11 +83,6 @@ vim.diagnostic.config({
 
 local cmp = require"cmp"
 cmp.setup({
-  -- snippet = {
-  --   expand = function(args)
-  --     require("luasnip").lsp_expand(args.body)
-  --   end,
-  -- },
   mapping = cmp.mapping.preset.insert({
     ["<C-p>"] = cmp.mapping.select_prev_item(),
     ["<C-n>"] = cmp.mapping.select_next_item(),

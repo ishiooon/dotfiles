@@ -30,7 +30,10 @@ local avante_code_readability_analysis = [[
   - 命名とコードスタイルの不一致
   - コードの繰り返し
   - クラス内で中心となるメソッドを上部に配置する
-  - ファイルサイズが小さくなるように分離する
+  - 必要があればファイルサイズが小さくなるように関心や機能ごとにより良いファイルに移動または分割する
+  - 関数型プログラミングを重視、できる限り純粋関数を作成する
+  - 可能な限り関数型に修正する
+  - 副作用がある場合は、必ずコメントを追加する
   上記以外の問題を特定しても構いません。
   問題がない場合は褒めてください。
 ]]
@@ -43,6 +46,7 @@ local avante_read= "初学者向けに何のためのファイルで何がどの
 local avante_code_review = "プロの開発者として、気になる部分を加味しつつコードレビューをしてください。"
 local avante_delete_duplicate = "プロジェクト内で重複しているコードを必ず一組だけ特定し、振る舞いや機能が一切変わらないよう気を付けて統合してください。不要になったファイルは削除してください。"
 local avante_delete_dead_code = "プロジェクト内で使用されていない関数およびクラスを必ず1つだけ特定し、振る舞いは一切変わらないよう気を付けて削除してください。"
+local avante_random_refactor = "プロジェクト内のファイルをランダムに1つ選び、振る舞いや機能は一切変わらないよう気を付けてリファクタリングしてください。ファイルを選ぶ際時間がかからないよう、ディレクトリから順に絞ってください。"
 
 -- avante.nvim
 local avante_ask = require("avante.api").ask
@@ -86,3 +90,7 @@ end, { noremap = true, silent = true, desc = "[avante]重複削除" })
 vim.keymap.set("n", "<leader>ap", function()
     avante_ask({ question = avante_delete_dead_code })
 end, { noremap = true, silent = true, desc = "[avante]デッドコード削除" })
+
+vim.keymap.set("n", "<leader>an", function()
+    avante_ask({ question = avante_random_refactor })
+end, { noremap = true, silent = true, desc = "[avante]ランダムファイルリファクタリング" })
