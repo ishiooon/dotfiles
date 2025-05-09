@@ -7,12 +7,15 @@ return {
     opts = {
         provider = "copilot",
         auto_suggestions_provider = "copilot",
+        cursor_applying_provider = 'copilot',
+        mode = 'agentic',
         behaviour = {
             auto_suggestions = false,
             auto_set_highlight_group = true,
             auto_set_keymaps = true,
             auto_apply_diff_after_generation = true,
             support_paste_from_clipboard = true,
+            enable_cursor_planning_mode = true, 
         },
         windows = {
             position = "right",
@@ -29,28 +32,33 @@ return {
         },
         copilot = {
             model = "claude-3.7-sonnet",
-            max_tokens = 8192,
+            -- model = "gpt-4.1",
+            -- model= "gemini-2.5-pro",
+            max_tokens = 1000000,
         },
         -- 固定文字列のシステムプロンプトに変更
         system_prompt = "以下のルールは必ず守ってください。\n"..
           "===================================================\n"..
            "ソースコード以外は必ず日本語を使用。\n"..
-           "avante.nvimで使用します。途中で処理が止まらないように注意してください。\n"..
            "このファイルが読めている場合は処理の開始前に[read_system_prompt]と表示。\n"..
-           "処理がループしないように注意しながら思考を進めてください。\n"..
+           " mcptoolのfilesystemとsequentialthinkingを必ず使用する。ため、処理の開始前に使用可能か確認する。\n"..
+           "関数型プログラミングを基本とし、できる限り純粋関数を作成します。また、既存のソースも可能な限り関数型に書き直します。\n"..
+           "副作用がある場合は、必ずコメントを追加する\n"..  
+           "とにかく読みやすさを優先し、保守性を担保する。\n"..
            "思考内容は[thinking]\n{内容}の形式で必ず表示。\n"..
            "処理内容は[processing]\n{内容}の形式で必ず表示。\n"..
            "関数及びファイルはできるだけ小さく作成し、関心は分離する。\n"..
-           "すでに同様の機能がないか常に確認し、再利用を優先。\n"..
+           "似たの機能がないか常に確認し、共用、再利用できるよう修正し使用する。\n"..
            "関数は呼び出し順に並べて配置。\n"..
            "ファイルを修正した場合はコミットせず、最後にコミット用のメッセージを表示。\n"..
-           "====================================================",
-        -- カスタムツールを一時的にコメントアウト
-        -- custom_tools = function()
-        --   return {
-        --       require("mcphub.extensions.avante").mcp_tool(),
-        --   }
-        -- end,
+           "全ての処理が終了した場合は[finished]と表示。\n"..
+           "処理が終了していない場合は[continue]と表示し、自動で処理を続行。\n"..
+            "====================================================\n",
+          custom_tools = function()
+            return {
+                require("mcphub.extensions.avante").mcp_tool(),
+            }
+          end,
     },
     build = "make",
     dependencies = {
