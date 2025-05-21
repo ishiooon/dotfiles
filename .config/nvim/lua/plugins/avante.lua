@@ -38,25 +38,36 @@ return {
         },
         -- 固定文字列のシステムプロンプトに変更
         system_prompt = function()
-          -- hub = require("mcphub").get_hub_instance()
-          base_prompt = "以下のルールは必ず守ってください。\n"..
+          -- MCPサーバー情報を取得するための安全な方法
+          local mcp_servers_info = ""
+          local status, mcphub = pcall(require, "mcphub")
+          
+          if status and mcphub then
+              local hub_status, hub = pcall(function() return mcphub.get_hub_instance() end)
+              if hub_status and hub then
+                  mcp_servers_info = hub:get_active_servers_prompt()
+              end
+          end
+          
+          local base_prompt = "以下のルールは必ず守ってください。\n"..
           "===================================================\n"..
+           "関連処理中に止まらず、一連の処理を一気に行う。\n"..
            "ソースコード以外は必ず日本語を使用。\n"..
            "このファイルが読めている場合は処理の開始前に[read_system_prompt]と表示。\n"..
-           "mcptoolのfilesystemとsequentialthinkingを必ず使用する。ため、処理の開始前に使用可能か確認する。\n"..
+           "mcptoolのfilesystemとsequentialthinkingを必ず使用するため、処理の開始前に使用可能か確認する。\n"..
            "関数型プログラミングを基本とし、できる限り純粋関数を作成します。また、既存のソースも可能な限り関数型に書き直します。\n"..
            "副作用がある場合は、必ずコメントを追加する\n"..  
            "基本1ファイルは150行以内、関数は50行以内に収める。\n"..
            "とにかく読みやすさを優先し、保守性を担保する。\n"..
            "関数及びファイルはできるだけ小さく作成し、関心は分離する。\n"..
            "似たの機能がないか常に確認し、共用、再利用できるよう修正し使用する。\n"..
+           "関連ファイルも確認し、より関心の近いファイルに移動する。\n"..
            "関数は呼び出し順に並べて配置。\n"..
            "ファイルを修正した場合はコミットせず、最後にコミット用のメッセージを表示。\n"..
            "全ての処理が終了した場合は[finished]と表示。\n"..
-            "====================================================\n"..
-            "以下はツールの説明です。\n\n"
-            -- return base_prompt .. hub:get_active_servers_prompt()        
-            return base_prompt
+            "====================================================\n"
+            
+          return base_prompt .. mcp_servers_info
         end,
         custom_tools = function()
             return {
