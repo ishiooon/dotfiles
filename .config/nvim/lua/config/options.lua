@@ -9,6 +9,9 @@ vim.cmd([[ShowkeysToggle]])
 vim.opt.number = true
 vim.opt.relativenumber = true
 
+-- views can only be fully collapsed with the global statusline
+vim.opt.laststatus = 3
+
 vim.opt.ignorecase = true -- 検索時に大文字小文字を区別しない
 
 -- タブとインデントの設定
