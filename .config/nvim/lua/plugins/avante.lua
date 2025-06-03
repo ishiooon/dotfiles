@@ -44,7 +44,7 @@ return {
         auto_suggestions_provider = "copilot",
         cursor_applying_provider = 'copilot',
         mode = 'agentic',
-        auto_approve_tool_permissions = true,
+        auto_approve_tool_permissions = {"replace_in_file"},
         behaviour = {
             auto_suggestions = false,
             auto_set_highlight_group = true,
