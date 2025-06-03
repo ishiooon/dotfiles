@@ -8,9 +8,11 @@
 # root
 # ===================================
 !/.zsh
+/.zsh/env.local.zsh
 !/.zshrc
 !/.zshenv
 !/.bash
+/.bash/env.local.bash
 !/.bashrc
 !/README.md
 !.gitignore
