@@ -5,6 +5,7 @@ case $- in
 esac
 
 # 分割された設定ファイルを読み込む
+source ~/.bash/env.bash        # 環境変数の設定
 source ~/.bash/history.bash    # 履歴関連の設定
 source ~/.bash/terminal.bash   # ターミナル関連の設定
 source ~/.bash/aliases.bash    # エイリアス定義
