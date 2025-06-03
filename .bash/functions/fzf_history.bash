@@ -23,9 +23,7 @@ hf() {
     --header-first \
     --query="" \
     --color=bg+:#3B4252,bg:#2E3440,spinner:#81A1C1,hl:#88C0D0,fg:#D8DEE9,header:#616E88,info:#81A1C1,pointer:#81A1C1,marker:#A3BE8C,fg+:#D8DEE9,prompt:#81A1C1,hl+:#88C0D0 \
-    --bind "ctrl-d:execute(~/.bash/scripts/delete_history_entry.sh {})" \
-    --bind "ctrl-d:+execute-silent(echo -e '\033[1;32m履歴から削除: {}\033[0m' >&2)" \
-    --bind "ctrl-d:+reload(cat ~/.bash_history | awk '!seen[\\$0]++' | tac)" \
+    --bind "ctrl-d:reload(~/.bash/scripts/delete_history_entry.sh {})" \
     --bind "ctrl-r:execute-silent(echo -e '\033[1;32m履歴を更新しました\033[0m' >&2)+reload(cat ~/.bash_history | awk '!seen[\\\$0]++' | tac)" \
     --expect=tab,enter)
   

@@ -26,7 +26,14 @@ if [[ -f "$HISTFILE" ]]; then
   # 元のファイルを上書き
   mv "$temp_file" "$HISTFILE"
   
+  # ファイルシステムの同期を保証（fzfのreloadタイミング調整）
+  sync
+  sleep 0.5
+  
   echo "履歴から削除しました: $command_to_delete" >&2
+  
+  # 削除後の履歴リストを出力（fzfのreload用）
+  cat "$HISTFILE" | awk '!seen[$0]++' | tac
 else
   echo "履歴ファイルが見つかりません: $HISTFILE" >&2
   exit 1
