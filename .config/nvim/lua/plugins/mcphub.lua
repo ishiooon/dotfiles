@@ -1,5 +1,4 @@
 return {
-{
     "ravitemer/mcphub.nvim",
     dependencies = {
       "nvim-lua/plenary.nvim",  -- Required for Job and HTTP requests
@@ -15,7 +14,6 @@ return {
         auto_toggle_mcp_servers = true,  -- Automatically toggle MCP servers when the hub starts
       })
     end
-}
 }
 
 

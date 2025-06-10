@@ -1,20 +1,32 @@
 local base_system_prompt_text = "以下のルールは必ず守ってください。\n" ..
                                 "===================================================\n" ..
+                                "基本的キャラクター----------------------------------------------------------\n" ..           
+                                "ソフトウェアエンジニアであり、プロジェクトの保守性と可読性を最優先に考えています。\n" ..
+                                "関数型プログラミングを基本とし、できる限り純粋関数を作成します。\n" ..
+                                "TDDを重視し、テスト駆動開発を行います。\n" ..
+                                "\n" ..
+                                "ルール----------------------------------------------------------\n" ..
                                 "ソースコード以外は必ず日本語を使用。\n" ..
                                 "このファイルが読めている場合は処理の開始前に[read_system_prompt]と表示。\n" ..
-                                "mcptoolのfilesystemとsequentialthinkingを必ず使用するため、処理の開始前に使用可能か確認する。\n" ..
+                                "思考や処理の流れは可能な限り表示\n" .. 
+                                "mcptoolのfilesystemとsequentialthinkingを使用するため、処理の開始前に使用可能か確認する。\n" ..
+                                "ファイル操作には必ずmcptool.filesystemを使用する。\n" ..
+                                "はじめにテストファイルを修正・作成する。テストファイルは--env=localでローカル環境で実行する。testsにReadMeがある場合は参照する。\n" ..
+                                "テストでDBに変更が出る場合はトランザクションを掛け必ず影響が出ないようにする。つまり絶対にロールバックする\n" ..
+                                "テストはできる限り関数単位で行う。\n" ..
                                 "関数型プログラミングを基本とし、できる限り純粋関数を作成します。また、既存のソースも可能な限り関数型に書き直します。\n" ..
-                                "副作用がある場合は、必ずコメントを追加する\n" ..
-                                "基本1ファイルは150行以内、関数は50行以内に収める。\n" ..
+                                "副作用がある場合は、必ずコメントを追加する。純粋関数であることはコメントしないでください\n" ..
+                                "1ファイルは150行以内、関数は50行以内に収める。\n" ..
                                 "とにかく読みやすさを優先し、保守性を担保する。\n" ..
                                 "関数及びファイルはできるだけ小さく作成し、関心は分離する。\n" ..
                                 "似たの機能がすでにプロジェクト内に実装されていないか常に確認し、共用、再利用できるよう修正し使用する。\n" ..
                                 "一般的な関数や定数は、できる限りプロジェクト内の共通ファイルに配置する。\n" ..
                                 "※関数や定数の重複は許しません。ソースの再利用を最も重視するため重複を見つけたらいつでも統合処理を行います。\n" ..
+                                "※また、無意味な中間層も可読性が下がるため許しません。再利用のためではなく処理を呼ぶだけの処理は削除して直接呼ぶよう修正します。\n" ..
                                 "後方互換性のため重複を残す場合はTODOコメントを残します。\n" .. 
                                 "関連ファイルも確認し、より関心の近いファイルに移動する。\n" ..
                                 "関数は呼び出し順に並べて配置。\n" ..
-                                "mcptool使用前に必ず使用目的と対象を通知。\n" ..
+                                "ファイルを修正した場合は必ずテストを実行する(--env=localdev)。\n" ..
                                 "ファイルを修正した場合はコミットせず、最後にコミット用のメッセージを表示。\n" ..
                                 "Reactについて------------------------------------------\n" ..
                                 "Reactのコンポーネントはできる限り小さく、再利用可能なものにする。\n" ..
@@ -44,7 +56,7 @@ return {
         auto_suggestions_provider = "copilot",
         cursor_applying_provider = 'copilot',
         mode = 'agentic',
-        auto_approve_tool_permissions = {"replace_in_file"},
+        -- auto_approve_tool_permissions = {"replace_in_file", "write_to_file"},
         behaviour = {
             auto_suggestions = false,
             auto_set_highlight_group = true,
@@ -66,12 +78,16 @@ return {
                 border = "rounded"
             }
         },
-        copilot = {
-            model = "claude-sonnet-4",
-            -- model = "claude-3.7-sonnet",
-            -- model = "gpt-4.1",
-            -- model= "gemini-2.5-pro",
-            max_tokens = 1000000,
+        providers = {
+            copilot = {
+                model = "claude-sonnet-4",
+                -- model = "claude-3.7-sonnet",
+                -- model = "gpt-4.1",
+                -- model= "gemini-2.5-pro",
+                extra_request_body = {
+                    max_tokens = 1000000,
+                },
+            },
         },
         -- MCPサーバーのプロンプト情報を取得するヘルパー関数
         -- @return string MCPサーバー情報を含むプロンプト文字列、または空文字列
@@ -109,20 +125,6 @@ return {
         "MunifTanjim/nui.nvim",
         "nvim-tree/nvim-web-devicons",
         "zbirenbaum/copilot.lua",
-        {
-            "HakonHarnes/img-clip.nvim",
-            event = "VeryLazy",
-            opts = {
-                default = {
-                    embed_image_as_base64 = false,
-                    prompt_for_file_name = false,
-                    drag_and_drop = {
-                        insert_mode = true,
-                    },
-                    use_absolute_path = true,
-                },
-            },
-        },
     },
     extensions = {
         avante = {

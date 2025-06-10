@@ -1,4 +1,4 @@
--- falshを使う 
+-- flashを使う
 return {
     {
         "folke/flash.nvim",
@@ -6,6 +6,9 @@ return {
         opts = {
             modes = {
                 search = {
+                    enabled = true,
+                },
+                char = {
                     enabled = true,
                 }
             }

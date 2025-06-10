@@ -13,8 +13,6 @@ local prefill_edit_window = function(request)
     vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("", true, true, true), "v", true)
 end
 
-
--- NOTE: most templates are inspired from ChatGPT.nvim -> chatgpt-actions.json
 local avante_code_readability_analysis = [[
   以下の点を考慮しコードの可読性の問題を特定、リファクタリングしてください。
   なお後方互換性を考慮し、振る舞いや機能は一切変わらないよう気を付けてください。
@@ -31,9 +29,11 @@ local avante_code_readability_analysis = [[
   - コードの繰り返し
   - クラス内で中心となるメソッドを上部に配置する
   - 必要があればファイルサイズが小さくなるように関心や機能ごとにより良いファイルに移動または分割する
+  - また、無意味な中間層も可読性が下がるため許しません。処理を呼ぶだけの処理は削除して直接呼ぶよう修正します
   - 関数型プログラミングを重視、できる限り純粋関数を作成する
   - 可能な限り関数型に修正する
   - 副作用がある場合は、必ずコメントを追加する
+  - 単体・機能テストがない場合は作成、実行する
   - 1ファイルは150行以内、関数は50行以内に収める。
   上記以外の問題を特定しても構いません。
   問題がない場合は褒めてください。
