@@ -1,9 +1,12 @@
--- 初期実行コマンド
---========================================================
+-- Denoのパス設定
+vim.g.denops_deno = vim.fn.expand('~/.deno/bin/deno')
+vim.g['denops#deno'] = vim.fn.expand('~/.deno/bin/deno')
+-- 環境変数の設定 (副作用: 環境変数の変更)
+vim.fn.setenv('PATH', vim.fn.expand('~/.local/bin') .. ':' .. vim.fn.expand('~/.deno/bin') .. ':' .. vim.fn.getenv('PATH'))
+
+
 -- カラースキームを設定
 vim.cmd([[colorscheme gruvbox-material]])
--- ストローク表示をオン
-vim.cmd([[ShowkeysToggle]])
 --========================================================
 -- 行番号を表示
 vim.opt.number = true
