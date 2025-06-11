@@ -107,5 +107,8 @@ local function toggle_diffview()
     vim.cmd('DiffviewOpen')
   end
 end
-
 vim.keymap.set('n', '<leader>dt', toggle_diffview, { desc = 'Diffview: トグル' })
+
+
+-- claude-code用のキーマップ
+vim.keymap.set('n', '<leader>cc', '<Cmd>ClaudeCode<CR>', { desc = 'Claude Code: トグル' })
