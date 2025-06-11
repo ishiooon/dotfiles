@@ -12,6 +12,7 @@
 !/.zshrc
 !/.zshenv
 !/.bash
+!/.claude
 /.bash/env.local.bash
 !/.bashrc
 !/README.md
