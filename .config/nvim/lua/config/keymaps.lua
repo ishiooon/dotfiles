@@ -89,3 +89,23 @@ vim.api.nvim_set_keymap("n", "<leader>wttr", "<cmd>lua _wttr_toggle()<CR>", {nor
 -- Suda.vim 用の キーマップ
 vim.keymap.set('n', '<Leader>sw', ':SudaWrite<CR>')
 vim.keymap.set('n', '<Leader>sr', ':SudaRead<CR>')
+
+-- diffview用のキーマップ - トグル機能
+-- @param なし
+-- @return なし
+-- @side_effect DiffviewのOpenとCloseを切り替える
+local function toggle_diffview()
+  local diffview = require('diffview')
+  local lib = require('diffview.lib')
+  local view = lib.get_current_view()
+  
+  if view then
+    -- Diffviewが開いている場合はクローズ
+    vim.cmd('DiffviewClose')
+  else
+    -- Diffviewが閉じている場合はオープン
+    vim.cmd('DiffviewOpen')
+  end
+end
+
+vim.keymap.set('n', '<leader>dt', toggle_diffview, { desc = 'Diffview: トグル' })
