@@ -133,3 +133,7 @@ ln -s ~/dotfiles/.config/mcphub ~/.config/mcphub
 ├── keybindings.zsh         # キーバインディング設定
 └── functions.zsh           # 関数定義
 ```
+
+## テスト情報
+
+このファイルはworktreeのテスト中に書き換えました。
