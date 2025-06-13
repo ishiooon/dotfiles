@@ -1,9 +1,13 @@
 {
   "permissions": {
     "allow": [
-      "Bash(ls:*)",
+      "Bash(sed:*)",
+      "Bash(php -l *)",
+      "Bash(npm test:*)",
       "Bash(find:*)"
     ],
-    "deny": []
+    "deny": [
+      "Bash(npm run *)"
+    ]
   }
 }
