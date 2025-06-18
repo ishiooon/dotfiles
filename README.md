@@ -136,4 +136,4 @@ ln -s ~/dotfiles/.config/mcphub ~/.config/mcphub
 
 ## テスト情報
 
-このファイルはworktreeのテスト中に書き換えました。
+ここはmainで書き換えました
