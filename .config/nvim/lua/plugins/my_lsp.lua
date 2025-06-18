@@ -20,6 +20,29 @@ return{
 			automatic_installation = true,
 		},
 	},
+	{
+		"neovim/nvim-lspconfig",
+		config = function()
+			-- Intelephense設定
+			require('lspconfig').intelephense.setup({
+				root_dir = require('lspconfig').util.root_pattern('.vscode', 'composer.json', '.git'),
+				init_options = {
+					licenceKey = vim.fn.expand('~/intelephense-licence.txt'),
+				},
+				settings = {
+					intelephense = {
+						stubs = {
+							"wordpress",
+						},
+					}
+				},
+				on_attach = function(client, bufnr)
+					-- WordPress関数の未定義エラーを無効化
+					client.server_capabilities.diagnosticsProvider = false
+				end,
+			})
+		end,
+	},
     -- nvim-cmp 自動補完
     {
         "hrsh7th/nvim-cmp",
@@ -65,5 +88,3 @@ return{
 	    event = { "BufRead", "BufNewFile" },
 	},
 }
-
-
