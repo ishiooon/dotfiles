@@ -18,3 +18,6 @@ HISTFILESIZE=20000
 
 # 各コマンド実行後に履歴をファイルに保存
 PROMPT_COMMAND="history -a; $PROMPT_COMMAND"
+
+# 特定のパターンを履歴から除外
+HISTIGNORE="HISTFILE=*:HISTCONTROL=*:shopt -s histappend:HISTSIZE=*:HISTFILESIZE=*:PROMPT_COMMAND=*:SAVEHIST=*:setopt*:set -o history:# *:HISTIGNORE=*"

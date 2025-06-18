@@ -46,8 +46,8 @@ if [[ -f "$HISTFILE" ]]; then
   
   echo "履歴から削除しました: $command_to_delete" >&2
   
-  # 削除後の履歴リストを出力（fzfのreload用）
-  cat "$HISTFILE" | cut -d';' -f2- | awk '!seen[$0]++' | tac
+  # 削除後の履歴リストを出力（fzfのreload用、フィルタリング適用）
+  cat "$HISTFILE" | cut -d';' -f2- | grep -vE '^(HISTFILE=|HISTCONTROL=|shopt -s histappend|HISTSIZE=|HISTFILESIZE=|PROMPT_COMMAND="history -a|SAVEHIST=|setopt|set -o history|#|HISTIGNORE=)' | awk '!seen[$0]++' | tac
 else
   echo "履歴ファイルが見つかりません: $HISTFILE" >&2
   exit 1
