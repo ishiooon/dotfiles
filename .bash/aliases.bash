@@ -17,3 +17,6 @@ alias l='ls -CF'
 
 # 長時間実行されるコマンドのための"alert"エイリアス
 alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
+
+# 履歴をクリーンアップするエイリアス
+alias clean-history='~/.bin/clean_history.sh'
