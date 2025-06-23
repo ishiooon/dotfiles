@@ -4,7 +4,13 @@
       "Bash(sed:*)",
       "Bash(php -l *)",
       "Bash(npm test:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Read(/home/dev_local/dotfiles/.claude/character.md)",
+      "Write(/home/dev_local/dotfiles/.claude/character.md)",
+      "Edit(/home/dev_local/dotfiles/.claude/character.md)",
+      "Read(/home/dev_local/dotfiles/.claude/character_log/*)",
+      "Write(/home/dev_local/dotfiles/.claude/character_log/*)",
+      "Edit(/home/dev_local/dotfiles/.claude/character_log/*)"
     ],
     "deny": [
       "Bash(npm run *)"
