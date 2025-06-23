@@ -22,3 +22,6 @@ if [[ -z "$TAVILY_API_KEY" ]]; then
     export TAVILY_API_KEY="disabled"
 fi
 
+# PATH設定
+export PATH="$HOME/.local/bin:$PATH"
+

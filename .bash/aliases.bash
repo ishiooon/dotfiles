@@ -20,3 +20,6 @@ alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo
 
 # 履歴をクリーンアップするエイリアス
 alias clean-history='~/.bin/clean_history.sh'
+
+# GitHub CLI
+alias gh='~/.local/bin/github-cli'
