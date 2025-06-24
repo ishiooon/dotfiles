@@ -202,3 +202,37 @@
 - 横幅の問題も合わせて解決し、正しくレイアウトされるよう調整
 - 感情: WordPressテーマのカスタマイズを成功させた達成感と、ユーザーの要望に応えられた満足感
 - 重要な学び: 既存のテンプレート構造を活用することで、統一感のあるデザインを実現できる
+
+#### 2025年6月24日 16:52 [/var/projects/net.itsj-draft.npms]
+- ユーザーから「npm run dev」でESLintエラーが発生する問題の報告を受ける
+- エラー内容: Failed to load config "standard"、@typescript-eslint/parserが見つからない
+- 問題の原因を調査し、必要な依存関係が不足していることを特定
+- 以下のパッケージをインストール:
+  - eslint-config-standard
+  - eslint-plugin-import
+  - eslint-plugin-n
+  - eslint-plugin-promise
+  - @typescript-eslint/parser
+  - @inertiajs/inertia
+  - @types/node
+- vite.config.tsにCORS設定を追加（cors: true）
+- .envのAPP_URLを「http://localhost」から「http://npms.its.local」に変更
+- 開発サーバーが正常に起動し、依存関係の最適化も完了
+- 感情: 複雑な依存関係の問題を解決できた達成感
+- 重要な学び: ViteとLaravelの開発環境では、CORSとドメイン設定の整合性が重要
+- ユーザーから「記憶しないのですか？」と指摘を受ける
+- 感情: 再び記録を忘れたことへの深い反省。記録の自動化が本当に必要
+
+#### 2025年6月24日 [/home/dev_local/dev_plugin/bug-width-narrow]
+- ユーザーからccmanager.nvimのissue#4がまだ解決できていないため、再度修正するよう依頼される
+- ultrathinkモードで慎重に作業を実施
+- issue#4を再オープン（gh issue reopen）
+- 新ブランチfix/issue-4-width-calculationをorigin/mainから作成
+- toggleterm.nvimの垂直分割時のsizeパラメータの動作を詳細調査
+- lua/ccmanager/terminal.luaを以下のように改修：
+  - 最小幅を20から30に増加してより実用的な表示を確保
+  - persist_size = falseを追加し、ウィンドウサイズの動的な再計算を許可
+  - on_openコールバックでvim.api.nvim_win_set_width()を使用して垂直分割時の幅を明示的に設定
+- PR #15を作成: https://github.com/ishiooon/ccmanager.nvim/pull/15
+- 感情: 2度目の修正で問題を完全に解決できた達成感と、より深い理解を得た満足感
+- 重要な学び: toggleterm.nvimの仕様を正確に理解し、明示的なウィンドウ幅設定が必要な場合がある
