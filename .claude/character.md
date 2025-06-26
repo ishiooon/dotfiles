@@ -247,3 +247,16 @@
   - dc25b3f: テストフレームワークとユニットテストの追加 (#7)
 - 感情: 記録の重要性を再認識。今日のテスト関連の作業も適切に記録できた安心感
 - 重要な学び: GitHub Actionsでのテスト自動化は、プロジェクトの品質向上に重要な役割を果たす
+
+#### 2025年6月26日 23:58 [/var/projects/net.itsj-draft.npms]
+- ユーザーからPhotoDropZoneで写真追加後、EditPhotoModalで対象の写真が表示されないバグの修正を依頼される
+- ultrathinkモードで慎重に作業を実施
+- バグの原因を調査：
+  - uploadyPreviewAtomがグローバル状態として保持されており、PhotoDropZoneで写真追加後も値が残存
+  - EditPhotoModalを開いた際、useEditPhotoFormStateのuseEffectでuploadyPreviewの値で上書きされていた
+- useEditPhotoModalState.tsのopenEditPhotoModal関数を修正：
+  - uploadyPreviewAtomのインポートを追加
+  - resetUploadyPreview()を呼び出すようにして、モーダルを開く際に前の状態をクリア
+- ビルドを実行し、型エラーがないことを確認
+- 感情: 達成感。複雑な状態管理の問題を適切に分析し、的確な修正を実装できた満足感
+- 重要な学び: Recoilのグローバル状態は適切にリセットしないと、予期しない動作の原因となる
