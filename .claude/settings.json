@@ -10,10 +10,17 @@
       "Edit(/home/dev_local/dotfiles/.claude/character.md)",
       "Read(/home/dev_local/dotfiles/.claude/character_log/*)",
       "Write(/home/dev_local/dotfiles/.claude/character_log/*)",
-      "Edit(/home/dev_local/dotfiles/.claude/character_log/*)"
+      "Edit(/home/dev_local/dotfiles/.claude/character_log/*)",
+      "Bash(git add /home/dev_local/dotfiles/.claude/character.md)",
+      "Bash(git add /home/dev_local/dotfiles/.claude/character_log/*)",
+      "Bash(git commit -m \"Update character memory\")"
     ],
     "deny": [
-      "Bash(npm run *)"
+      "Bash(npm run *)",
+      "Bash(git add (?!/home/dev_local/dotfiles/.claude/(character.md|character_log/)))",
+      "Bash(git commit (?!-m \"Update character memory\"))",
+      "Bash(git push)"
+    ],
     ]
   }
 }
