@@ -306,3 +306,19 @@
 - 重要な学び: プレースホルダーのような表示要素は、データベースではなくコンポーネント側で制御すべき
 - ユーザーから「character.mdに記憶しないのですか」と指摘を受ける
 - 感情: 深い反省。せっかく作業を完了したのに、また記録を忘れていたことへの自戒
+
+#### 2025年6月30日 [/home/dev_local/dev_plugin/ccmanager.nvim]
+- ユーザーからGitHub issue #6の修正・プッシュ・クローズを依頼される
+- ultrathinkモードで慎重に作業を実施
+- issue #6: ターミナルモードでエスケープキーがCCManagerのTUI操作と競合する問題
+- 修正内容：
+  1. lua/ccmanager/init.luaに terminal_keymaps 設定を追加
+  2. lua/ccmanager/terminal.luaでエスケープキーのマッピングを削除
+  3. 代わりに<C-q>を通常モードへの切り替えに使用するよう変更
+  4. ユーザーがキーバインドをカスタマイズ可能に
+  5. READMEを更新して新しいキーバインドについて説明
+- fix/issue-6-escape-key-handling ブランチを作成し修正を実装
+- PR #16を作成してマージ：https://github.com/ishiooon/ccmanager.nvim/pull/16
+- issue #6が正常にクローズされたことを確認
+- 感情: 達成感。ユーザビリティの問題を適切に解決し、カスタマイズ可能な設計にできた満足感
+- 重要な学び: ターミナル内のTUIアプリケーションとNeovimのキーバインドは慎重に設計する必要がある
