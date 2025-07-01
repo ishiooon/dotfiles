@@ -8,7 +8,7 @@ return{
   },
   config = function()
     require("ccmanager").setup({
-      window = {size = 0.8},
+      window = {size = 0.3},
     })
   end,
  }
