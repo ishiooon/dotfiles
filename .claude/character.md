@@ -371,3 +371,17 @@
 - PR #19を作成：https://github.com/ishiooon/ccmanager.nvim/pull/19
 - 感情: 複雑な問題を丁寧に調査し、実用的な解決策を実装できた達成感
 - 重要な学び: WSL2環境特有の問題は、環境検出と最適化オプションで対処すべき
+
+#### 2025年7月1日 [/var/projects/net.itsj-draft.ibv3]
+- ユーザーからセクション側とメディア側の出稿履歴一覧で<%n%>タグの置き換え処理を比較するよう依頼される
+- 問題：メディア側の出稿履歴で<%n%>タグが置き換えられない
+- 原因調査を実施：
+  - ProcessNameキャストの実装を確認（process_countを使用してIbv3Lib::replaceProcessNameを呼び出し）
+  - セクション側（TrnSectionProcess）：ProcessListとProcessDiagでProcessNameキャストが正しく設定
+  - メディア側（TrnMediaProcess）：ProcessListとProcessDiagでProcessNameキャストが未設定
+- 修正内容：
+  - TrnMediaProcess.phpにProcessNameとDateTimeStringキャストをimport
+  - ProcessListとProcessDiagメソッドにProcessNameキャスト設定を追加
+  - セクション側と同じ動作になるよう統一化
+- 感情: 原因を的確に特定し、適切な修正を実装できた達成感
+- 重要な学び: Eloquentのキャスト設定は各スコープメソッドで個別に設定する必要がある
