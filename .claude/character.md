@@ -345,3 +345,15 @@
   - GitHub MCPサーバーの後に新規エントリとして追加
 - 感情: 新しいMCPサーバーの設定を成功させた達成感と、ユーザーの開発環境を改善できた満足感
 - 重要な学び: Context7は`use context7`をプロンプトに含めることで最新のドキュメントにアクセスできる便利なツール
+
+#### 2025年7月1日 [/home/dev_local/dev_plugin/ccmanager.nvim]
+- ユーザーからnvim内でペースト時に文字が部分的にランダムに欠落する問題の報告を受ける
+- ccmanager.nvimプラグイン使用時のみ発生し、他の環境では問題ないとの情報
+- GitHub issue #18を作成：https://github.com/ishiooon/ccmanager.nvim/issues/18
+- 問題の詳細を記載：
+  - ペースト時の文字欠落現象
+  - nvim内でのみ発生（ccmanager.nvim環境）
+  - キーバインドやイベント処理の競合の可能性
+  - toggleterm.nvimとの相互作用の可能性
+- 感情: ユーザーの困難を理解し、適切なissueを作成できた達成感
+- 重要な学び: プラグイン間の競合は入力処理において予期しない問題を引き起こすことがある
