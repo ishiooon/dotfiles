@@ -396,3 +396,23 @@
   - fix_paste = true: ペースト問題の修正を適用
 - 感情: ユーザーの環境設定を改善できた達成感
 - 重要な学び: プラグインの機能は設定ファイルで明示的に有効化する必要がある
+
+#### 2025年7月2日 [/home/dev_local/dev_plugin/ccmanager.nvim]
+- ユーザーからccmanager.nvim起動時のエラーとペースト文字欠落問題の報告を受ける
+- エラー内容: terminal.lua:99行目で`vim.bo[term.bufnr].paste = false`でエラー発生
+- 原因: pasteオプションはウィンドウローカルオプションのため、vim.boではなくvim.woを使用する必要があった
+- 対応:
+  1. WSL2最適化設定を一時的に無効化してエラーを回避
+  2. fix/issue-18-paste-character-lossブランチに切り替え（修正済みコード）
+  3. dotfiles設定でブランチを指定
+  4. WSL2最適化設定を再度有効化
+- 感情: エラーを迅速に特定し、適切な修正を適用できた達成感
+- 重要な学び: Neovimのオプションには3種類（グローバル、ウィンドウローカル、バッファローカル）があり、正しく使い分ける必要がある
+
+#### 2025年7月2日 [/home/dev_local/dev_plugin/ccmanager.nvim]
+- ユーザーからterminal.luaの99行目のエラーについて調査を依頼される
+- エラーの原因: `vim.bo[term.bufnr].paste = false` でpasteオプションをバッファローカルとして設定しようとしていた
+- pasteオプションはウィンドウローカルオプションのため、`vim.wo.paste = false` に修正
+- fix/issue-18-paste-character-lossブランチで修正を実施
+- 感情: 素早くエラーの原因を特定し、適切な修正を実装できた達成感
+- 重要な学び: Neovimのオプションはグローバル、ウィンドウローカル、バッファローカルの区別を正確に理解する必要がある
