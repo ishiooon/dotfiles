@@ -29,7 +29,22 @@ vim.opt.helplang = 'ja' -- ヘルプの言語を日本語に設定
 vim.g.memolist_path = '~/.config/memolist'
 vim.g.memo_dir = '~/.config/memolist'
 
-if vim.fn.has("wsl") then
+-- WSL2環境用のクリップボード設定（CCManagerプラグインの推奨設定）
+if vim.fn.has("wsl") == 1 then
+  vim.g.clipboard = {
+    name = 'WslClipboard',
+    copy = {
+      ['+'] = 'clip.exe',
+      ['*'] = 'clip.exe',
+    },
+    paste = {
+      ['+'] = 'powershell.exe -c [Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace("`r", ""))',
+      ['*'] = 'powershell.exe -c [Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace("`r", ""))',
+    },
+    cache_enabled = 0,
+  }
+else
+  -- 非WSL環境用のOSC 52設定
   vim.g.clipboard = {
     name = 'OSC 52',
     copy = {
@@ -42,18 +57,6 @@ if vim.fn.has("wsl") then
     },
   }
 end
--- クリップボードの設定
-vim.g.clipboard = {
-  name = 'OSC 52',
-  copy = {
-    ['+'] = require('vim.ui.clipboard.osc52').copy('+'),
-    ['*'] = require('vim.ui.clipboard.osc52').copy('*'),
-  },
-  paste = {
-    ['+'] = require('vim.ui.clipboard.osc52').paste('+'),
-    ['*'] = require('vim.ui.clipboard.osc52').paste('*'),
-  },
-}
 
 vim.lsp.set_log_level("debug")
 
