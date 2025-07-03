@@ -121,3 +121,28 @@
   - terminal_spec.luaのToggletermモックを修正
 - 感情: テストエラーの修正に成功し、CI/CDパイプラインの重要性を再認識
 - 重要な学び: GitHub Actions環境とローカル環境の違いを考慮したテスト設計が必要
+
+#### 2025年7月2日 [/var/projects/net.itsj-draft.ibv3]
+- ユーザーからmediarequest/deleteルートがメディアとファイルの削除で共有されていて分かりにくいので分割するよう依頼
+- TODOリストを作成して体系的に作業を実施
+- 調査結果：
+  - メディア本体削除: 論理削除、削除可能条件あり（進捗が未着手の場合のみ）
+  - ファイル削除: 物理削除、見積書・発注書・納品書の3種類
+- 実施した変更：
+  1. routes/admin.php: /mediarequest/delete/{pamphlet_id}/... → /mediarequest/deletefile/{pamphlet_id}/...
+  2. routes/direction.php: 同様の変更
+  3. routes/product.php: 同様の変更
+  4. MediaRequest.blade.php: 3箇所のファイル削除リンクURLを修正
+- 感情: 達成感。ルートの整理によりシステムの可読性と保守性が向上した満足感
+- 重要な学び: 同じパスで異なる処理を行うルートは、明確に分離することで理解しやすくなる
+
+#### 2025年7月3日 [/var/projects/net.itsj-draft.ibv3]
+- ユーザーからその他メディア削除時のメール置換タグ%%(その他メディア削除日時)%%が置換されない問題の報告
+- ultrathinkモードで調査を実施
+- 調査結果：
+  - MailReplaceTemplate.phpの71行目で「その他メディア削除日時」のkey_nameが`section_delete_datetime`（セクション削除と重複）
+  - DeleteMediaRequest.phpの147行目でも`section_delete_datetime`を使用
+  - CSVデータとマイグレーションでもその他メディア削除用に`section_delete_datetime`を使用するよう定義
+- ユーザーから「migrationを見ると現在のreplace_key_nameでよさそう」との指摘
+- 感情: 複雑な仕様に対する理解の深まり。設計上の混乱があるが、現状は仕様通りに動作していることを確認
+- 重要な学び: 意味的に混乱を招く実装でも、既存の仕様やマイグレーションとの整合性を優先する必要がある
