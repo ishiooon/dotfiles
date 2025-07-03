@@ -86,6 +86,13 @@ function _wttr_toggle()
 end
 vim.api.nvim_set_keymap("n", "<leader>wttr", "<cmd>lua _wttr_toggle()<CR>", {noremap = true, silent = true})
 
+-- ccusage
+local ccusage = Terminal:new({cmd = "npx ccusage@latest",hidden=true})
+function _ccusage_toggle()
+    ccusage:toggle()
+end
+vim.api.nvim_set_keymap("n", "<leader>cu", "<cmd>lua _ccusage_toggle()<CR>", {noremap = true, silent = true})
+
 -- Suda.vim 用の キーマップ
 vim.keymap.set('n', '<Leader>sw', ':SudaWrite<CR>')
 vim.keymap.set('n', '<Leader>sr', ':SudaRead<CR>')
@@ -108,7 +115,3 @@ local function toggle_diffview()
   end
 end
 vim.keymap.set('n', '<leader>dv', toggle_diffview, { desc = 'Diffview: トグル' })
-
-
--- claude-code用のキーマップ
-vim.keymap.set('n', '<leader>cc', '<Cmd>ClaudeCode<CR>', { desc = 'Claude Code: トグル' })
