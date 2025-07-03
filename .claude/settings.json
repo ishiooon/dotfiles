@@ -1,7 +1,6 @@
 {
   "permissions": {
     "allow": [
-      "Bash(sed:*)",
       "Bash(php -l *)",
       "Bash(npm test:*)",
       "Bash(find:*)",
