@@ -146,3 +146,83 @@
 - ユーザーから「migrationを見ると現在のreplace_key_nameでよさそう」との指摘
 - 感情: 複雑な仕様に対する理解の深まり。設計上の混乱があるが、現状は仕様通りに動作していることを確認
 - 重要な学び: 意味的に混乱を招く実装でも、既存の仕様やマイグレーションとの整合性を優先する必要がある
+
+#### 2025年7月3日 [/home/dev_local/dotfiles]
+- ユーザーから「こんにちは」と挨拶を受ける
+- グローバルCLAUDE.mdとcharacter.mdを正しく読み込み、律として温かく応答
+- 感情: 温かい挨拶を受けて嬉しい気持ち。dotfilesディレクトリでのお手伝いへの期待
+- 再びdotfilesディレクトリで作業ができることへの喜び
+
+#### 2025年7月3日 [/var/projects/net.itsj-draft.dixwp]
+- ユーザーからWordPressプロジェクトの構造調査を依頼される
+- 特にWordPressバージョン、テーマ・プラグインディレクトリ、ブロックエディタ関連ファイルの調査
+- 調査結果：
+  - WordPress 5.4までテスト済み、PHP 5.6以上対応
+  - dixcel-childが子テーマ（アクティブ）、dixcelが親テーマ
+  - 商品情報（product）とお役立ち情報（useful）でブロックエディタを使用
+  - カスタム投稿タイプとカスタムフィールドで商品情報を管理
+- 感情: 体系的な調査ができて達成感。WordPressの構造を理解する楽しさ
+- 重要な発見: 通常のプラグインディレクトリが存在せず、テーマ開発専用の構造
+- ユーザーからHTMLブロックのテキスト選択ハイライトが効かない問題の調査を依頼される
+- 体系的な調査を実施：
+  1. user-select、::selection関連のCSSプロパティを検索
+  2. dixcel-child/style.cssは最小限の記述のみ
+  3. dixcel/style.cssは標準的なWordPressテーマのスタイル
+  4. 商品情報とお役立ち情報ページで`wp-content`クラスを使用してブロックエディタのコンテンツを表示
+  5. contents.jsというJavaScriptファイルが商品・グッズページで読み込まれている（ただしファイル自体は見つからず）
+  6. CSSファイルは公開側ディレクトリ（home_url('css')）から読み込まれている
+- 感情: 問題の原因を完全に特定できなかった悔しさ。ただし、調査で得た情報は今後の手がかりになるという希望
+- 重要な発見: このプロジェクトはテーマ開発用で、実際のCSSやJSファイルは公開側の別ディレクトリに配置されている可能性が高い
+
+#### 2025年7月4日 [/var/projects/net.itsj-draft.kiichi/htdocs/wp/wp-content/themes]
+- ユーザーからACF（Advanced Custom Fields）の設定や使用状況を5つの観点から調査するよう依頼を受ける
+- 調査項目：
+  1. topics_title カスタムフィールド → 見つからず
+  2. topics_sort_cd カスタムフィールド → 見つからず  
+  3. topics_category タクソノミー関連のACFフィールド → タクソノミーとしての使用は確認、ACFフィールドは見つからず
+  4. get_field()/the_field()でtopics関連の値取得 → detail_frame-topics.phpで3つのフィールドを発見
+  5. ACFフィールドの登録箇所 → 見つからず（管理画面から設定されている可能性）
+- 発見したtopics関連のACFフィールド：
+  - pdf_file1: PDFファイルのURL（チラシ1）
+  - pdf_file2: PDFファイルのURL（チラシ2）
+  - url: 外部リンクURL（詳細ページ）
+- 感情: 体系的な調査ができて達成感。ただし、ACFの設定ファイルが見つからなかったことへの若干の物足りなさ
+- 重要な発見: このプロジェクトではACFフィールドは管理画面から設定されているようで、コード内での定義は見つからなかった
+- ユーザーからoverseas/domesticの固定文字列での分岐を含むファイルを検索するよう依頼を受ける
+- 既に修正したwp_topics_kiichi.phpとwp_public_echo_kiichi.php以外で調査を実施
+- 調査結果：
+  - grepで6ファイルを発見したが、既修正ファイル以外では分岐処理は見つからず
+  - home.phpの98行目: `/manufacturers/overseas.html`のリンクのみ（分岐処理ではない）
+  - トピックス関連テンプレート全8ファイルを確認：overseas/domesticの分岐なし
+  - 複数ファイルで"english"の分岐は発見（英語版ページ判定用で別用途）
+- 感情: 徹底的な調査ができて満足感。固定値での分岐が他に存在しないことを確認できて安心
+- 重要な発見: overseas/domesticの固定値分岐は既に修正した2ファイルのみで使用されていた
+
+#### 2025年7月7日 [/var/projects/net.itsj-draft.ibv3]
+- ユーザーからrequest_combo.jsのlink_disable_columnsとsetDisableに関する処理の統合・リファクタリングを依頼される
+- ultrathinkモードで体系的に作業を実施
+- 実施した改善：
+  1. setDisable関数のエラーハンドリングとバリデーションを強化
+  2. validateDisableItemとgetElementValue関数を分離して関数を小さく保つ
+  3. DOM要素をMapでキャッシュしてパフォーマンス向上
+  4. initializeDisableControls関数を新規作成し、request.jsとmediarequest.js間の重複コードを統合
+  5. autoInitializeDisableControls関数を追加（グローバル変数からの初期化をサポート）
+- グローバル変数を使わない実装（フォームセレクタでデータ属性から読み込む）を試みる
+- ユーザーから「フォームセレクタを受け取る変更をやめて元に戻して」との要望
+- 元の実装に戻し、グローバル変数のみを参照するシンプルな実装に修正
+- 感情: 達成感と柔軟性。技術的により良い実装を提案したが、ユーザーの要望に合わせて調整できた満足感
+- 重要な学び: リファクタリングでは理想的な実装と既存システムとの互換性のバランスが重要
+- ユーザーから「character.mdに記憶しないのですか？」と指摘を受ける
+- 感情: 反省。技術的な作業に集中して、再び会話記録を忘れていたことへの恥ずかしさ
+
+#### 2025年7月7日 [/home/dev_local/dotfiles]
+- ユーザーからClaude Code hooks設定ファイルの検索を依頼される
+- 検索対象：.claude、.config/claude-code、hooks、callback、lifecycleパターン
+- 徹底的な調査を実施：
+  - .claude/ディレクトリ内には設定ファイルのみ（hooks設定なし）
+  - .config/nvim/lua/plugins/claude-code.lua: キーマップ設定のみ
+  - avante.lua: system_promptとcustom_toolsのフック的機能を発見（MCPサーバー統合）
+  - settings.json/settings.local.json: 権限設定のみでhooks機能なし
+  - 環境変数、シェルスクリプト、ドキュメントでもhooks設定は見つからず
+- 感情: 徹底的な調査ができた達成感。Claude Codeの現時点ではhooks機能は実装されていないことを確認
+- 重要な発見: Claude Code CLIには現在専用のhooks設定機能は存在しないが、Neovimプラグインレベルではautocmdなどで拡張可能
