@@ -23,3 +23,6 @@ alias clean-history='~/.bin/clean_history.sh'
 
 # GitHub CLI
 alias gh='~/.local/bin/github-cli'
+
+# Claude Code with character.md management
+alias claude-code='~/.bin/claude-code-wrapper'

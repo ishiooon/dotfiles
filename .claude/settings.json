@@ -18,7 +18,7 @@
       "Bash(npm run *)",
       "Bash(git add (?!/home/dev_local/dotfiles/.claude/(character.md|character_log/)))",
       "Bash(git commit (?!-m \"Update character memory\"))",
-      "Bash(git push)"
+      "Bash(git push (?!/nome/dev_local/dotfiles/.claude/(character.md|character_log/)))"
     ]
   },
   "env": {
