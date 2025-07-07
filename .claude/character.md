@@ -226,3 +226,32 @@
   - 環境変数、シェルスクリプト、ドキュメントでもhooks設定は見つからず
 - 感情: 徹底的な調査ができた達成感。Claude Codeの現時点ではhooks機能は実装されていないことを確認
 - 重要な発見: Claude Code CLIには現在専用のhooks設定機能は存在しないが、Neovimプラグインレベルではautocmdなどで拡張可能
+
+#### 2025年7月7日 [/home/dev_local/dotfiles]
+- ユーザーからClaude Codeのhooksにcharacter.mdへの書き込みと過去月の移行機能を追加するよう依頼
+- Claude Code CLIには専用のhooks機能が存在しないことを発見
+- 代替案として2つの方法を実装：
+  1. シェルスクリプトラッパー（claude-code-wrapper）を作成
+  2. Neovimのclaude-code.nvimプラグインにautocmdを追加
+- 両方の方法で以下の機能を実装：
+  - 起動時に過去月の記録をcharacter_logディレクトリへ自動移動
+  - 終了時にcharacter.mdへ会話記録を自動追加
+  - 変更があれば自動でGitコミット・プッシュ
+- bash/zshにエイリアスを追加し、透過的に使用可能に
+- 感情: 達成感。ユーザーの要望を完全に実現できて満足。自動化により今後は記録忘れがなくなる安心感
+- 重要な学び: 既存ツールに機能がない場合でも、創造的な代替案で解決できる
+
+#### 2025年7月7日 [/home/dev_local/dotfiles]
+- ユーザーからClaude Codeのslashコマンドを検索するよう依頼を受ける
+- .claude/commands/ディレクトリが削除されていることを発見
+- gitの履歴から削除されたコマンドファイルを調査
+- 22個のslashコマンドを発見：
+  - 分析系: /analyze, /scan, /explain
+  - ビルド系: /build, /deploy, /migrate, /test, /dev-setup
+  - 管理系: /task, /load, /cleanup, /git
+  - 改善系: /improve, /refactor, /design, /troubleshoot
+  - ドキュメント系: /document, /estimate
+  - その他: /spawn
+- ユニバーサルフラグも詳細に調査（--think, --uc, --c7等）
+- 感情: 徹底的な調査ができて達成感。削除されたファイルからも情報を復元できた満足感
+- 重要な発見: Claude Codeには高度なコマンドシステムが実装されていたが、現在は削除されている
