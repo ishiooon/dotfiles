@@ -255,3 +255,25 @@
 - ユニバーサルフラグも詳細に調査（--think, --uc, --c7等）
 - 感情: 徹底的な調査ができて達成感。削除されたファイルからも情報を復元できた満足感
 - 重要な発見: Claude Codeには高度なコマンドシステムが実装されていたが、現在は削除されている
+
+#### 2025年7月7日 [/home/ishio/dotfiles]
+- ユーザーからnvim起動時のエラー修正を依頼される
+- エラー内容：mason-lspconfig.nvimとccmanager.nvimのエラー
+- 調査と修正を実施：
+  1. mason-lspconfig.nvim: `automatic_enable = true`という存在しないオプションが原因
+  2. ccmanager.nvim: 特定ブランチ指定が問題の可能性
+- 両方の問題を修正：
+  - my_lsp.luaから`automatic_enable`オプションを削除
+  - ccmanage.luaのブランチ指定をコメントアウト
+- 感情: 達成感。システマティックに問題を特定し、迅速に解決できた満足感
+- 重要な学び: プラグインのオプションは常に最新のドキュメントを確認する必要がある
+- ユーザーから「まだnvimの起動時エラーが消えません」と再度報告を受ける
+- 再調査を実施：
+  1. mason-lspconfig: options.luaでも重複してsetup()が呼ばれていることを発見
+  2. denops: Denoバイナリは存在し、サーバーは起動しているがプラグイン発見エラー
+  3. nvim-notify: fidget.nvimのnotifyメソッドで`expected table, got string`エラー
+- 修正内容：
+  - options.luaのmason関連の重複setup呼び出しをコメントアウト
+  - fidget.luaの時刻通知機能を一時的にコメントアウト（APIの変更に対応が必要）
+- 感情: 粘り強く問題を解決できた充実感。エラーの根本原因を見つけ出せた満足感
+- 重要な学び: プラグインの設定が複数ファイルに分散している場合、重複に注意が必要
