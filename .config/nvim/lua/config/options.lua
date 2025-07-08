@@ -43,8 +43,11 @@ if vim.fn.has("wsl") == 1 then
     },
     cache_enabled = 0,
   }
+elseif vim.fn.has("mac") == 1 or vim.fn.has("macunix") == 1 then
+  -- macOS環境用のクリップボード設定
+  vim.opt.clipboard = "unnamedplus"
 else
-  -- 非WSL環境用のOSC 52設定
+  -- その他の環境用のOSC 52設定
   vim.g.clipboard = {
     name = 'OSC 52',
     copy = {
