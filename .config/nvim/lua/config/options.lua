@@ -66,6 +66,7 @@ vim.opt.winblend = 3 -- ウィンドウの不透明度
 vim.opt.pumblend = 3 -- ポップアップメニューの不透明度
 
 -- lsp設定
+-- mason関連の設定はmy_lsp.luaで行うため、ここでは削除
 local mason = require('mason')
 local lspconfig = require('lspconfig')
 local mason_lspconfig = require('mason-lspconfig')
@@ -74,8 +75,8 @@ local mason_lspconfig = require('mason-lspconfig')
 -- lspのハンドラーに設定（グローバル変数ではなくローカル変数に変更）
 local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
-mason.setup()
-mason_lspconfig.setup()
+-- mason.setup()
+-- mason_lspconfig.setup()
 
 -- lspの設定後に追加
 vim.opt.completeopt = "menu,menuone,noselect"
@@ -157,7 +158,8 @@ require("telescope").setup({
 })
 
 -- dap設定
-require("mason").setup()
+-- mason.setupはmy_lsp.luaで実行されるため、ここでは削除
+-- require("mason").setup()
 require("mason-nvim-dap").setup({
     ensure_installed = { "php-debug-adapter" },
     automatic_installation = true,

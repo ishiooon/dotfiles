@@ -18,6 +18,7 @@ return{
 	    	},
 		opts =  {
 			automatic_installation = true,
+			-- automatic_enable は削除（存在しないオプション）
 		},
 	},
 	{
