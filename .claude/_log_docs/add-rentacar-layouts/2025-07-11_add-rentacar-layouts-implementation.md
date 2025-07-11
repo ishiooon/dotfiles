@@ -130,3 +130,9 @@ add-rentacar-layouts/
 - プラグインのクラスインスタンス化を`plugins_loaded`フックで実行するように変更
 - これによりフィルターがtsukizuki-web-settingsの処理前に確実に登録される
 - デバッグログを追加して処理フローを確認
+
+### 2025-07-11 追加修正9 - メニュー並び順の修正
+- `ccpp_create_new_post`が固定のmenu_position(5)を使用していることが判明
+- 直接`register_post_type`を使用してmenu_positionを制御
+- `menu_position = 70 + $page_data['index']`で他のtsukizuki-web-settingsメニューと同じ位置計算
+- カテゴリタクソノミーも同時に登録してtsukizuki-web-settingsと同じ動作を実現
