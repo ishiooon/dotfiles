@@ -1,4 +1,7 @@
 {
+  "env": {
+    "MAX_THINKING_TOKENS": "63999"
+  },
   "permissions": {
     "allow": [
       "Bash(php -l *)",
@@ -20,7 +23,5 @@
       "Bash(git push (?!/nome/dev_local/dotfiles/.claude/_log_docs/)))"
     ]
   },
-  "env": {
-    "MAX_THINKING_TOKENS": "63999"
-  }
+  "model": "opus"
 }
