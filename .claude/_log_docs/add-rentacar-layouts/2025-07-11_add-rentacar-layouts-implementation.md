@@ -95,3 +95,10 @@ add-rentacar-layouts/
 - 独自のメニューを作成し、インデックス番号付きタイトルを正しく表示
 - サブメニューとして「事業者一覧」「新規追加」「表示設定」を追加
 - 不要になった`modify_menu_label`メソッドを削除
+
+### 2025-07-11 追加修正3 - tsukizuki-web-settings標準方式への移行
+- 固定の`POST_TYPE`定数を動的な`$post_type`変数に変更
+- `ccpp_create_new_post`を使用してtsukizuki-web-settingsの標準的な方法でカスタム投稿タイプを作成
+- `handle_custom_layout_page`フィルター内でカスタム投稿タイプとカスタムフィールドを定義
+- 不要な`register_post_type`、`add_admin_menu`、`check_and_add_menu`メソッドを削除
+- カスタムフィールドの定義をインラインで実装（tsukizuki-web-settingsと同じ方式）
