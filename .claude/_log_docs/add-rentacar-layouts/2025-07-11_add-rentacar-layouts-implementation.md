@@ -107,3 +107,14 @@ add-rentacar-layouts/
 - `register_post_types_early`メソッドを追加し、`init`アクションのpriority 10で実行
 - `ccpp_create_new_post`が遅いタイミング（priority 99）で実行される問題を解決
 - サイト構成データを直接`get_option`で取得して早いタイミングでカスタム投稿タイプを登録
+
+### 2025-07-11 追加修正5 - レイアウトスタイル名の修正
+- レイアウトスタイル名を`layout_rental_provider`（単数形）から`layout_rental_providers`（複数形）に統一
+- tsukizuki-web-settingsから呼び出される際のレイアウトスタイル名が複数形であることが判明
+- すべての条件文とチェック処理を複数形に修正
+
+### 2025-07-11 追加修正6 - SCFデータ取得方法の修正
+- `get_option('site_structure-options')`がfalseを返す問題を修正
+- `SCF::get_option_meta`を使用してサイト構成データを正しく取得
+- 直接`register_post_type`を使用してカスタム投稿タイプを登録
+- デバッグコードをすべて削除してクリーンアップ
