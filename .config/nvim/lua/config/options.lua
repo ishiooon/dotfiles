@@ -29,20 +29,57 @@ vim.opt.helplang = 'ja' -- ヘルプの言語を日本語に設定
 vim.g.memolist_path = '~/.config/memolist'
 vim.g.memo_dir = '~/.config/memolist'
 
--- WSL2環境用のクリップボード設定（CCManagerプラグインの推奨設定）
+-- WSL2環境用のクリップボード設定
 if vim.fn.has("wsl") == 1 then
-  vim.g.clipboard = {
-    name = 'WslClipboard',
-    copy = {
-      ['+'] = 'clip.exe',
-      ['*'] = 'clip.exe',
-    },
-    paste = {
-      ['+'] = 'powershell.exe -c [Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace("`r", ""))',
-      ['*'] = 'powershell.exe -c [Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace("`r", ""))',
-    },
-    cache_enabled = 0,
-  }
+  -- Dockerコンテナ内かどうかをチェック
+  local is_in_docker = vim.fn.filereadable("/.dockerenv") == 1 or vim.fn.system("grep -q docker /proc/self/cgroup 2>/dev/null && echo 1 || echo 0"):gsub("%s+", "") == "1"
+  
+  if is_in_docker then
+    -- WSL内のDockerコンテナでは手動でOSC 52シーケンスを送信
+    local function osc52_copy(lines)
+      local text = table.concat(lines, "\n")
+      -- base64エンコード（改行を除去）
+      local base64 = vim.fn.system({"base64", "-w", "0"}, text):gsub("\n", "")
+      -- OSC 52シーケンスを構築
+      local osc52
+      if vim.env.TMUX then
+        -- tmux環境ではDCSでラップ
+        osc52 = string.format("\27Ptmux;\27\27]52;c;%s\7\27\\", base64)
+      else
+        -- 通常のOSC 52
+        osc52 = string.format("\27]52;c;%s\7", base64)
+      end
+      -- ターミナルに直接書き込み
+      vim.fn.chansend(vim.v.stderr, osc52)
+    end
+    
+    vim.g.clipboard = {
+      name = 'OSC52-Docker',
+      copy = {
+        ['+'] = osc52_copy,
+        ['*'] = osc52_copy,
+      },
+      paste = {
+        -- Dockerコンテナ内では貼り付けは通常通り
+        ['+'] = function() return vim.split(vim.fn.getreg('+'), '\n') end,
+        ['*'] = function() return vim.split(vim.fn.getreg('*'), '\n') end,
+      },
+    }
+  else
+    -- 通常のWSL環境では従来の設定を使用
+    vim.g.clipboard = {
+      name = 'WslClipboard',
+      copy = {
+        ['+'] = 'clip.exe',
+        ['*'] = 'clip.exe',
+      },
+      paste = {
+        ['+'] = 'powershell.exe -c [Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace("`r", ""))',
+        ['*'] = 'powershell.exe -c [Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace("`r", ""))',
+      },
+      cache_enabled = 0,
+    }
+  end
 else
   -- 非WSL環境用のOSC 52設定
   vim.g.clipboard = {
