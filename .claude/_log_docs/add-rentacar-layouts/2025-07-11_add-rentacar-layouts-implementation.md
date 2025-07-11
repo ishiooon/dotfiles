@@ -118,3 +118,15 @@ add-rentacar-layouts/
 - `SCF::get_option_meta`を使用してサイト構成データを正しく取得
 - 直接`register_post_type`を使用してカスタム投稿タイプを登録
 - デバッグコードをすべて削除してクリーンアップ
+
+### 2025-07-11 追加修正7 - tsukizuki-web-settingsのフィルターフック内で処理
+- `register_post_types_early`メソッドを削除
+- `handle_custom_layout_page`フィルター内で`ccpp_create_new_post`を使用
+- ブログレイアウトと同じ処理方法に統一
+- タクソノミー登録をinitフックで処理
+
+### 2025-07-11 追加修正8 - フィルター登録タイミングの修正
+- tsukizuki-web-settingsが`init` priority 99で`wisf_create_custom_page()`を実行することを発見
+- プラグインのクラスインスタンス化を`plugins_loaded`フックで実行するように変更
+- これによりフィルターがtsukizuki-web-settingsの処理前に確実に登録される
+- デバッグログを追加して処理フローを確認
