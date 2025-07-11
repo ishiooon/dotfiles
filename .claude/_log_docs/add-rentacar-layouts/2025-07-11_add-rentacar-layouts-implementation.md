@@ -102,3 +102,8 @@ add-rentacar-layouts/
 - `handle_custom_layout_page`フィルター内でカスタム投稿タイプとカスタムフィールドを定義
 - 不要な`register_post_type`、`add_admin_menu`、`check_and_add_menu`メソッドを削除
 - カスタムフィールドの定義をインラインで実装（tsukizuki-web-settingsと同じ方式）
+
+### 2025-07-11 追加修正4 - タイミング問題の修正
+- `register_post_types_early`メソッドを追加し、`init`アクションのpriority 10で実行
+- `ccpp_create_new_post`が遅いタイミング（priority 99）で実行される問題を解決
+- サイト構成データを直接`get_option`で取得して早いタイミングでカスタム投稿タイプを登録
