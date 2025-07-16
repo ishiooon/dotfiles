@@ -21,28 +21,13 @@
     ]
   },
   "hooks": {
-    "PreToolUse": [
-      {
-        "matcher": ".*",
-        "once": true,
-        "hooks": [
-          {
-            "type": "command",
-            "command": "echo '🕐 現在時刻:' && TZ=Asia/Tokyo date '+%Y/%m/%d %H:%M JST'"
-          }
-        ]
-      }
-    ],
-    "Notification": [
-      {
-        "matcher": ".*",
-        "hooks": [
-          {
-            "type": "command", 
-            "command": "TZ=Asia/Tokyo date '+[%H:%M JST]'"
-          }
-        ]
-      }
-    ]
+    "PreToolUse": {
+      ".*": [
+        {
+          "type": "command",
+          "command": "echo '🕐 現在時刻:' && TZ=Asia/Tokyo date '+%Y/%m/%d %H:%M JST'"
+        }
+      ]
+    }
   }
 }
