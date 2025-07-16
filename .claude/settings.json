@@ -7,20 +7,20 @@
       "Bash(php -l *)",
       "Bash(npm test:*)",
       "Bash(find:*)",
-      "Read(/home/dev_local/dotfiles/.claude/_log_docs.md)",
-      "Write(/home/dev_local/dotfiles/.claude/_log_docs.md)",
-      "Edit(/home/dev_local/dotfiles/.claude/_log_docs.md)",
-      "Read(/home/dev_local/dotfiles/.claude/_log_docs/*)",
-      "Write(/home/dev_local/dotfiles/.claude/_log_docs/*)",
-      "Edit(/home/dev_local/dotfiles/.claude/_log_docs/*)",
-      "Bash(git add /home/dev_local/dotfiles/.claude/_log_docs/*)",
+      "Read(/home/dev_local/LifeDayPlans/_log_docs.md)",
+      "Write(/home/dev_local/LifeDayPlans/_log_docs.md)",
+      "Edit(/home/dev_local/LifeDayPlans/_log_docs.md)",
+      "Read(/home/dev_local/LifeDayPlans/_log_docs/*)",
+      "Write(/home/dev_local/LifeDayPlans/_log_docs/*)",
+      "Edit(/home/dev_local/LifeDayPlans/_log_docs/*)",
+      "Bash(git add /home/dev_local/LifeDayPlans/_log_docs/*)",
       "Bash(git commit -m \"Update _log_docs\")"
     ],
     "deny": [
       "Bash(npm run *)",
-      "Bash(git add (?!/home/dev_local/dotfiles/.claude/_log_docs/)))",
+      "Bash(git add (?!/home/dev_local/LifeDayPlans/_log_docs/)))",
       "Bash(git commit (?!-m \"Update _log_docs\"))",
-      "Bash(git push (?!/nome/dev_local/dotfiles/.claude/_log_docs/)))"
+      "Bash(git push (?!/nome/dev_local/LifeDayPlans/_log_docs/)))"
     ]
   },
   "model": "opus"
