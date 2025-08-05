@@ -204,8 +204,18 @@ dap.adapters.php = {
     command = 'node',
     args = { os.getenv('HOME') .. '/vscode-php-debug/out/phpDebug.js' }
 }
+
+dap.configurations.php = {
+    {
+        type = "php",
+        request = "launch",
+        name = "Listen for Xdebug",
+        port = 9003
+    }
+}
 -- .vscode/launch.jsonの設定
 -- require("dap.ext.vscode").load_launchjs(nil, { lldb = { "c", "cpp", "" } })
+
 
 dap.set_log_level('TRACE')
 -- ブレークポイントの設定
