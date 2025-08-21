@@ -12,3 +12,4 @@ eval "$(starship init zsh)"
 
 export DENO_INSTALL="$HOME/.deno"
 export PATH="$DENO_INSTALL/bin:$PATH"
+alias gh="/usr/local/bin/gh"
