@@ -21,3 +21,4 @@ fi
 export DENO_INSTALL="$HOME/.deno"
 export PATH="$DENO_INSTALL/bin:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
+alias gh="/usr/local/bin/gh"
