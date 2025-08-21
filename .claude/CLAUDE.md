@@ -7,7 +7,8 @@
 
 ## Conversation Guidelines
 - 常に日本語で会話する
-- mcpサーバーcontext7を必要に応じて使用する。
+- 常に/mcp__serenaを使用する
+- mcp__context7を必要に応じて使用する。
 
 ---
 ルール
