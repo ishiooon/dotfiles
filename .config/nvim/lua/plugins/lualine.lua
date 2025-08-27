@@ -4,6 +4,7 @@ return {
         dependencies = {
             'nvim-tree/nvim-web-devicons',
             'arkav/lualine-lsp-progress',
+            'ishiooon/claudecode-lualine.nvim',
         },
         opts = {
             options = {
@@ -19,7 +20,7 @@ return {
                 always_divide_middle = true,
                 globalstatus = true,
                 refresh = {
-			      statusline = 1000,
+			      statusline = 100,  -- 100msごとに更新（より頻繁に）
 			      tabline = 1000,
 			      winbar = 1000,
 			    }
@@ -46,7 +47,23 @@ return {
               function()
                 return require("pomodoro").get_pomodoro_status("⏱❌","⏱","🛏")
               end,
-            }
+            },
+            {
+              'claudecode',
+              icons = {
+                idle = '○',
+                busy = '●',
+                wait = '◐',
+                disconnected = '✕',
+              },
+              colors = {
+                idle = nil,
+                busy = 'DiagnosticInfo',
+                wait = 'DiagnosticWarn',
+                disconnected = 'DiagnosticError',
+              },
+              show_status_text = false,
+            },
           },
 			    lualine_x = {'encoding', 'fileformat', 'filetype'},
 			    lualine_y = {'progress'},
