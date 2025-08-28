@@ -180,11 +180,7 @@ return{
 							maxItems = 100,
 						},
 					}
-				},
-				on_attach = function(client, bufnr)
-					-- デフォルトのon_attach処理
-					vim.lsp.buf.inlay_hint.enable(true, { bufnr = bufnr })
-				end,
+				}
 			})
 		end,
 	},
