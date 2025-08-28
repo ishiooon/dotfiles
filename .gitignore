@@ -37,6 +37,8 @@
 /.bin/*
 
 !/.bin/install.sh
+!/.bin/install-wordpress-stubs.sh
 .config/nvim/lazy-lock.json
+.config/nvim/intelephense.json
 .config/lazygit/state.yml
 .config/mcphub/servers.json
