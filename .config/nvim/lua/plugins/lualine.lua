@@ -48,6 +48,8 @@ return {
                 return require("pomodoro").get_pomodoro_status("⏱❌","⏱","🛏")
               end,
             },
+          },
+			    lualine_x = {
             {
               'claudecode',
               icons = {
@@ -64,8 +66,7 @@ return {
               },
               show_status_text = false,
             },
-          },
-			    lualine_x = {'encoding', 'fileformat', 'filetype'},
+            'encoding', 'fileformat', 'filetype'},
 			    lualine_y = {'progress'},
                 -- 時計アイコンと時分を表示
                 lualine_z = {
