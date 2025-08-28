@@ -36,9 +36,30 @@ return{
 				return nil
 			end
 
+			-- プロジェクトルートから絶対パスを取得する関数
+			local function get_wordpress_paths()
+				local root_dir = vim.fn.getcwd()
+				local paths = {}
+				
+				-- WordPressプロジェクトの場合
+				if vim.fn.isdirectory(root_dir .. "/wp-includes") == 1 then
+					table.insert(paths, root_dir)
+					table.insert(paths, root_dir .. "/wp-includes")
+					table.insert(paths, root_dir .. "/wp-admin")
+					table.insert(paths, root_dir .. "/wp-content")
+				end
+				
+				-- vendor ディレクトリ
+				if vim.fn.isdirectory(root_dir .. "/vendor") == 1 then
+					table.insert(paths, root_dir .. "/vendor")
+				end
+				
+				return paths
+			end
+
 			-- Intelephense設定
 			require('lspconfig').intelephense.setup({
-				root_dir = require('lspconfig').util.root_pattern('.vscode', 'composer.json', '.git'),
+				root_dir = require('lspconfig').util.root_pattern('wp-config.php', 'composer.json', '.git'),
 				init_options = {
 					licenceKey = get_intelephense_license(),
 				},
@@ -119,11 +140,7 @@ return{
 							"wordpress",
 						},
 						environment = {
-							includePaths = {
-								"vendor/",
-								"_ide_helper.php",
-								"bootstrap/cache/",
-							},
+							includePaths = get_wordpress_paths(),
 						},
 						files = {
 							associations = {
@@ -140,6 +157,7 @@ return{
 								"**/bower_components/**",
 								"**/vendor/**/{Test,test,Tests,tests}/**",
 							},
+							maxSize = 1000000,
 						},
 						diagnostics = {
 							enable = true,
@@ -151,15 +169,21 @@ return{
 							undefinedProperties = false,
 							undefinedVariables = true,
 						},
+						telemetry = {
+							enabled = false,
+						},
+						maxMemory = 256,
+						completion = {
+							insertUseDeclaration = true,
+							fullyQualifyGlobalConstantsAndFunctions = false,
+							triggerParameterHints = true,
+							maxItems = 100,
+						},
 					}
 				},
 				on_attach = function(client, bufnr)
-					-- プロジェクトタイプに応じて診断を制御
-					local root_dir = vim.fn.getcwd()
-					if root_dir:match("wordpress") then
-						-- WordPress関数の未定義エラーを無効化
-						client.server_capabilities.diagnosticsProvider = false
-					end
+					-- デフォルトのon_attach処理
+					vim.lsp.buf.inlay_hint.enable(true, { bufnr = bufnr })
 				end,
 			})
 		end,
