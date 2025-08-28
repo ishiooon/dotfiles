@@ -1,6 +1,6 @@
 local lsp_servers = {
     "lua_ls",
-    "Intelephense",
+    "intelephense",
     "eslint-lsp",
     "php-debug-adapter",
     "blade-formatter",
@@ -24,11 +24,23 @@ return{
 	{
 		"neovim/nvim-lspconfig",
 		config = function()
+			-- Intelephenseライセンスキー読み込み関数
+			local function get_intelephense_license()
+				local license_path = vim.fn.expand('~/intelephense-licence.txt')
+				local f = io.open(license_path, 'r')
+				if f then
+					local license_key = f:read('*a'):gsub('^%s+', ''):gsub('%s+$', '') -- trim whitespace
+					f:close()
+					return license_key
+				end
+				return nil
+			end
+
 			-- Intelephense設定
 			require('lspconfig').intelephense.setup({
 				root_dir = require('lspconfig').util.root_pattern('.vscode', 'composer.json', '.git'),
 				init_options = {
-					licenceKey = vim.fn.expand('~/intelephense-licence.txt'),
+					licenceKey = get_intelephense_license(),
 				},
 				settings = {
 					intelephense = {
