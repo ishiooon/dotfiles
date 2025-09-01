@@ -13,6 +13,7 @@
 !/.zshenv
 !/.bash
 !/.claude
+/.claude/settings.local.json
 /.bash/env.local.bash
 !/.bashrc
 !/README.md
@@ -28,6 +29,7 @@
 !/.config/mcphub
 !/.config/wezterm
 !/.config/starship.toml
+/.config/git
 
 
 # ===================================
