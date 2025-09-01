@@ -115,3 +115,6 @@ local function toggle_diffview()
   end
 end
 vim.keymap.set('n', '<leader>dv', toggle_diffview, { desc = 'Diffview: トグル' })
+
+-- winresizer用のキーマップ
+vim.keymap.set('n', '<C-w>r', '<Cmd>WinResizerStartResize<CR>')
