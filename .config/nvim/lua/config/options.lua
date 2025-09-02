@@ -93,67 +93,10 @@ vim.opt.winblend = 3 -- ウィンドウの不透明度
 vim.opt.pumblend = 3 -- ポップアップメニューの不透明度
 
 -- lsp設定
--- mason関連の設定はmy_lsp.luaで行うため、ここでは削除
-local mason = require('mason')
-local lspconfig = require('lspconfig')
-local mason_lspconfig = require('mason-lspconfig')
-
--- lsp自動補完設定
--- lspのハンドラーに設定（グローバル変数ではなくローカル変数に変更）
-local capabilities = require("cmp_nvim_lsp").default_capabilities()
-
--- mason.setup()
--- mason_lspconfig.setup()
-
--- lspの設定後に追加
-vim.opt.completeopt = "menu,menuone,noselect"
-
--- lsp_linesを使用するためデフォルトのvirtual_textを無効にする
-vim.diagnostic.config({
-  virtual_text = {
-    format = function(diagnostic)
-      return string.format("(%s: %s)",diagnostic.source, diagnostic.code)
-    end,
-  },
-  virtual_lines = true,
-})
-
-local cmp = require"cmp"
-cmp.setup({
-  mapping = cmp.mapping.preset.insert({
-    ["<C-p>"] = cmp.mapping.select_prev_item(),
-    ["<C-n>"] = cmp.mapping.select_next_item(),
-    ["<C-d>"] = cmp.mapping.scroll_docs(-4),
-    ["<C-f>"] = cmp.mapping.scroll_docs(4),
-    ["<C-Space>"] = cmp.mapping.complete(),
-    ["<C-e>"] = cmp.mapping.close(),
-    ["<CR>"] = cmp.mapping.confirm({ select = true }),
-  }),
-  sources = cmp.config.sources({
-    { name = "nvim_lsp" },
-    { name = "luasnip" },
-    { name = "render-markdown" }
-  }, {
-    { name = "buffer" },
-  })
-})
+-- すべてのLSP関連設定はmy_lsp.luaに移動済み
 
 
--- tree-sitterの設定(4blade)
-local parser_config = require "nvim-treesitter.parsers".get_parser_configs()
-parser_config.blade = {
-  install_info = {
-    url = "https://github.com/EmranMR/tree-sitter-blade",
-    files = {"src/parser.c"},
-    branch = "main",
-  },
-  filetype = "blade"
-}
-vim.filetype.add({
-  pattern = {
-    ['.*%.blade%.php'] = 'blade',
-  },
-})
+-- tree-sitterの設定はtreesitter.luaに移動済み
 
 -- neotreeの透過
 require('transparent').clear_prefix('NeoTree')
