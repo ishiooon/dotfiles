@@ -1,65 +1,64 @@
+-- LSPサーバー名（mason-lspconfig用）
 local lsp_servers = {
     "lua_ls",
     "intelephense",
-    "eslint-lsp",
-    "php-debug-adapter",
-    "blade-formatter",
-    "html-lsp"
+    "eslint",
+    "html"
 }
 
-return{
+-- Masonツール名（LSP以外のツール）
+local mason_tools = {
+    "php-debug-adapter",
+    "blade-formatter"
+}
+
+return {
 	-- mason / mason-lspconfig / lspconfig
-	{ "williamboman/mason.nvim", opts = { ensure_installed = lsp_servers } },
+	{ "williamboman/mason.nvim", config = function()
+		require("mason").setup()
+	end },
 	{
 		"williamboman/mason-lspconfig.nvim",
-	    	dependencies = {
-	    		"williamboman/mason.nvim",
+		dependencies = {
+			"williamboman/mason.nvim",
 			"neovim/nvim-lspconfig",
-	    	},
-		opts =  {
-			automatic_installation = true,
-			-- automatic_enable は削除（存在しないオプション）
 		},
-	},
-	{
-		"neovim/nvim-lspconfig",
 		config = function()
+			local lspconfig = require('lspconfig')
+			-- lsp自動補完設定
+			local capabilities = require("cmp_nvim_lsp").default_capabilities()
 			-- Intelephenseライセンスキー読み込み関数
 			local function get_intelephense_license()
 				local license_path = vim.fn.expand('~/intelephense-licence.txt')
 				local f = io.open(license_path, 'r')
 				if f then
-					local license_key = f:read('*a'):gsub('^%s+', ''):gsub('%s+$', '') -- trim whitespace
+					local license_key = f:read('*a'):gsub('^%s+', ''):gsub('%s+$', '')
 					f:close()
 					return license_key
 				end
 				return nil
 			end
-
-			-- プロジェクトルートから絶対パスを取得する関数
-			local function get_wordpress_paths()
-				local root_dir = vim.fn.getcwd()
-				local paths = {}
-				
-				-- WordPressプロジェクトの場合
-				if vim.fn.isdirectory(root_dir .. "/wp-includes") == 1 then
-					table.insert(paths, root_dir)
-					table.insert(paths, root_dir .. "/wp-includes")
-					table.insert(paths, root_dir .. "/wp-admin")
-					table.insert(paths, root_dir .. "/wp-content")
-				end
-				
-				-- vendor ディレクトリ
-				if vim.fn.isdirectory(root_dir .. "/vendor") == 1 then
-					table.insert(paths, root_dir .. "/vendor")
-				end
-				
-				return paths
-			end
-
-			-- Intelephense設定
-			require('lspconfig').intelephense.setup({
-				root_dir = require('lspconfig').util.root_pattern('wp-config.php', 'composer.json', '.git'),
+			-- lspの設定
+			vim.opt.completeopt = "menu,menuone,noselect"
+			-- lsp_linesを使用するためデフォルトのvirtual_textを無効にする
+			vim.diagnostic.config({
+				virtual_text = {
+					format = function(diagnostic)
+						return string.format("(%s: %s)",diagnostic.source, diagnostic.code)
+					end,
+				},
+				virtual_lines = true,
+			})
+			local mason_lspconfig = require("mason-lspconfig")
+			mason_lspconfig.setup({
+				automatic_installation = false, -- 自動インストールを無効化
+				automatic_enable = false, -- 自動的なLSP有効化を無効にする（重複起動を防ぐ）
+				ensure_installed = lsp_servers,
+			})
+			-- 各LSPサーバーの手動設定
+			-- Intelephenseの設定
+			lspconfig.intelephense.setup({
+				capabilities = capabilities,
 				init_options = {
 					licenceKey = get_intelephense_license(),
 				},
@@ -103,11 +102,7 @@ return{
 							"pcntl",
 							"pcre",
 							"PDO",
-							"pdo_ibm",
 							"pdo_mysql",
-							"pdo_pgsql",
-							"pdo_sqlite",
-							"pgsql",
 							"Phar",
 							"posix",
 							"pspell",
@@ -138,94 +133,87 @@ return{
 							"zip",
 							"zlib",
 							"wordpress",
-						},
-						environment = {
-							includePaths = get_wordpress_paths(),
+							"WordPress"
 						},
 						files = {
-							associations = {
-								"*.php",
-								"*.blade.php",
-							},
-							exclude = {
-								"**/.git/**",
-								"**/.svn/**",
-								"**/.hg/**",
-								"**/CVS/**",
-								"**/.DS_Store/**",
-								"**/node_modules/**",
-								"**/bower_components/**",
-								"**/vendor/**/{Test,test,Tests,tests}/**",
-							},
-							maxSize = 1000000,
+							maxSize = 5000000
 						},
 						diagnostics = {
 							enable = true,
-							undefinedTypes = false,
-							undefinedFunctions = false,
-							undefinedConstants = false,
-							undefinedClassConstants = false,
-							undefinedMethods = false,
-							undefinedProperties = false,
-							undefinedVariables = true,
-						},
-						telemetry = {
-							enabled = false,
-						},
-						maxMemory = 256,
-						completion = {
-							insertUseDeclaration = true,
-							fullyQualifyGlobalConstantsAndFunctions = false,
-							triggerParameterHints = true,
-							maxItems = 100,
-						},
+							undefinedFunctions = false
+						}
 					}
 				}
 			})
+			-- その他のLSPサーバーの設定
+			lspconfig.lua_ls.setup({ capabilities = capabilities })
+			lspconfig.eslint.setup({ capabilities = capabilities })
+			lspconfig.html.setup({ capabilities = capabilities })
 		end,
 	},
-    -- nvim-cmp 自動補完
-    {
-        "hrsh7th/nvim-cmp",
-        dependencies = {
-            "hrsh7th/cmp-cmdline",
-            "hrsh7th/cmp-nvim-lsp",
-            "hrsh7th/cmp-nvim-lua",
-            "hrsh7th/cmp-path",
-        },
-        opts = {}
-    },
+	-- nvim-cmp 自動補完
+	{
+		"hrsh7th/nvim-cmp",
+		dependencies = {
+			"hrsh7th/cmp-cmdline",
+			"hrsh7th/cmp-nvim-lsp",
+			"hrsh7th/cmp-nvim-lua",
+			"hrsh7th/cmp-path",
+			"L3MON4D3/LuaSnip",
+		},
+		config = function()
+			local cmp = require"cmp"
+			cmp.setup({
+				mapping = cmp.mapping.preset.insert({
+					["<C-p>"] = cmp.mapping.select_prev_item(),
+					["<C-n>"] = cmp.mapping.select_next_item(),
+					["<C-d>"] = cmp.mapping.scroll_docs(-4),
+					["<C-f>"] = cmp.mapping.scroll_docs(4),
+					["<C-Space>"] = cmp.mapping.complete(),
+					["<C-e>"] = cmp.mapping.close(),
+					["<CR>"] = cmp.mapping.confirm({ select = true }),
+				}),
+				sources = cmp.config.sources({
+					{ name = "nvim_lsp" },
+					{ name = "luasnip" },
+					{ name = "render-markdown" }
+				}, {
+					{ name = "buffer" },
+				})
+			})
+		end,
+	},
 	-- lspsaga
 	{
-	    	"nvimdev/lspsaga.nvim",
+		"nvimdev/lspsaga.nvim",
 		opts  = {
-		    symbol_in_winbar = {
-			separator = "  ",
-		    },
-            finder = {
-                max_height = 0.6,
-                -- これは必須です / REQUIRED
-                default = 'tyd+ref+imp+def',
-                -- ここは任意でお好きなキーバインドにしてください / optional
-                keys = {
-                    toggle_or_open = '<CR>',
-                    vsplit = 'v',
-                    split = 's',
-                    tabnew = 't',
-                    tab = 'T',
-                    quit = 'q',
-                    close = '<Esc>',
-                },
-                -- これは必須です / REQUIRED
-                methods = {
-                    tyd = 'textDocument/typeDefinition',
-                }
-            },
-        },
-	   	dependencies = {
+			symbol_in_winbar = {
+				separator = " 󰇘 ",
+			},
+			finder = {
+				max_height = 0.6,
+				-- これは必須です / REQUIRED
+				default = 'tyd+ref+imp+def',
+				-- ここは任意でお好きなキーバインドにしてください / optional
+				keys = {
+					toggle_or_open = '<CR>',
+					vsplit = 'v',
+					split = 's',
+					tabnew = 't',
+					tab = 'T',
+					quit = 'q',
+					close = '<Esc>',
+				},
+				-- これは必須です / REQUIRED
+				methods = {
+					tyd = 'textDocument/typeDefinition',
+				}
+			},
+		},
+		dependencies = {
 			"nvim-treesitter/nvim-treesitter",
 			"nvim-tree/nvim-web-devicons",
-        },
-	    event = { "BufRead", "BufNewFile" },
+		},
+		event = { "BufRead", "BufNewFile" },
 	},
 }
