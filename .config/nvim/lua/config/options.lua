@@ -33,7 +33,6 @@ vim.g.memo_dir = '~/.config/memolist'
 if vim.fn.has("wsl") == 1 then
   -- Dockerコンテナ内かどうかをチェック
   local is_in_docker = vim.fn.filereadable("/.dockerenv") == 1 or vim.fn.system("grep -q docker /proc/self/cgroup 2>/dev/null && echo 1 || echo 0"):gsub("%s+", "") == "1"
-  
   if is_in_docker then
     -- WSL内のDockerコンテナでは手動でOSC 52シーケンスを送信
     local function osc52_copy(lines)
@@ -52,7 +51,6 @@ if vim.fn.has("wsl") == 1 then
       -- ターミナルに直接書き込み
       vim.fn.chansend(vim.v.stderr, osc52)
     end
-    
     vim.g.clipboard = {
       name = 'OSC52-Docker',
       copy = {
@@ -85,7 +83,7 @@ else
   vim.opt.clipboard = "unnamedplus"
 end
 
-vim.lsp.set_log_level("debug")
+-- vim.lsp.set_log_level("debug")  -- ログ肥大化防止のためコメントアウト
 
 -- ウィンドウの不透明度
 vim.opt.termguicolors = true
@@ -160,7 +158,7 @@ dap.configurations.php = {
 -- require("dap.ext.vscode").load_launchjs(nil, { lldb = { "c", "cpp", "" } })
 
 
-dap.set_log_level('TRACE')
+-- dap.set_log_level('TRACE')  -- ログ肥大化防止のためコメントアウト
 -- ブレークポイントの設定
 vim.keymap.set('n', '<Leader>b', function() dap.toggle_breakpoint() end, { desc = "Toggle Breakpoint" })
 vim.keymap.set('n', '<Leader>B', function() dap.set_breakpoint(vim.fn.input('Breakpoint condition: ')) end, { desc = "Set Conditional Breakpoint" })

@@ -105,7 +105,6 @@ local function toggle_diffview()
   local diffview = require('diffview')
   local lib = require('diffview.lib')
   local view = lib.get_current_view()
-  
   if view then
     -- Diffviewが開いている場合はクローズ
     vim.cmd('DiffviewClose')
