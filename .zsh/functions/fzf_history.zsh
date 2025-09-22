@@ -12,7 +12,7 @@ hf() {
   
   # フィルタリング関数を定義
   filter_history() {
-    grep -vE '^(HISTFILE=|HISTCONTROL=|shopt -s histappend|HISTSIZE=|HISTFILESIZE=|PROMPT_COMMAND="history -a|SAVEHIST=|setopt|set -o history|#|HISTIGNORE=)'
+    grep -a -vE '^(HISTFILE=|HISTCONTROL=|shopt -s histappend|HISTSIZE=|HISTFILESIZE=|PROMPT_COMMAND="history -a|SAVEHIST=|setopt|set -o history|#|HISTIGNORE=)'
   }
   
   # fzfを使ってコマンドを選択するUI設定
@@ -29,7 +29,7 @@ hf() {
     --query="" \
     --color=bg+:#3B4252,bg:#2E3440,spinner:#81A1C1,hl:#88C0D0,fg:#D8DEE9,header:#616E88,info:#81A1C1,pointer:#81A1C1,marker:#A3BE8C,fg+:#D8DEE9,prompt:#81A1C1,hl+:#88C0D0 \
     --bind "ctrl-d:reload(~/.zsh/scripts/delete_history_entry.sh {})" \
-    --bind "ctrl-r:execute-silent(echo -e '\033[1;32m履歴を更新しました\033[0m' >&2)+reload(cat ~/.zsh_history | cut -d';' -f2- | grep -vE '^(HISTFILE=|HISTCONTROL=|shopt -s histappend|HISTSIZE=|HISTFILESIZE=|PROMPT_COMMAND=\"history -a|SAVEHIST=|setopt|set -o history|#|HISTIGNORE=)' | awk '!seen[\$0]++' | tac)" \
+    --bind "ctrl-r:execute-silent(echo -e '\033[1;32m履歴を更新しました\033[0m' >&2)+reload(cat ~/.zsh_history | cut -d';' -f2- | grep -a -vE '^(HISTFILE=|HISTCONTROL=|shopt -s histappend|HISTSIZE=|HISTFILESIZE=|PROMPT_COMMAND=\"history -a|SAVEHIST=|setopt|set -o history|#|HISTIGNORE=)' | awk '!seen[\$0]++' | tac)" \
     --expect=tab,enter)
   
   # fzfの出力から押されたキーと選択されたコマンドを取得
