@@ -19,17 +19,34 @@ if os_name:find('windows') then
   -- Changing the default program: wsl
   config.default_prog = { "wsl.exe", "--distribution", "ubuntu", "--cd", "~" }
 
-  -- ぼかし効果を有効にする
-  config.window_background_opacity = 0
-  config.win32_system_backdrop = "Acrylic"
+  -- OpenGLフロントエンドを使用（WebGPUだと透明度が効かない）
+  config.front_end = "OpenGL"
+  
+  -- 透明度設定
+  config.window_background_opacity = 0.5
+  
+  -- ウィンドウの装飾設定（透明化に必要）
+  config.window_decorations = "RESIZE"
+  
+  -- 背景画像を使った透明化の代替案
+  config.background = {
+    {
+      source = {
+        Color = '#000000',
+      },
+      width = '100%',
+      height = '100%',
+      opacity = 0.3,
+    },
+  }
 
-  -- 最初からフルスクリーンで起動
-  local mux = wezterm.mux
-  wezterm.on("gui-startup", function(cmd)
-  ---@diagnostic disable-next-line: unused-local
-      local tab, pane, window = mux.spawn_window(cmd or {})
-      window:gui_window():toggle_fullscreen()
-  end)
+  -- 最初からフルスクリーンで起動（フルスクリーンでは透明化が効かない可能性）
+  -- local mux = wezterm.mux
+  -- wezterm.on("gui-startup", function(cmd)
+  -- ---@diagnostic disable-next-line: unused-local
+  --     local tab, pane, window = mux.spawn_window(cmd or {})
+  --     window:gui_window():toggle_fullscreen()
+  -- end)
 end
 
 -- macOS固有の設定
@@ -48,7 +65,10 @@ if os_name:find('darwin') then
 
 end
 
-
+-- Linux固有の設定（WSL以外のLinux環境）
+if os_name:find('linux') and not os_name:find('windows') then
+  config.window_background_opacity = 0.8
+end
 
 -- IMEを有効にする
 config.use_ime = true
@@ -66,8 +86,6 @@ config.key_tables = require('keybinds').key_tables
 -- テーマを変更する:
 config.color_scheme = 'Gruvbox Material (Gogh)'
 
--- 全環境共通の透過設定
-config.window_background_opacity = 0.8
 -- フォントを変更する:
 config.font = wezterm.font_with_fallback({
   {family="UDEV Gothic NFLG", weight="Regular"},
