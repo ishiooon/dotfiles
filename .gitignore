@@ -44,3 +44,4 @@
 .config/nvim/intelephense.json
 .config/lazygit/state.yml
 .config/mcphub/servers.json
+.claude
