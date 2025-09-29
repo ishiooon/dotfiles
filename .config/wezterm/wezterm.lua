@@ -23,7 +23,7 @@ if os_name:find('windows') then
   config.front_end = "OpenGL"
   
   -- 透明度設定
-  config.window_background_opacity = 0.5
+  config.window_background_opacity = 0.6
   -- アクリル
   config.win32_system_backdrop = "Acrylic"
 
