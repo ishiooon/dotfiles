@@ -42,11 +42,12 @@ return {
 			vim.opt.completeopt = "menu,menuone,noselect"
 			-- lsp_linesを使用するためデフォルトのvirtual_textを無効にする
 			vim.diagnostic.config({
-				virtual_text = {
-					format = function(diagnostic)
-						return string.format("(%s: %s)",diagnostic.source, diagnostic.code)
-					end,
-				},
+        -- -- 右側にエラーコードを表示しないためコメントアウト
+				-- virtual_text = {
+				-- 	format = function(diagnostic)
+				-- 		return string.format("(%s: %s)",diagnostic.source, diagnostic.code)
+				-- 	end,
+				-- },
 				virtual_lines = true,
 			})
 			local mason_lspconfig = require("mason-lspconfig")
