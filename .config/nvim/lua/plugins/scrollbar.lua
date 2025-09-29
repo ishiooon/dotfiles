@@ -15,7 +15,14 @@ return {
                 Info = { color = "#83a598" },   -- 青
                 Hint = { color = "#8ec07c" },   -- 緑
                 Misc = { color = "#d3869b" },   -- 紫
+                GitAdd = { color = "#8ec07c" }, -- 緑（追加）
+                GitChange = { color = "#83a598" }, -- 青（変更）
+                GitDelete = { color = "#fb4934" }, -- 赤（削除）
             }
-        }
+        },
+        config = function(_, opts)
+            require("scrollbar").setup(opts)
+            require("scrollbar.handlers.gitsigns").setup()
+        end
     }
 }
