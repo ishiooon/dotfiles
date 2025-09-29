@@ -23,30 +23,17 @@ if os_name:find('windows') then
   config.front_end = "OpenGL"
   
   -- 透明度設定
-  config.window_background_opacity = 0.5
-  
-  -- ウィンドウの装飾設定（透明化に必要）
-  config.window_decorations = "RESIZE"
-  
-  -- 背景画像を使った透明化の代替案
-  config.background = {
-    {
-      source = {
-        Color = '#000000',
-      },
-      width = '100%',
-      height = '100%',
-      opacity = 0.3,
-    },
-  }
+  config.window_background_opacity = 0.3
+  -- アクリル
+  config.win32_system_backdrop = "Acrylic"
 
   -- 最初からフルスクリーンで起動（フルスクリーンでは透明化が効かない可能性）
-  -- local mux = wezterm.mux
-  -- wezterm.on("gui-startup", function(cmd)
-  -- ---@diagnostic disable-next-line: unused-local
-  --     local tab, pane, window = mux.spawn_window(cmd or {})
-  --     window:gui_window():toggle_fullscreen()
-  -- end)
+  local mux = wezterm.mux
+  wezterm.on("gui-startup", function(cmd)
+  ---@diagnostic disable-next-line: unused-local
+      local tab, pane, window = mux.spawn_window(cmd or {})
+      window:gui_window():toggle_fullscreen()
+  end)
 end
 
 -- macOS固有の設定
