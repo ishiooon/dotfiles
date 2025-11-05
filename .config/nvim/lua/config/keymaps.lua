@@ -17,7 +17,7 @@ vim.keymap.set("n", "<leader>fb", ":Telescope file_browser path=%:p:h select_buf
 -- ファイル検索
 vim.keymap.set("n", "<leader>ff", builtin.find_files, {})
 -- テキスト検索
-vim.keymap.set("n", "<leader>fg", builtin.live_grep, {})
+
 -- freequency検索
 vim.keymap.set("n", "<leader>fe", ':Telescope frecency workspace=CWD<CR>', {})
 vim.keymap.set("n", "<C-p>", ':Telescope frecency workspace=CWD<CR>', {})
@@ -86,12 +86,24 @@ function _wttr_toggle()
 end
 vim.api.nvim_set_keymap("n", "<leader>wttr", "<cmd>lua _wttr_toggle()<CR>", {noremap = true, silent = true})
 
--- ccusage
-local ccusage = Terminal:new({cmd = "npx ccusage@latest",hidden=true})
-function _ccusage_toggle()
-    ccusage:toggle()
-end
-vim.api.nvim_set_keymap("n", "<leader>cu", "<cmd>lua _ccusage_toggle()<CR>", {noremap = true, silent = true})
+-- codex用のキーマップ（安全な呼び出し + 正しい実行）
+vim.keymap.set("n", "<leader>cc", function()
+  local ok, codex = pcall(require, "codex")
+  if not ok or not codex or type(codex.toggle) ~= "function" then
+    vim.notify("codex: toggle が見つかりません", vim.log.levels.WARN)
+    return
+  end
+  codex.toggle()
+end, { desc = "Codex: Toggle" })
+
+vim.keymap.set("v", "<leader>cs", function()
+  local ok, codex = pcall(require, "codex")
+  if not ok or not codex or not codex.actions or type(codex.actions.send_selection) ~= "function" then
+    vim.notify("codex: actions.send_selection が見つかりません", vim.log.levels.WARN)
+    return
+  end
+  codex.actions.send_selection()
+end, { desc = "Codex: Send selection" })
 
 -- Suda.vim 用の キーマップ
 vim.keymap.set('n', '<Leader>sw', ':SudaWrite<CR>')
