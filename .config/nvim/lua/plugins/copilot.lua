@@ -1,4 +1,3 @@
--- neocodeiumをインストール
 --  aiを用いたコード補完 
 return {
     {
@@ -15,4 +14,3 @@ return {
         opts = {},
     },
 }
-
