@@ -23,6 +23,11 @@ return {
         "m-demare/hlargs.nvim",
         opts = {}
     },
+    --Treesitterを使用して、現在の関数やクラスのコンテキストを表示する
+    {
+        "nvim-treesitter/nvim-treesitter-context",
+        opts = {}
+    },
     -- bladeのsyntaxを追加(~/.config/nvim/after/queries/bladeにhighlights.scf・injections.scmを配置)
     config = function(plug, config)
         local treesiter = require("nvim-treesitter.configs")
