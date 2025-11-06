@@ -1,11 +1,14 @@
 return{
     {
         "vim-denops/denops.vim",
+        -- Denopsの読み込み前にバージョンチェックを抑制（NVIM 0.11.3未満での警告対策）
+        init = function()
+            vim.g.denops_disable_version_check = 1
+            -- デバッグ出力を無効化（起動時の[denops]メッセージ抑制）
+            vim.g['denops#debug'] = 0
+        end,
         config = function()
-            -- Denopsプラグインのデバッグ有効化 (副作用: デバッグ出力)
-            vim.g['denops#debug'] = 1
-            -- Denoのパスを明示的に設定
-            vim.g['denops#deno'] = '/home/dev_local/.local/bin/deno'
+            -- Denoのパスはoptions.luaで統一設定済み（~/.deno/bin/deno）
         end
     },
     {'lambdalisue/kensaku.vim'},
@@ -21,4 +24,3 @@ return{
         end
     },
 }
-
