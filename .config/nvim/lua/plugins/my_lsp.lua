@@ -24,7 +24,6 @@ return {
 			"neovim/nvim-lspconfig",
 		},
 		config = function()
-			local lspconfig = require('lspconfig')
 			-- lsp自動補完設定
 			local capabilities = require("cmp_nvim_lsp").default_capabilities()
 			-- Intelephenseライセンスキー読み込み関数
@@ -56,9 +55,9 @@ return {
 				automatic_enable = false, -- 自動的なLSP有効化を無効にする（重複起動を防ぐ）
 				ensure_installed = lsp_servers,
 			})
-			-- 各LSPサーバーの手動設定
+			-- 各LSPサーバーの手動設定（Neovim 0.11+ API）
 			-- Intelephenseの設定
-			lspconfig.intelephense.setup({
+			vim.lsp.config('intelephense', {
 				capabilities = capabilities,
 				init_options = {
 					licenceKey = get_intelephense_license(),
@@ -147,9 +146,15 @@ return {
 				}
 			})
 			-- その他のLSPサーバーの設定
-			lspconfig.lua_ls.setup({ capabilities = capabilities })
-			lspconfig.eslint.setup({ capabilities = capabilities })
-			lspconfig.html.setup({ capabilities = capabilities })
+			vim.lsp.config('lua_ls', { capabilities = capabilities })
+			vim.lsp.config('eslint', { capabilities = capabilities })
+			vim.lsp.config('html', { capabilities = capabilities })
+
+			-- 設定したサーバーを有効化（ファイルタイプに応じて起動）
+			vim.lsp.enable('intelephense')
+			vim.lsp.enable('lua_ls')
+			vim.lsp.enable('eslint')
+			vim.lsp.enable('html')
 		end,
 	},
 	-- nvim-cmp 自動補完
