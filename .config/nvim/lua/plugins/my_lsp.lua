@@ -47,7 +47,7 @@ return {
 				-- 		return string.format("(%s: %s)",diagnostic.source, diagnostic.code)
 				-- 	end,
 				-- },
-				virtual_lines = true,
+				virtual_lines = false,
 			})
 			local mason_lspconfig = require("mason-lspconfig")
 			mason_lspconfig.setup({
@@ -194,7 +194,10 @@ return {
 		"nvimdev/lspsaga.nvim",
 		opts  = {
 			symbol_in_winbar = {
-				separator = " 󰇘 ",
+        enable = false,
+				-- separator = " ",
+        -- hide_keyword = true,
+        -- show_file = false,
 			},
 			finder = {
 				max_height = 0.6,
@@ -222,4 +225,10 @@ return {
 		},
 		event = { "BufRead", "BufNewFile" },
 	},
+  {
+      "rachartier/tiny-inline-diagnostic.nvim",
+      event = "VeryLazy",
+      priority = 1000,
+      opts = {},
+  }
 }
