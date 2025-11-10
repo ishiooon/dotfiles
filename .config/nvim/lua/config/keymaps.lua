@@ -113,3 +113,7 @@ vim.keymap.set('n', '<leader>ol', '<cmd>Lspsaga outline<CR>')
 -- キー: <Leader>sr / <Leader>sw (suda)
 vim.keymap.set('n', '<Leader>sr', ':SudaRead<CR>')
 vim.keymap.set('n', '<Leader>sw', ':SudaWrite<CR>')
+
+
+-- キー: <Leader>ut (undotree)
+vim.keymap.set('n', '<Leader>ut', '<Cmd>Atone toggle<CR>' , { desc = 'Atone[Undotree]: トグル' })
