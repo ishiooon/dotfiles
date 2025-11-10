@@ -4,6 +4,8 @@
 return{
     {
         "Pocco81/auto-save.nvim",
-        opts={}
+        opts={
+          -- メッセージを非表示
+        }
     }
 }
