@@ -117,3 +117,10 @@ vim.keymap.set('n', '<Leader>sw', ':SudaWrite<CR>')
 
 -- キー: <Leader>ut (undotree)
 vim.keymap.set('n', '<Leader>ut', '<Cmd>Atone toggle<CR>' , { desc = 'Atone[Undotree]: トグル' })
+
+-- キー: <leader>nt* (neovim-tips)
+vim.keymap.set('n', '<leader>nto', '<Cmd>NeovimTips<CR>', { desc = 'Neovim tips' })
+vim.keymap.set('n', '<leader>ntr', '<Cmd>NeovimTipsRandom<CR>', { desc = 'Show random tip' })
+vim.keymap.set('n', '<leader>nte', '<Cmd>NeovimTipsEdit<CR>', { desc = 'Edit your tips' })
+vim.keymap.set('n', '<leader>nta', '<Cmd>NeovimTipsAdd<CR>', { desc = 'Add your tip' })
+vim.keymap.set('n', '<leader>ntp', '<Cmd>NeovimTipsPdf<CR>', { desc = 'Open tips PDF' })
