@@ -2,7 +2,15 @@ return{
   {
     "saxon1964/neovim-tips",
     version = "*", -- Only update on tagged releases
-    lazy = true,  -- Load only when keybinds are triggered
+    lazy = true,  -- Load lazily
+    -- Load plugin when any of these commands are invoked
+    cmd = {
+      "NeovimTips",
+      "NeovimTipsRandom",
+      "NeovimTipsEdit",
+      "NeovimTipsAdd",
+      "NeovimTipsPdf",
+    },
     dependencies = {
       "MunifTanjim/nui.nvim",
       -- OPTIONAL: Choose your preferred markdown renderer (or omit for raw markdown)
@@ -17,13 +25,6 @@ return{
       daily_tip = 0,  -- 0 = off, 1 = once per day, 2 = every startup
       -- Other optional settings...
       bookmark_symbol = "🌟 ",
-    },
-    keys = {
-      { "<leader>nto", ":NeovimTips<CR>", desc = "Neovim tips" },
-      { "<leader>ntr", ":NeovimTipsRandom<CR>", desc = "Show random tip" },
-      { "<leader>nte", ":NeovimTipsEdit<CR>", desc = "Edit your tips" },
-      { "<leader>nta", ":NeovimTipsAdd<CR>", desc = "Add your tip" },
-      { "<leader>ntp", ":NeovimTipsPdf<CR>", desc = "Open tips PDF" },
     },
   }
 }
