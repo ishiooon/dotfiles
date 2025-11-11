@@ -45,3 +45,13 @@
 .config/lazygit/state.yml
 .config/mcphub/servers.json
 .claude
+
+# ===================================
+# .codex
+# ===================================
+!/.codex
+.codex/log
+.codex/sessions
+.codex/auth.json
+.codex/history.jsonl
+.codex/version.json
