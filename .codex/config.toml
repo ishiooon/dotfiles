@@ -1,0 +1,27 @@
+model = "gpt-5"
+model_reasoning_effort = "high"
+[projects."/var/www/local.its.wp-test/htdocs/shop"]
+trust_level = "trusted"
+
+[projects."/home/dev_local/dotfiles"]
+trust_level = "trusted"
+
+[projects."/var/www/local.its.wp-test/htdocs/business"]
+trust_level = "trusted"
+
+[projects."/var/www/local.its.wp-test/htdocs/band"]
+trust_level = "trusted"
+
+[projects."/var/projects/net.itsj-draft.test"]
+trust_level = "trusted"
+
+[projects."/var/projects/net.itsj-draft.t2f-cmp"]
+trust_level = "trusted"
+
+[mcp_servers.serena]
+command = "uvx"
+args = ["--from", "git+https://github.com/oraios/serena", "serena", "start-mcp-server", "--context", "codex"]
+
+[mcp_servers.context7]
+command = "npx"
+args = ["-y", "@upstash/context7-mcp"]
