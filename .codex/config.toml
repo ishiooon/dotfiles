@@ -1,5 +1,5 @@
-model = "gpt-5"
-model_reasoning_effort = "high"
+model = "gpt-5-codex"
+model_reasoning_effort = "medium"
 [projects."/var/www/local.its.wp-test/htdocs/shop"]
 trust_level = "trusted"
 
@@ -18,6 +18,15 @@ trust_level = "trusted"
 [projects."/var/projects/net.itsj-draft.t2f-cmp"]
 trust_level = "trusted"
 
+[projects."/var/www/local.its.wp-test/htdocs/legal"]
+trust_level = "trusted"
+
+[projects."/var/www/local.its.its-subsc/laravel"]
+trust_level = "trusted"
+
+[projects."/var/projects/net.itsj-draft.its-subsc"]
+trust_level = "trusted"
+
 [mcp_servers.serena]
 command = "uvx"
 args = ["--from", "git+https://github.com/oraios/serena", "serena", "start-mcp-server", "--context", "codex"]
@@ -25,3 +34,11 @@ args = ["--from", "git+https://github.com/oraios/serena", "serena", "start-mcp-s
 [mcp_servers.context7]
 command = "npx"
 args = ["-y", "@upstash/context7-mcp"]
+
+[mcp_servers.google_spreadsheets]
+command = "npx"
+args = ["-y", "google-spreadsheets-mcp-server"]
+
+[mcp_servers.playwright]
+command = "npx"
+args = ["-y", "playwright-mcp-server"]
