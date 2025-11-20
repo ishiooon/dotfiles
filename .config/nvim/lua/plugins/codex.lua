@@ -37,9 +37,10 @@ return{
       -- toggle をラップ
       codex.toggle = wrap_right(codex.toggle) or codex.toggle
 
-      -- 視覚モード(<leader>cs)での送信も右に出す
+      -- 視覚モード(<leader>cs)やファイル送信でも右に出す
       if codex.actions and type(codex.actions) == "table" then
         codex.actions.send_selection = wrap_right(codex.actions.send_selection) or codex.actions.send_selection
+        codex.actions.send = wrap_right(codex.actions.send) or codex.actions.send
       end
 
       -- 入力画面から素早く抜けるキー(バッファローカル)

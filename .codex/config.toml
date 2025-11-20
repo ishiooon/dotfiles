@@ -1,5 +1,10 @@
 model = "gpt-5.1-codex-max"
 model_reasoning_effort = "high"
+network_access = true
+
+[tools]
+web_search = true
+
 [projects."/var/www/local.its.wp-test/htdocs/shop"]
 trust_level = "trusted"
 
