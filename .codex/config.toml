@@ -1,5 +1,5 @@
-model = "gpt-5-codex"
-model_reasoning_effort = "medium"
+model = "gpt-5.1-codex-max"
+model_reasoning_effort = "high"
 [projects."/var/www/local.its.wp-test/htdocs/shop"]
 trust_level = "trusted"
 
@@ -42,3 +42,7 @@ args = ["-y", "google-spreadsheets-mcp-server"]
 [mcp_servers.playwright]
 command = "npx"
 args = ["-y", "playwright-mcp-server"]
+
+[notice]
+hide_gpt5_1_migration_prompt = true
+"hide_gpt-5.1-codex-max_migration_prompt" = true
