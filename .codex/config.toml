@@ -32,6 +32,9 @@ trust_level = "trusted"
 [projects."/var/projects/net.itsj-draft.its-subsc"]
 trust_level = "trusted"
 
+[projects."/var/www/local.its.wp-test/htdocs/band/wp-content/themes/bp_wp_site"]
+trust_level = "trusted"
+
 [mcp_servers.serena]
 command = "uvx"
 args = ["--from", "git+https://github.com/oraios/serena", "serena", "start-mcp-server", "--context", "codex"]
