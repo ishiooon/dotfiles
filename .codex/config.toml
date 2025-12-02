@@ -1,5 +1,5 @@
 model = "gpt-5.1-codex-max"
-model_reasoning_effort = "high"
+model_reasoning_effort = "xhigh"
 network_access = true
 
 [tools]
@@ -33,6 +33,12 @@ trust_level = "trusted"
 trust_level = "trusted"
 
 [projects."/var/www/local.its.wp-test/htdocs/band/wp-content/themes/bp_wp_site"]
+trust_level = "trusted"
+
+[projects."/var/projects/net.itsj-draft.ibv3"]
+trust_level = "trusted"
+
+[projects."/var/www/local.its.wp-test/htdocs/ren-s"]
 trust_level = "trusted"
 
 [mcp_servers.serena]
