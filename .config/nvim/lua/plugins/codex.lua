@@ -52,19 +52,12 @@ return{
           local name = (vim.api.nvim_buf_get_name(b) or ""):lower()
           if not (ft:match("codex") or name:match("codex")) then return end
 
-          local bt = (vim.bo[b] and vim.bo[b].buftype) or ""
           local opts = { buffer = b, silent = true, nowait = true }
 
           -- どの codex バッファでも 'q' で閉じる
           pcall(vim.keymap.set, 'n', 'q', '<Cmd>close<CR>', opts)
 
-          -- 入力っぽいバッファでは <Esc>/<C-c> で抜けて閉じる
-          if bt == 'prompt' or bt == 'nofile' then
-            pcall(vim.keymap.set, 'i', '<Esc>', '<Esc><Cmd>close<CR>', opts)
-            pcall(vim.keymap.set, 'n', '<Esc>', '<Cmd>close<CR>', opts)
-            pcall(vim.keymap.set, 'i', '<C-c>', '<Esc><Cmd>close<CR>', opts)
-            pcall(vim.keymap.set, 'n', '<C-c>', '<Cmd>close<CR>', opts)
-          end
+          -- 入力っぽいバッファでも Esc/C-c は閉じる動作に割り当てない
         end,
       })
     end,

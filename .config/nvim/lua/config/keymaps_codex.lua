@@ -88,11 +88,39 @@ local function send_neotree_file_to_codex()
   send(path .. "\n", { submit = false })
 end
 
+-- Codex バッファかどうかを判定する
+local function is_codex_buffer(buf)
+  local ft = (vim.bo[buf] and vim.bo[buf].filetype) or ""
+  local name = (vim.api.nvim_buf_get_name(buf) or ""):lower()
+  return ft:match("codex") or name:match("codex")
+end
+
+-- Codex のフォーカスを外す（副作用: 挿入モードを終了し、直前のウィンドウへ移動する）
+local function unfocus_codex_window()
+  pcall(vim.cmd, "stopinsert")
+  pcall(vim.cmd, "wincmd p")
+end
+
+-- Codex バッファ内のキーマップを設定する（副作用: Codex バッファへキーマップを追加する）
+local function set_codex_buffer_keymaps(buf)
+  local opts = { buffer = buf, silent = true, nowait = true }
+  vim.keymap.set({ "n", "i" }, "<Esc>", unfocus_codex_window, opts)
+  vim.keymap.set({ "n", "i" }, "<leader>cc", toggle_codex, { buffer = buf, silent = true, nowait = true, desc = "Codex: Toggle (codex)" })
+end
+
 -- エントリーポイント: Codex 周りのキーマップを登録する
 function M.setup()
   vim.keymap.set("n", "<leader>cc", toggle_codex, { desc = "Codex: Toggle" })
   vim.keymap.set("n", "<leader>cr", run_ccresume_codex, { desc = "Codex: Run ccresume (npx)" })
   vim.keymap.set("v", "<leader>cs", send_visual_selection_to_codex, { desc = "Codex: Send selection" })
+  vim.api.nvim_create_autocmd({ "BufWinEnter", "FileType" }, {
+    callback = function(event)
+      if not is_codex_buffer(event.buf) then
+        return
+      end
+      set_codex_buffer_keymaps(event.buf)
+    end,
+  })
   vim.api.nvim_create_autocmd("FileType", {
     pattern = "neo-tree",
     callback = function(event)
