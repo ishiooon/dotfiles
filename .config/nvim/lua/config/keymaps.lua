@@ -3,7 +3,6 @@
 -- 前提: 依存モジュール/共通オプション
 local builtin = require("telescope.builtin")
 local Terminal  = require('toggleterm.terminal').Terminal
-local codex_keymaps = require("config.keymaps_codex")
 local opts = { noremap = true, silent = true }
 
 -- <C-b> で始まるキー
@@ -63,8 +62,7 @@ local function toggle_diffview()
   end
 end
 
--- キー: <leader>cc / <leader>cs (codex)
-codex_keymaps.setup()
+-- Codexの既定キーマップはcodex.nvim側で設定するため、ここでは定義しない
 
 -- キー: <leader>dv (diffview)
 vim.keymap.set('n', '<leader>dv', toggle_diffview, { desc = 'Diffview: トグル' })

@@ -47,6 +47,9 @@ trust_level = "trusted"
 [projects."/home/dev_local/mine/SAMS"]
 trust_level = "trusted"
 
+[projects."/home/dev_local/dev_plugin/codex.nvim"]
+trust_level = "trusted"
+
 [mcp_servers.context7]
 command = "npx"
 args = ["-y", "@upstash/context7-mcp"]
