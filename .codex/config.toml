@@ -49,15 +49,3 @@ trust_level = "trusted"
 
 [projects."/home/dev_local/dev_plugin/codex.nvim"]
 trust_level = "trusted"
-
-[mcp_servers.context7]
-command = "npx"
-args = ["-y", "@upstash/context7-mcp"]
-
-[mcp_servers.google_spreadsheets]
-command = "npx"
-args = ["-y", "google-spreadsheets-mcp-server"]
-
-[mcp_servers.playwright]
-command = "npx"
-args = ["-y", "playwright-mcp-server"]
