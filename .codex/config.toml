@@ -2,8 +2,8 @@ model = "gpt-5.2-codex"
 model_reasoning_effort = "high"
 network_access = true
 
-[tools]
-web_search = true
+[features]
+web_search_request = true
 
 [projects."/var/www/local.its.wp-test/htdocs/shop"]
 trust_level = "trusted"
