@@ -50,3 +50,9 @@ trust_level = "trusted"
 
 [projects."/home/dev_local/dev_plugin/codex.nvim"]
 trust_level = "trusted"
+
+[projects."/home/dev_local/mine/collect_note_affiliate_link"]
+trust_level = "trusted"
+
+[projects."/home/dev_local/dev_plugin/idle-dungeon.nvim"]
+trust_level = "trusted"
