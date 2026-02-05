@@ -67,6 +67,9 @@ end
 -- キー: <leader>dv (diffview)
 vim.keymap.set('n', '<leader>dv', toggle_diffview, { desc = 'Diffview: トグル' })
 
+-- キー: <leader>dm (idle_dungeon_menu_toggle)
+vim.keymap.set('n', '<leader>dm', '<Cmd>IdleDungeonMenu<CR>', { desc = 'IdleDungeonMenu: トグル' })
+
 -- キー: <leader>e (neo-tree)
 vim.keymap.set('n', '<leader>e', '<Cmd>Neotree reveal toggle<CR>', { desc = 'Neotree: トグル', })
 

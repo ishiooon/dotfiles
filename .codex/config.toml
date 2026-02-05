@@ -2,6 +2,7 @@ model = "gpt-5.2-codex"
 model_reasoning_effort = "high"
 network_access = true
 notify = ["sh", "/path/to/codex.nvim/scripts/codex_notify.sh"]
+personality = "pragmatic"
 
 [features]
 web_search_request = true
@@ -55,4 +56,10 @@ trust_level = "trusted"
 trust_level = "trusted"
 
 [projects."/home/dev_local/dev_plugin/idle-dungeon.nvim"]
+trust_level = "trusted"
+
+[projects."/home/dev_local/mine/create_ai_movie"]
+trust_level = "trusted"
+
+[projects."/var/projects/net.itsj-draft.itsj/phplibs"]
 trust_level = "trusted"
