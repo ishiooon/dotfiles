@@ -4,65 +4,6 @@ network_access = true
 notify = ["sh", "/path/to/codex.nvim/scripts/codex_notify.sh"]
 personality = "pragmatic"
 
+# 公開時に不要なローカルプロジェクト情報は保持しない
 [features]
 web_search_request = true
-
-[projects."/var/www/local.its.wp-test/htdocs/shop"]
-trust_level = "trusted"
-
-[projects."/home/dev_local/dotfiles"]
-trust_level = "trusted"
-
-[projects."/var/www/local.its.wp-test/htdocs/business"]
-trust_level = "trusted"
-
-[projects."/var/www/local.its.wp-test/htdocs/band"]
-trust_level = "trusted"
-
-[projects."/var/projects/net.itsj-draft.test"]
-trust_level = "trusted"
-
-[projects."/var/projects/net.itsj-draft.t2f-cmp"]
-trust_level = "trusted"
-
-[projects."/var/www/local.its.wp-test/htdocs/legal"]
-trust_level = "trusted"
-
-[projects."/var/www/local.its.its-subsc/laravel"]
-trust_level = "trusted"
-
-[projects."/var/projects/net.itsj-draft.its-subsc"]
-trust_level = "trusted"
-
-[projects."/var/www/local.its.wp-test/htdocs/band/wp-content/themes/bp_wp_site"]
-trust_level = "trusted"
-
-[projects."/var/projects/net.itsj-draft.ibv3"]
-trust_level = "trusted"
-
-[projects."/var/www/local.its.wp-test/htdocs/ren-s"]
-trust_level = "trusted"
-
-[projects."/var/projects/net.itsj-draft.isv6"]
-trust_level = "trusted"
-
-[projects."/home/dev_local/mine/SAMS"]
-trust_level = "trusted"
-
-[projects."/home/dev_local/dev_plugin/codex.nvim"]
-trust_level = "trusted"
-
-[projects."/home/dev_local/mine/collect_note_affiliate_link"]
-trust_level = "trusted"
-
-[projects."/home/dev_local/dev_plugin/idle-dungeon.nvim"]
-trust_level = "trusted"
-
-[projects."/home/dev_local/mine/create_ai_movie"]
-trust_level = "trusted"
-
-[projects."/var/projects/net.itsj-draft.itsj/phplibs"]
-trust_level = "trusted"
-
-[projects."/var/projects/net.itsj-draft.itsj"]
-trust_level = "trusted"

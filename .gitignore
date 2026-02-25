@@ -14,6 +14,8 @@
 !/.bash
 !/.claude
 /.claude/settings.local.json
+# shell snapshot は環境情報を含むため常に除外する
+/.claude/shell-snapshots
 /.bash/env.local.bash
 !/.bashrc
 !/README.md
@@ -56,6 +58,11 @@
 .codex/history.jsonl
 .codex/version.json
 .codex/ide
+# Codex のローカル設定は環境依存かつ機密情報を含む可能性があるため除外する
+.codex/config.toml
+.codex/policy/default.codexpolicy
+# 一時実行ファイルは公開対象外のため常に除外する
+.codex/tmp
 # shell snapshot には認証情報が含まれる可能性があるため常に除外する
 .codex/shell_snapshots
 # ローカルに追加した Skill はユーザー環境依存のため既定では除外する
