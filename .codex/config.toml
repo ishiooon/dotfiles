@@ -1,5 +1,5 @@
 model = "gpt-5.3-codex"
-model_reasoning_effort = "high"
+model_reasoning_effort = "xhigh"
 network_access = true
 notify = ["sh", "/path/to/codex.nvim/scripts/codex_notify.sh"]
 personality = "pragmatic"
@@ -62,4 +62,7 @@ trust_level = "trusted"
 trust_level = "trusted"
 
 [projects."/var/projects/net.itsj-draft.itsj/phplibs"]
+trust_level = "trusted"
+
+[projects."/var/projects/net.itsj-draft.itsj"]
 trust_level = "trusted"
