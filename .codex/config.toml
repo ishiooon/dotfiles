@@ -1,4 +1,4 @@
-model = "gpt-5.3-codex"
+model = "gpt-5.4"
 model_reasoning_effort = "xhigh"
 network_access = true
 notify = ["sh", "/path/to/codex.nvim/scripts/codex_notify.sh"]
@@ -7,3 +7,12 @@ personality = "pragmatic"
 # 公開時に不要なローカルプロジェクト情報は保持しない
 [features]
 web_search_request = true
+
+[projects."/Users/ishiooon/dotfiles"]
+trust_level = "trusted"
+
+[projects."/Users/ishiooon"]
+trust_level = "trusted"
+
+[notice.model_migrations]
+"gpt-5.3-codex" = "gpt-5.4"
