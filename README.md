@@ -132,6 +132,11 @@ ln -s ~/dotfiles/.config/mcphub ~/.config/mcphub
 ├── history.zsh             # 履歴設定
 ├── keybindings.zsh         # キーバインディング設定
 └── functions.zsh           # 関数定義
+
+.config/
+├── nvim/                   # Neovimの設定
+├── wezterm/                # WezTermの設定
+└── starship.toml           # starshipの設定
 ```
 
 ## テスト情報

@@ -26,6 +26,15 @@ log_error() {
     echo -e "${RED}[ERROR]${NC} $1"
 }
 
+# 既存の設定をバックアップ先へ退避し、後から復元できる状態を保つ
+backup_existing_path() {
+    local target="$1"
+    local type="$2"
+
+    log_warn "Backing up existing $type: $(basename "$target")"
+    mv "$target" "$backup_dir/$(basename "$target")"
+}
+
 # バックアップディレクトリ作成
 backup_dir="$HOME/dotbackup/$(date +%Y%m%d_%H%M%S)"
 mkdir -p "$backup_dir"
@@ -57,8 +66,7 @@ create_symlink() {
             fi
         else
             # 通常のファイル・ディレクトリの場合
-            log_warn "Backing up existing $type: $(basename $dest)"
-            mv "$dest" "$backup_dir/$(basename $dest)"
+            backup_existing_path "$dest" "$type"
         fi
     fi
     
@@ -93,12 +101,14 @@ log_info "Setting up .config directory..."
 create_symlink "$HOME/dotfiles/.config" "$HOME/.config" "dir"
 
 # ===================================================
-# 4. 便利スクリプト・ツール
+# 4. 便利スクリプト・ツール・エージェント設定
 # ===================================================
-log_info "Setting up utility scripts and tools..."
+log_info "Setting up utility scripts, tools, and agent configuration..."
 
 create_symlink "$HOME/dotfiles/.bin" "$HOME/.bin" "dir"
 create_symlink "$HOME/dotfiles/.claude" "$HOME/.claude" "dir"
+# Codex 用の追加 Skill やローカル Marketplace を dotfiles 配下で一元管理する。
+create_symlink "$HOME/dotfiles/.agents" "$HOME/.agents" "dir"
 
 # ===================================================
 # 5. 設定ファイル
@@ -155,4 +165,3 @@ echo "     - 'source ~/.zshrc' (for zsh)"
 echo "  3. Open nvim and run ':Lazy sync' to install plugins"
 echo ""
 log_info "Backup files are stored in: $backup_dir"
-

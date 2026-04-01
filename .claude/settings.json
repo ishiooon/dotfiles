@@ -3,5 +3,6 @@
     "type": "command",
     "command": "~/dotfiles/.claude/statusline.sh"
   },
-  "alwaysThinkingEnabled": true
+  "alwaysThinkingEnabled": true,
+  "skipDangerousModePermissionPrompt": true
 }
