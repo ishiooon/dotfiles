@@ -33,12 +33,15 @@ assert_not_ignored() {
   fi
 }
 
-# Claude 系のローカル作業データは引き続きコミット対象外であることを確認する。
+# Claude 系のディレクトリはローカルの作業状態や設定を含むため、説明書以外をコミット対象外にする。
 assert_ignored ".claude/backups/example.json"
 assert_ignored ".claude/cache/example.md"
 assert_ignored ".claude/debug/example.txt"
+assert_ignored ".claude/settings.json"
 assert_ignored ".claude/settings.local.json"
+assert_ignored ".claude/statusline.sh"
 assert_ignored ".claude/todos/example.json"
+assert_not_ignored ".claude/CLAUDE.md"
 
 # シェルや外部ツールのローカル設定は、認証情報を含む可能性があるため除外する。
 assert_ignored ".bash/env.local.bash"
@@ -77,10 +80,10 @@ assert_ignored ".codex/transcription-history.jsonl"
 assert_ignored ".codex/vendor_imports/skills-curated-cache.json"
 assert_ignored ".codex/version.json"
 
-# dotfiles で共有する Codex の説明書と共通 Skill は、引き続き追跡できることを確認する。
+# Codex 系のディレクトリは認証情報、会話履歴、キャッシュを含み得るため、説明書以外をコミット対象外にする。
+assert_ignored ".codex/skills/.system/example/SKILL.md"
+assert_ignored ".codex/superpowers/skills/example/SKILL.md"
 assert_not_ignored ".codex/AGENTS.md"
-assert_not_ignored ".codex/skills/.system/example/SKILL.md"
-assert_not_ignored ".codex/superpowers/skills/example/SKILL.md"
 
 # テストコードとして追加した Lua ファイルは、引き続き追跡対象に含める。
 assert_not_ignored "tests/gitignore_security_entries_test.lua"

@@ -12,10 +12,11 @@
 !/.zshrc
 !/.zshenv
 !/.bash
-!/.claude
-/.claude/settings.local.json
-# shell snapshot は環境情報を含むため常に除外する
-/.claude/shell-snapshots
+# Claude 配下はローカルの設定、履歴、作業状態を含むため、共有する説明書以外を除外する。
+!/.claude/
+/.claude/*
+/.claude/.*
+!/.claude/CLAUDE.md
 /.bash/env.local.bash
 !/.bashrc
 !/README.md
@@ -46,7 +47,6 @@
 .config/nvim/intelephense.json
 .config/lazygit/state.yml
 .config/mcphub/servers.json
-.claude
 
 # ===================================
 # .agents
@@ -68,22 +68,8 @@
 # ===================================
 # .codex
 # ===================================
-!/.codex
-
-# Codex 配下は会話履歴、認証情報、キャッシュ、プラグインを含むため既定では全て除外する。
+# Codex 配下は会話履歴、認証情報、キャッシュ、プラグインを含むため、共有する説明書以外を除外する。
+!/.codex/
 /.codex/*
 /.codex/.*
-
-# リポジトリで共有する Codex 向け説明書だけは追跡対象にする。
 !/.codex/AGENTS.md
-
-# superpowers は dotfiles から参照する共有資産として追跡対象にする。
-!/.codex/superpowers
-!/.codex/superpowers/**
-
-# Codex の標準 Skill は共有対象にし、ユーザーがローカルに追加した Skill は除外する。
-!/.codex/skills
-/.codex/skills/*
-/.codex/skills/.*
-!/.codex/skills/.system
-!/.codex/skills/.system/**
