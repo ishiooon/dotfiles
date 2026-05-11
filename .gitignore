@@ -69,24 +69,21 @@
 # .codex
 # ===================================
 !/.codex
-.codex/log
-.codex/sessions
-.codex/auth.json
-.codex/history.jsonl
-.codex/version.json
-# SQLite の状態ファイルは会話履歴や実行状態を保持するため常に除外する
-.codex/*.sqlite*
-.codex/ide
-# Codex のローカル設定は環境依存かつ機密情報を含む可能性があるため除外する
-.codex/config.toml
-.codex/policy/default.codexpolicy
-# 一時実行ファイルは公開対象外のため常に除外する
-.codex/tmp
-# shell snapshot には認証情報が含まれる可能性があるため常に除外する
-.codex/shell_snapshots
-# ローカルに追加した Skill はユーザー環境依存のため既定では除外する
-.codex/skills/*
-!.codex/skills/.system
-!.codex/skills/.system/**
-.codex/tmp/path/codex-arg0ojNTpb
-.codex/tmp/path/codex-arg06FULbl
+
+# Codex 配下は会話履歴、認証情報、キャッシュ、プラグインを含むため既定では全て除外する。
+/.codex/*
+/.codex/.*
+
+# リポジトリで共有する Codex 向け説明書だけは追跡対象にする。
+!/.codex/AGENTS.md
+
+# superpowers は dotfiles から参照する共有資産として追跡対象にする。
+!/.codex/superpowers
+!/.codex/superpowers/**
+
+# Codex の標準 Skill は共有対象にし、ユーザーがローカルに追加した Skill は除外する。
+!/.codex/skills
+/.codex/skills/*
+/.codex/skills/.*
+!/.codex/skills/.system
+!/.codex/skills/.system/**

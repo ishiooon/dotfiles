@@ -25,8 +25,9 @@ if [[ -f "$HISTFILE" ]]; then
   # zsh履歴はタイムスタンプ付きの形式なので、コマンド部分のみでマッチング
   # 該当コマンドを除外してファイルを書き直す
   while IFS= read -r line; do
-    # zsh履歴の形式: ": timestamp:0;command"
-    if [[ "$line" =~ ^:[[:digit:]]+:[[:digit:]]+\;(.*)$ ]]; then
+    # zshの拡張履歴は「: 1710000000:0;command」のように、先頭コロンの後ろへ空白が入る。
+    # 空白の有無をどちらも許容し、fzfに表示されるコマンド部分だけで削除対象を判定する。
+    if [[ "$line" =~ ^:[[:space:]]*[[:digit:]]+:[[:digit:]]+\;(.*)$ ]]; then
       cmd_part="${match[1]}"
       if [[ "$cmd_part" != "$command_to_delete" ]]; then
         echo "$line" >> "$temp_file"
