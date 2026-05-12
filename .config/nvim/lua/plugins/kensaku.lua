@@ -8,7 +8,7 @@ return{
             vim.g['denops#debug'] = 0
         end,
         config = function()
-            -- Denoのパスはoptions.luaで統一設定済み（~/.deno/bin/deno）
+            -- Denoのパスはoptions.luaで実行可能な deno から解決する。
         end
     },
     {'lambdalisue/kensaku.vim'},

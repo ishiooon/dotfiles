@@ -26,6 +26,8 @@ return {
     },
     {
         "nvim-telescope/telescope-frecency.nvim",
+        -- Neovim v0.11.0 では v2 系が要求する v0.11.7 に届かないため、互換性のある v1 系へ固定する。
+        version = "^1.0.0",
         config = function()
             require("telescope").load_extension "frecency"
         end,

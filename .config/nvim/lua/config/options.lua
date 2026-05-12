@@ -1,8 +1,5 @@
--- Denoのパス設定
-vim.g.denops_deno = vim.fn.expand('~/.deno/bin/deno')
-vim.g['denops#deno'] = vim.fn.expand('~/.deno/bin/deno')
--- 環境変数の設定 (副作用: 環境変数の変更)
-vim.fn.setenv('PATH', vim.fn.expand('~/.local/bin') .. ':' .. vim.fn.expand('~/.deno/bin') .. ':' .. vim.fn.getenv('PATH'))
+-- denops.vim が使う Deno を、実際に実行できるパスから解決する。
+require("config.denops").apply_deno_path(vim)
 
 
 -- カラースキームを設定
@@ -177,5 +174,4 @@ vim.keymap.set('n', '<Leader>du', function() dapui.toggle() end, { desc = "Toggl
 
 -- 最後のデバッグセッションを再実行
 vim.keymap.set('n', '<Leader>dl', function() dap.run_last() end, { desc = "Run Last Debug Session" })
-
 
