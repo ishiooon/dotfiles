@@ -109,6 +109,8 @@ create_symlink "$HOME/dotfiles/.bin" "$HOME/.bin" "dir"
 create_symlink "$HOME/dotfiles/.claude" "$HOME/.claude" "dir"
 # Codex 用の追加 Skill やローカル Marketplace を dotfiles 配下で一元管理する。
 create_symlink "$HOME/dotfiles/.agents" "$HOME/.agents" "dir"
+# Amethyst は ~/.amethyst.yml を優先して読むため、dotfiles 内の設定実体へ直接リンクする。
+create_symlink "$HOME/dotfiles/.config/amethyst/amethyst.yml" "$HOME/.amethyst.yml" "file"
 
 # ===================================================
 # 5. 設定ファイル

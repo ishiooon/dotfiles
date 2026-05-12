@@ -58,6 +58,10 @@ mv ~/.config/mcphub ~/dotbackup/mcphub
 ln -s ~/dotfiles/.config/mcphub ~/.config/mcphub
 ```
 
+#### 4. JankyBorders のインストール
+フォーカス中のウィンドウを枠線で見分けるため、JankyBorders の設定を dotfiles で管理します。設定の実体は `.config/borders/bordersrc` です。
+導入前確認は `bash .bin/install-janky-borders.sh --dry-run`、導入は `bash .bin/install-janky-borders.sh`、設定変更後の再読み込みは `brew services restart borders` です。
+
 ## セットアップ
 
 ### APIキーの設定
@@ -134,6 +138,7 @@ ln -s ~/dotfiles/.config/mcphub ~/.config/mcphub
 └── functions.zsh           # 関数定義
 
 .config/
+├── borders/                # JankyBordersの設定
 ├── nvim/                   # Neovimの設定
 ├── wezterm/                # WezTermの設定
 └── starship.toml           # starshipの設定

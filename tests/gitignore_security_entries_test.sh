@@ -48,6 +48,12 @@ assert_ignored ".bash/env.local.bash"
 assert_ignored ".zsh/env.local.zsh"
 assert_ignored ".config/mcphub/servers.json"
 
+# Amethyst の設定ファイルは端末ごとの差分が小さいため、dotfiles で共有する。
+assert_not_ignored ".config/amethyst/amethyst.yml"
+
+# JankyBorders の見た目設定は個人環境の機密情報を含まないため、dotfiles で共有する。
+assert_not_ignored ".config/borders/bordersrc"
+
 # Codex の SQLite 状態ファイルは会話履歴や実行状態を含むため、必ず除外する。
 assert_ignored ".codex/state_security_test.sqlite"
 assert_ignored ".codex/state_security_test.sqlite-shm"
@@ -91,5 +97,8 @@ assert_not_ignored "tests/nvim_neo_tree_git_refresh_test.lua"
 
 # dotfiles で管理する Codex Skills の入口は、追跡対象から外してはいけない。
 assert_not_ignored ".agents/skills/superpowers"
+
+# JankyBorders の導入手順は再現性のために dotfiles で共有する。
+assert_not_ignored ".bin/install-janky-borders.sh"
 
 echo "PASS: セキュリティ上コミット不要な状態ファイルは除外され、Lua テストは追跡対象でした。"

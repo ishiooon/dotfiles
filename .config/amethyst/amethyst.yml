@@ -1,0 +1,421 @@
+# Amethyst は ~/.amethyst.yml を優先して読み込む。
+# このファイルを実体として管理し、ホームディレクトリ側からシンボリックリンクする。
+
+# ここでは公式の v0.24.1 デフォルト値を基準にし、デフォルト値が無い項目はコメントアウトする。
+# 既定値と同じショートカットが反映されない場合は、該当するコマンドだけコメントアウトして Amethyst を再起動する。
+
+# 使用するレイアウトの順序を指定する。先頭の BSP を通常利用する既定レイアウトとして扱う。
+layouts:
+  - bsp
+  - fullscreen
+  - tall
+  # - wide
+  # - column
+  # - tall-right
+  # - two-pane
+  # - middle-wide
+  # - 3column-left
+  # - 3column-middle
+  # - 3column-right
+  # - 4column-left
+  # - 4column-right
+  # - row
+  # - floating
+  # - widescreen-tall
+  # - widescreen-tall-right
+
+# 主要な修飾キーを定義する。
+mod1:
+  - option
+  - shift
+
+# 追加操作用の修飾キーを定義する。
+mod2:
+  - option
+  - shift
+  - control
+
+# デフォルト値が無いため、必要になった場合だけ有効化する。
+# mod3:
+#   - option
+#   - command
+
+# デフォルト値が無いため、必要になった場合だけ有効化する。
+# mod4:
+#   - control
+#   - command
+
+# 次のレイアウトへ切り替える。
+cycle-layout:
+  mod: mod1
+  key: space
+
+# 前のレイアウトへ切り替える。
+cycle-layout-backward:
+  mod: mod2
+  key: space
+
+# Tall レイアウトを選択する。
+select-tall-layout:
+  mod: mod1
+  key: a
+
+# Wide レイアウトを選択する。
+select-wide-layout:
+  mod: mod1
+  key: s
+
+# Fullscreen レイアウトを選択する。
+select-fullscreen-layout:
+  mod: mod1
+  key: d
+
+# Column レイアウトを選択する。
+select-column-layout:
+  mod: mod1
+  key: f
+
+# デフォルト値が無いため、必要になった場合だけ有効化する。
+# select-row-layout:
+#   mod: mod1
+#   key: r
+
+# 左回りの画面へフォーカスを移動する。
+focus-screen-ccw:
+  mod: mod1
+  key: p
+
+# 右回りの画面へフォーカスを移動する。
+focus-screen-cw:
+  mod: mod1
+  key: n
+
+# 1番目の画面へフォーカスを移動する。
+focus-screen-1:
+  mod: mod1
+  key: w
+
+# 2番目の画面へフォーカスを移動する。
+focus-screen-2:
+  mod: mod1
+  key: e
+
+# 3番目の画面へフォーカスを移動する。
+focus-screen-3:
+  mod: mod1
+  key: r
+
+# 4番目の画面へフォーカスを移動する。
+focus-screen-4:
+  mod: mod1
+  key: q
+
+# 5番目の画面へフォーカスを移動する。
+focus-screen-5:
+  mod: mod1
+  key: g
+
+# 1番目の画面へ現在のウィンドウを移動する。
+throw-screen-1:
+  mod: mod2
+  key: w
+
+# 2番目の画面へ現在のウィンドウを移動する。
+throw-screen-2:
+  mod: mod2
+  key: e
+
+# 3番目の画面へ現在のウィンドウを移動する。
+throw-screen-3:
+  mod: mod2
+  key: r
+
+# 4番目の画面へ現在のウィンドウを移動する。
+throw-screen-4:
+  mod: mod2
+  key: q
+
+# 5番目の画面へ現在のウィンドウを移動する。
+throw-screen-5:
+  mod: mod2
+  key: g
+
+# メイン領域を縮小する。
+shrink-main:
+  mod: mod1
+  key: h
+
+# メイン領域を拡大する。
+expand-main:
+  mod: mod1
+  key: l
+
+# メイン領域に入るウィンドウ数を増やす。
+increase-main:
+  mod: mod1
+  key: ","
+
+# メイン領域に入るウィンドウ数を減らす。
+decrease-main:
+  mod: mod1
+  key: "."
+
+# 左回りにウィンドウフォーカスを移動する。
+focus-ccw:
+  mod: mod1
+  key: j
+
+# 右回りにウィンドウフォーカスを移動する。
+focus-cw:
+  mod: mod1
+  key: k
+
+# メインウィンドウへフォーカスを移動する。
+focus-main:
+  mod: mod1
+  key: m
+
+# 左回りの画面へ現在のウィンドウを移動する。
+swap-screen-ccw:
+  mod: mod2
+  key: h
+
+# 右回りの画面へ現在のウィンドウを移動する。
+swap-screen-cw:
+  mod: mod2
+  key: l
+
+# 左回りのウィンドウと現在のウィンドウを入れ替える。
+swap-ccw:
+  mod: mod2
+  key: j
+
+# 右回りのウィンドウと現在のウィンドウを入れ替える。
+swap-cw:
+  mod: mod2
+  key: k
+
+# 現在のウィンドウとメインウィンドウを入れ替える。
+swap-main:
+  mod: mod1
+  key: enter
+
+# 1番目の操作スペースへ現在のウィンドウを移動する。
+throw-space-1:
+  mod: mod2
+  key: "1"
+
+# 2番目の操作スペースへ現在のウィンドウを移動する。
+throw-space-2:
+  mod: mod2
+  key: "2"
+
+# 3番目の操作スペースへ現在のウィンドウを移動する。
+throw-space-3:
+  mod: mod2
+  key: "3"
+
+# 4番目の操作スペースへ現在のウィンドウを移動する。
+throw-space-4:
+  mod: mod2
+  key: "4"
+
+# 5番目の操作スペースへ現在のウィンドウを移動する。
+throw-space-5:
+  mod: mod2
+  key: "5"
+
+# 6番目の操作スペースへ現在のウィンドウを移動する。
+throw-space-6:
+  mod: mod2
+  key: "6"
+
+# 7番目の操作スペースへ現在のウィンドウを移動する。
+throw-space-7:
+  mod: mod2
+  key: "7"
+
+# 8番目の操作スペースへ現在のウィンドウを移動する。
+throw-space-8:
+  mod: mod2
+  key: "8"
+
+# 9番目の操作スペースへ現在のウィンドウを移動する。
+throw-space-9:
+  mod: mod2
+  key: "9"
+
+# 10番目の操作スペースへ現在のウィンドウを移動する。
+throw-space-10:
+  mod: mod2
+  key: "0"
+
+# 左の操作スペースへ現在のウィンドウを移動する。
+throw-space-left:
+  mod: mod2
+  key: left
+
+# 右の操作スペースへ現在のウィンドウを移動する。
+throw-space-right:
+  mod: mod2
+  key: right
+
+# 現在のウィンドウのフローティング状態を切り替える。
+toggle-float:
+  mod: mod1
+  key: t
+
+# タイリング全体の有効状態を切り替える。
+toggle-tiling:
+  mod: mod2
+  key: t
+
+# 現在のレイアウト名を表示する。
+display-current-layout:
+  mod: mod1
+  key: i
+
+# ウィンドウ配置を再評価する。
+reevaluate-windows:
+  mod: mod1
+  key: z
+
+# マウスポインター位置に応じたフォーカス切り替えを有効または無効にする。
+toggle-focus-follows-mouse:
+  mod: mod2
+  key: x
+
+# Amethyst を再起動する。
+relaunch-amethyst:
+  mod: mod2
+  key: z
+
+# デフォルト値が無いため、カスタムレイアウトで必要になった場合だけ有効化する。
+# command1:
+#   mod: mod1
+#   key: "1"
+
+# デフォルト値が無いため、カスタムレイアウトで必要になった場合だけ有効化する。
+# command2:
+#   mod: mod1
+#   key: "2"
+
+# デフォルト値が無いため、カスタムレイアウトで必要になった場合だけ有効化する。
+# command3:
+#   mod: mod1
+#   key: "3"
+
+# デフォルト値が無いため、カスタムレイアウトで必要になった場合だけ有効化する。
+# command4:
+#   mod: mod1
+#   key: "4"
+
+# デフォルト値が無いため、タイリングを明示的に有効化したい場合だけ有効化する。
+# enable-tiling:
+#   mod: mod2
+#   key: up
+
+# デフォルト値が無いため、タイリングを明示的に無効化したい場合だけ有効化する。
+# disable-tiling:
+#   mod: mod2
+#   key: down
+
+# 自動的にフローティングまたはタイリングするアプリケーションを指定しない。
+floating: []
+
+# フローティング対象を追加したい場合は、アプリケーションのバンドル識別子を指定する。
+# floating:
+#   - com.apple.systempreferences
+#   - com.apple.finder
+
+# floating に指定したアプリケーションだけをフローティング対象にする。
+floating-is-blacklist: true
+
+# 画面領域からメニューバーを除外しない。
+ignore-menu-bar: false
+
+# メニューバーアイコンを表示する。
+hide-menu-bar-icon: false
+
+# 小さいウィンドウも自動的にフローティングにせず、必要な場合だけショートカットで明示的に切り替える。
+float-small-windows: false
+
+# フォーカス移動時にマウスポインターを移動しない。
+mouse-follows-focus: true
+
+# マウスポインター位置に応じたフォーカス切り替えを無効にする。
+focus-follows-mouse: false
+
+# マウスでウィンドウを重ねたときに位置を入れ替えない。
+mouse-swaps-windows: false
+
+# マウスでサイズ変更した結果をレイアウトへ反映し、隣接するウィンドウも同じ配置として調整する。
+mouse-resizes-windows: true
+
+# レイアウト切り替え時にレイアウト名を表示する。
+enables-layout-hud: true
+
+# 操作スペース移動時にレイアウト名を表示する。
+enables-layout-hud-on-space-change: true
+
+# ベータ版更新を受け取らない。
+use-canary-build: false
+
+# 新しいウィンドウを末尾に追加する。
+new-windows-to-main: false
+
+# ウィンドウを操作スペースへ移動した後、その操作スペースへ移動する。
+follow-space-thrown-windows: true
+
+# タイル配置されたウィンドウ同士の間に余白を追加する。
+window-margins: true
+
+# 画面外周の余白は screen-padding で固定するため、単独ウィンドウ向けの自動余白調整は使わない。
+smart-window-margins: false
+
+# 隣り合うウィンドウの両側に 4 ピクセルずつ余白を入れ、見た目のウィンドウ間隔を 8 ピクセルにする。
+window-margin-size: 4
+
+# 余白を消したい場合は、この例を有効化する。
+# window-margins: false
+# smart-window-margins: false
+# window-margin-size: 0
+
+# 表示可能なウィンドウ数の上限を無効にする。
+window-max-count: 0
+
+# ウィンドウの最小高さを制限しない。
+window-minimum-height: 0
+
+# ウィンドウの最小幅を制限しない。
+window-minimum-width: 0
+
+# メイン領域のサイズ変更幅を 5 パーセントにする。
+window-resize-step: 5
+
+# 画面左端とウィンドウの間を 8 ピクセル空ける。
+screen-padding-left: 0
+
+# 画面右端とウィンドウの間を 8 ピクセル空ける。
+screen-padding-right: 0
+
+# 画面上端とウィンドウの間を 8 ピクセル空ける。
+screen-padding-top: 0
+
+# 画面下端とウィンドウの間を 8 ピクセル空ける。
+screen-padding-bottom: 0
+
+# 画面外周の余白を消したい場合は、この例を有効化する。
+# screen-padding-left: 0
+# screen-padding-right: 0
+# screen-padding-top: 0
+# screen-padding-bottom: 0
+
+# Amethyst の起動後もレイアウト状態を復元する。
+restore-layouts-on-launch: true
+
+# レイアウト表示にデバッグ情報を出さない。
+debug-layout-info: false
+
+# 内蔵ディスプレイでも画面余白を無効化しない。
+disable-padding-on-builtin-display: false

@@ -28,6 +28,10 @@
 !/.config
 /.config/*
 
+!/.config/amethyst
+!/.config/amethyst/**
+!/.config/borders
+!/.config/borders/**
 !/.config/nvim
 !/.config/mcphub
 !/.config/wezterm
@@ -42,6 +46,7 @@
 /.bin/*
 
 !/.bin/install.sh
+!/.bin/install-janky-borders.sh
 !/.bin/install-wordpress-stubs.sh
 .config/nvim/lazy-lock.json
 .config/nvim/intelephense.json
