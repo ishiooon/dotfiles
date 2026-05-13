@@ -7,8 +7,9 @@
 # 使用するレイアウトの順序を指定する。先頭の BSP を通常利用する既定レイアウトとして扱う。
 layouts:
   - bsp
-  - fullscreen
+  # - widescreen-tall
   - tall
+  - fullscreen
   # - wide
   # - column
   # - tall-right
@@ -21,7 +22,6 @@ layouts:
   # - 4column-right
   # - row
   # - floating
-  # - widescreen-tall
   # - widescreen-tall-right
 
 # 主要な修飾キーを定義する。
@@ -370,16 +370,8 @@ follow-space-thrown-windows: true
 # タイル配置されたウィンドウ同士の間に余白を追加する。
 window-margins: true
 
-# 画面外周の余白は screen-padding で固定するため、単独ウィンドウ向けの自動余白調整は使わない。
-smart-window-margins: false
-
-# 隣り合うウィンドウの両側に 4 ピクセルずつ余白を入れ、見た目のウィンドウ間隔を 8 ピクセルにする。
-window-margin-size: 4
-
-# 余白を消したい場合は、この例を有効化する。
-# window-margins: false
-# smart-window-margins: false
-# window-margin-size: 0
+# 単独ウィンドウでも余白を保ち、SketchyBar と同じ外周の見え方にそろえる。
+smart-window-margins: true
 
 # 表示可能なウィンドウ数の上限を無効にする。
 window-max-count: 0
@@ -393,14 +385,17 @@ window-minimum-width: 0
 # メイン領域のサイズ変更幅を 5 パーセントにする。
 window-resize-step: 5
 
-# 画面左端とウィンドウの間を 8 ピクセル空ける。
+# ウィンドウ同士の見た目の間隔を設定する。
+window-margin-size: 8
+
+# 画面左端とウィンドウの間は空けない。
 screen-padding-left: 0
 
-# 画面右端とウィンドウの間を 8 ピクセル空ける。
+# 画面右端とウィンドウの間は空けない。
 screen-padding-right: 0
 
-# 画面上端とウィンドウの間を 8 ピクセル空ける。
-screen-padding-top: 0
+# SketchyBar の上余白とバー高さを避ける。
+screen-padding-top: 44
 
 # 画面下端とウィンドウの間を 8 ピクセル空ける。
 screen-padding-bottom: 0

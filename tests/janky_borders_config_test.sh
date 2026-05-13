@@ -10,6 +10,8 @@ fi
 # このテストファイルから見たプロジェクトルートを求める。
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 CONFIG_FILE="$ROOT_DIR/.config/borders/bordersrc"
+# アクティブウィンドウの枠線が、既存の Gruvbox Material 配色と同じ落ち着いた前景色になることを確認する。
+EXPECTED_ACTIVE_COLOR="active_color=0xffd4be98"
 
 # 設定ファイルが存在しない場合は即時失敗し、配置漏れを検知する。
 if [[ ! -f "$CONFIG_FILE" ]]; then
@@ -61,6 +63,14 @@ done
 
 if ! grep -Fxq "ax_focus=on" "$CAPTURE_FILE"; then
   echo "サブモニター向けのフォーカス検出設定が有効ではありません。" >&2
+  exit 1
+fi
+
+if ! grep -Fxq "$EXPECTED_ACTIVE_COLOR" "$CAPTURE_FILE"; then
+  echo "アクティブウィンドウの枠線色が Gruvbox Material の前景色ではありません。" >&2
+  echo "期待した設定: $EXPECTED_ACTIVE_COLOR" >&2
+  echo "実際の引数:" >&2
+  cat "$CAPTURE_FILE" >&2
   exit 1
 fi
 

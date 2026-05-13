@@ -54,6 +54,23 @@ assert_not_ignored ".config/amethyst/amethyst.yml"
 # JankyBorders の見た目設定は個人環境の機密情報を含まないため、dotfiles で共有する。
 assert_not_ignored ".config/borders/bordersrc"
 
+# SketchyBar の見た目設定とプラグインは個人情報を含まず、メニューバー外観の再現性に必要なため共有する。
+assert_not_ignored ".config/sketchybar/sketchybarrc"
+assert_not_ignored ".config/sketchybar/colors.sh"
+assert_not_ignored ".config/sketchybar/items/left.sh"
+assert_not_ignored ".config/sketchybar/items/center.sh"
+assert_not_ignored ".config/sketchybar/items/right.sh"
+assert_not_ignored ".config/sketchybar/plugins/clock.sh"
+assert_not_ignored ".config/sketchybar/plugins/cpu.sh"
+assert_not_ignored ".config/sketchybar/plugins/codex_usage.sh"
+assert_not_ignored ".config/sketchybar/plugins/apple_menu_action.sh"
+assert_not_ignored ".config/sketchybar/plugins/current_app_menu.sh"
+assert_not_ignored ".config/sketchybar/plugins/lib.sh"
+assert_not_ignored ".config/sketchybar/plugins/menu_popup_hover.sh"
+assert_not_ignored ".config/sketchybar/plugins/memory.sh"
+assert_not_ignored ".config/sketchybar/plugins/restart_sketchybar.sh"
+assert_not_ignored ".config/sketchybar/plugins/music_now_playing.sh"
+
 # Codex の SQLite 状態ファイルは会話履歴や実行状態を含むため、必ず除外する。
 assert_ignored ".codex/state_security_test.sqlite"
 assert_ignored ".codex/state_security_test.sqlite-shm"
@@ -100,5 +117,8 @@ assert_not_ignored ".agents/skills/superpowers"
 
 # JankyBorders の導入手順は再現性のために dotfiles で共有する。
 assert_not_ignored ".bin/install-janky-borders.sh"
+
+# SketchyBar の導入手順は再現性のために dotfiles で共有する。
+assert_not_ignored ".bin/install-sketchybar.sh"
 
 echo "PASS: セキュリティ上コミット不要な状態ファイルは除外され、Lua テストは追跡対象でした。"

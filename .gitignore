@@ -32,6 +32,8 @@
 !/.config/amethyst/**
 !/.config/borders
 !/.config/borders/**
+!/.config/sketchybar
+!/.config/sketchybar/**
 !/.config/nvim
 !/.config/mcphub
 !/.config/wezterm
@@ -47,6 +49,7 @@
 
 !/.bin/install.sh
 !/.bin/install-janky-borders.sh
+!/.bin/install-sketchybar.sh
 !/.bin/install-wordpress-stubs.sh
 .config/nvim/lazy-lock.json
 .config/nvim/intelephense.json

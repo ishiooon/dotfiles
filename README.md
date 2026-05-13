@@ -62,6 +62,10 @@ ln -s ~/dotfiles/.config/mcphub ~/.config/mcphub
 フォーカス中のウィンドウを枠線で見分けるため、JankyBorders の設定を dotfiles で管理します。設定の実体は `.config/borders/bordersrc` です。
 導入前確認は `bash .bin/install-janky-borders.sh --dry-run`、導入は `bash .bin/install-janky-borders.sh`、設定変更後の再読み込みは `brew services restart borders` です。
 
+#### 5. SketchyBar のインストール
+メニューバー全体を薄く透ける gruvbox-material 系の懐かしい雰囲気にし、前面アプリ、CPU、メモリ、時計だけを常時表示します。設定の実体は `.config/sketchybar/sketchybarrc` と `.config/sketchybar/plugins/` です。
+導入前確認は `bash .bin/install-sketchybar.sh --dry-run`、導入は `bash .bin/install-sketchybar.sh` です。
+
 ## セットアップ
 
 ### APIキーの設定
@@ -139,6 +143,7 @@ ln -s ~/dotfiles/.config/mcphub ~/.config/mcphub
 
 .config/
 ├── borders/                # JankyBordersの設定
+├── sketchybar/             # SketchyBarの設定
 ├── nvim/                   # Neovimの設定
 ├── wezterm/                # WezTermの設定
 └── starship.toml           # starshipの設定
