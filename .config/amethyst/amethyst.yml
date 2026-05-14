@@ -9,7 +9,8 @@ layouts:
   - bsp
   # - widescreen-tall
   - tall
-  - fullscreen
+  # 標準 Fullscreen は単独ウィンドウ扱いで外周余白を消すため、同じ見た目を保つカスタム版を使う。
+  - padded-fullscreen
   # - wide
   # - column
   # - tall-right
@@ -65,8 +66,11 @@ select-wide-layout:
   mod: mod1
   key: s
 
-# Fullscreen レイアウトを選択する。
-select-fullscreen-layout:
+# 標準 Fullscreen は余白を消すため、直接選択ショートカットを無効化する。
+select-fullscreen-layout: false
+
+# 余白付き Fullscreen レイアウトを選択する。
+select-padded-fullscreen-layout:
   mod: mod1
   key: d
 

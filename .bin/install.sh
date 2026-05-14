@@ -111,6 +111,10 @@ create_symlink "$HOME/dotfiles/.claude" "$HOME/.claude" "dir"
 create_symlink "$HOME/dotfiles/.agents" "$HOME/.agents" "dir"
 # Amethyst は ~/.amethyst.yml を優先して読むため、dotfiles 内の設定実体へ直接リンクする。
 create_symlink "$HOME/dotfiles/.config/amethyst/amethyst.yml" "$HOME/.amethyst.yml" "file"
+# Amethyst のカスタムレイアウトは Application Support 配下だけを探索するため、管理中の実体へリンクする。
+amethyst_layout_dir="$HOME/Library/Application Support/Amethyst/Layouts"
+mkdir -p "$amethyst_layout_dir"
+create_symlink "$HOME/dotfiles/.config/amethyst/layouts/padded-fullscreen.js" "$amethyst_layout_dir/padded-fullscreen.js" "file"
 
 # ===================================================
 # 5. 設定ファイル

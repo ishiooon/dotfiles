@@ -68,4 +68,19 @@ if [[ "$ACTUAL_AMETHYST_TARGET" != "$EXPECTED_AMETHYST_TARGET" ]]; then
   exit 1
 fi
 
+AMETHYST_LAYOUT_LINK="$TEST_HOME/Library/Application Support/Amethyst/Layouts/padded-fullscreen.js"
+if [[ ! -L "$AMETHYST_LAYOUT_LINK" ]]; then
+  echo "Amethyst のカスタムレイアウトがシンボリックリンクとして配置されていません。" >&2
+  exit 1
+fi
+
+ACTUAL_LAYOUT_TARGET="$(readlink "$AMETHYST_LAYOUT_LINK")"
+EXPECTED_LAYOUT_TARGET="$TEST_HOME/dotfiles/.config/amethyst/layouts/padded-fullscreen.js"
+if [[ "$ACTUAL_LAYOUT_TARGET" != "$EXPECTED_LAYOUT_TARGET" ]]; then
+  echo "Amethyst のカスタムレイアウトのリンク先が期待と一致しません。" >&2
+  echo "期待値: $EXPECTED_LAYOUT_TARGET" >&2
+  echo "実際値: $ACTUAL_LAYOUT_TARGET" >&2
+  exit 1
+fi
+
 echo "PASS: .config は dotfiles の内容としてインストールされました。"

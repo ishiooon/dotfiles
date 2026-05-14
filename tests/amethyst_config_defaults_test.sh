@@ -56,7 +56,29 @@ unless config["layouts"].is_a?(Array) && config["layouts"].first == "bsp"
   exit 1
 end
 
+unless config["layouts"].include?("padded-fullscreen")
+  warn "余白付きフルスクリーン用のカスタムレイアウトが有効なレイアウト一覧に含まれていません。"
+  exit 1
+end
+
+if config["layouts"].include?("fullscreen")
+  warn "標準の fullscreen レイアウトは余白を消すため、有効なレイアウト一覧から外してください。"
+  exit 1
+end
+
+unless config["select-fullscreen-layout"] == false
+  warn "標準 fullscreen への直接ショートカットは無効化してください: #{config["select-fullscreen-layout"].inspect}"
+  exit 1
+end
+
+custom_layout_shortcut = config["select-padded-fullscreen-layout"]
+unless custom_layout_shortcut == { "mod" => "mod1", "key" => "d" }
+  warn "余白付きフルスクリーンのショートカットが mod1+d に設定されていません: #{custom_layout_shortcut.inspect}"
+  exit 1
+end
+
 command_keys = expected_keys.select { |key| config[key].is_a?(Hash) }
+command_keys += %w[select-padded-fullscreen-layout]
 invalid_commands = command_keys.reject { |key| config[key].key?("mod") && config[key].key?("key") }
 unless invalid_commands.empty?
   warn "ショートカット設定に mod または key がありません: #{invalid_commands.join(', ')}"
