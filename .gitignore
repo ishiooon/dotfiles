@@ -81,3 +81,7 @@
 /.codex/*
 /.codex/.*
 !/.codex/AGENTS.md
+# Codex の custom agent 定義だけを dotfiles として管理する。
+!/.codex/agents/
+/.codex/agents/*
+!/.codex/agents/*.toml
