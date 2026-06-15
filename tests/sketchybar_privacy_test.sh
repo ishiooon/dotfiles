@@ -25,9 +25,15 @@ for file in "$CONFIG_FILE" "$INSTALL_SCRIPT" "$README_FILE"; do
 done
 
 # 不要になったプラグインファイルが残ると、後から誤って再接続されるため削除済みであることを確認する。
-for removed_script in "$PLUGIN_DIR/menu_extras_setup.sh" "$PLUGIN_DIR/menu_extras_toggle.sh" "$PLUGIN_DIR/front_app.sh"; do
+for removed_script in \
+  "$PLUGIN_DIR/menu_extras_setup.sh" \
+  "$PLUGIN_DIR/menu_extras_toggle.sh" \
+  "$PLUGIN_DIR/front_app.sh" \
+  "$PLUGIN_DIR/apple_menu_action.sh" \
+  "$PLUGIN_DIR/menu_popup_hover.sh" \
+  "$PLUGIN_DIR/restart_sketchybar.sh"; do
   if [[ -e "$removed_script" ]]; then
-    echo "不要になった追加アイコン展開プラグインが残っています: $removed_script" >&2
+    echo "不要になった SketchyBar プラグインが残っています: $removed_script" >&2
     exit 1
   fi
 done

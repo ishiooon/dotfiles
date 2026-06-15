@@ -4,15 +4,15 @@
 # ここでは公式の v0.24.1 デフォルト値を基準にし、デフォルト値が無い項目はコメントアウトする。
 # 既定値と同じショートカットが反映されない場合は、該当するコマンドだけコメントアウトして Amethyst を再起動する。
 
-# 使用するレイアウトの順序を指定する。先頭の BSP を通常利用する既定レイアウトとして扱う。
+# 使用するレイアウトの順序を指定する。先頭の Tall を通常利用する既定レイアウトとして扱う。
 layouts:
-  - bsp
+  # - bsp
   # - widescreen-tall
   - tall
   # 標準 Fullscreen は単独ウィンドウ扱いで外周余白を消すため、同じ見た目を保つカスタム版を使う。
   - padded-fullscreen
   # - wide
-  # - column
+  - column
   # - tall-right
   # - two-pane
   # - middle-wide
@@ -399,7 +399,7 @@ screen-padding-left: 0
 screen-padding-right: 0
 
 # SketchyBar の上余白とバー高さを避ける。
-screen-padding-top: 44
+screen-padding-top: 34
 
 # 画面下端とウィンドウの間を 8 ピクセル空ける。
 screen-padding-bottom: 0

@@ -8,7 +8,7 @@ ITEM_DIR="$CONFIG_DIR/items"
 
 source "$CONFIG_DIR/colors.sh"
 
-# reload では過去に作った item が残るため、使わなくなった中央表示を先に消す。
+# reload では過去に作った item が残るため、使わなくなった表示を先に消す。
 for stale_item in \
   music.waveform \
   music.bar.1 \
@@ -21,7 +21,28 @@ for stale_item in \
   space.2 \
   space.3 \
   space.4 \
-  space.5; do
+  space.5 \
+  apple.menu.about_this_mac \
+  apple.menu.system_settings \
+  apple.menu.app_store \
+  apple.menu.force_quit \
+  apple.menu.sleep \
+  apple.menu.lock_screen \
+  apple.menu.restart_sketchybar \
+  current.app.about \
+  current.app.settings \
+  current.app.hide \
+  current.app.hide_others \
+  current.app.show_all \
+  current.app.quit \
+  music.playlist.title \
+  music.queue.1 \
+  music.queue.2 \
+  music.queue.3 \
+  music.queue.4 \
+  music.queue.5 \
+  codex.usage.five_hour \
+  codex.usage.weekly; do
   sketchybar --remove "$stale_item" >/dev/null 2>&1 || true
 done
 
@@ -29,18 +50,18 @@ done
 bar_settings=(
   position=top
   height=34
-  margin=8
-  y_offset=8
+  margin=0
+  y_offset=0
   corner_radius=8
-  blur_radius=24
-  color="$BAR_COLOR"
-  border_color="$BORDER_COLOR"
-  border_width=1
+  blur_radius=0
+  color="$TRANSPARENT_COLOR"
+  border_color="$TRANSPARENT_COLOR"
+  border_width=0
   padding_left=8
   padding_right=8
   display=all
   sticky=on
-  shadow=on
+  shadow=off
   topmost=window
 )
 
@@ -62,6 +83,7 @@ sketchybar --default "${default_settings[@]}"
 
 # 左、中央、右の表示群を分けて読み込み、バー本体の設定を短く保つ。
 source "$ITEM_DIR/left.sh"
+source "$ITEM_DIR/input_source.sh"
 source "$ITEM_DIR/center.sh"
 source "$ITEM_DIR/right.sh"
 

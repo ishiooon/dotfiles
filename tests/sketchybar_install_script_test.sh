@@ -23,6 +23,8 @@ for expected in \
   "brew install sketchybar" \
   "defaults write NSGlobalDomain _HIHideMenuBar -bool true" \
   "defaults -currentHost write NSGlobalDomain _HIHideMenuBar -bool true" \
+  "/usr/libexec/PlistBuddy -c Set\\ :DesktopViewSettings:IconViewSettings:gridOffsetY\\ 44" \
+  "killall Finder" \
   "brew services start sketchybar" \
   "sketchybar --reload"; do
   if ! grep -Fq "$expected" <<<"$OUTPUT"; then

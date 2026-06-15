@@ -63,12 +63,9 @@ assert_not_ignored ".config/sketchybar/items/right.sh"
 assert_not_ignored ".config/sketchybar/plugins/clock.sh"
 assert_not_ignored ".config/sketchybar/plugins/cpu.sh"
 assert_not_ignored ".config/sketchybar/plugins/codex_usage.sh"
-assert_not_ignored ".config/sketchybar/plugins/apple_menu_action.sh"
 assert_not_ignored ".config/sketchybar/plugins/current_app_menu.sh"
 assert_not_ignored ".config/sketchybar/plugins/lib.sh"
-assert_not_ignored ".config/sketchybar/plugins/menu_popup_hover.sh"
 assert_not_ignored ".config/sketchybar/plugins/memory.sh"
-assert_not_ignored ".config/sketchybar/plugins/restart_sketchybar.sh"
 assert_not_ignored ".config/sketchybar/plugins/music_now_playing.sh"
 
 # Codex の SQLite 状態ファイルは会話履歴や実行状態を含むため、必ず除外する。

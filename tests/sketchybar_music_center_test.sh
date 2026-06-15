@@ -33,9 +33,16 @@ for forbidden in "--add graph" "music.waveform" "music_waveform.sh" "music.bar."
   fi
 done
 
-for expected in "--add item music.toggle center" "icon.padding_right=2" "--add item music.now center" "--add slider music.progress center 132" "label.padding_left=4" "label.padding_right=8" "width=132" "slider.background.height=1" "slider.knob=\"\"" "padding_left=-144" "padding_right=0" "music.status music.toggle music.now" "popup.music.now" "music.queue.1" "music_now_playing.sh" "MUSIC_CONTROL_ACTION=playpause"; do
+for expected in "--add item music.toggle center" "icon.padding_right=2" "--add item music.now center" "--add slider music.progress center 132" "label.padding_left=4" "label.padding_right=8" "width=132" "slider.background.height=1" "slider.knob=\"\"" "padding_left=-144" "padding_right=0" "music.status music.toggle music.now" "music_now_playing.sh" "MUSIC_CONTROL_ACTION=playpause"; do
   if ! grep -Fq -- "$expected" <<<"$CONFIG_TEXT"; then
     echo "中央の Music 表示に必要な構成が不足しています: $expected" >&2
+    exit 1
+  fi
+done
+
+for forbidden in "popup.music.now" "music.queue." "music.playlist.title" "mouse.entered" "mouse.exited" "menu_popup_hover.sh"; do
+  if grep -Fq "$forbidden" <<<"$DISPLAY_TEXT"; then
+    echo "中央の Music 表示に hover popup 用の構成が残っています: $forbidden" >&2
     exit 1
   fi
 done
@@ -60,14 +67,20 @@ if ! awk '/--add item music.now center/{music_line=NR} /--add slider music.progr
   exit 1
 fi
 
-MUSIC_OUTPUT="$(MUSIC_TRACK_NAME=Kaze MUSIC_ARTIST_NAME=Fujii MUSIC_PLAYLIST_NAME=Favorites MUSIC_PLAYER_POSITION=75 MUSIC_TRACK_DURATION=300 MUSIC_QUEUE_TRACKS=$'Kaze - Fujii\nGrace - Fujii' NAME=music.now bash "$MUSIC_SCRIPT" --env=localdev --dry-run)"
-for expected in "music.toggle" "label=Kaze\\ -\\ Fujii" "music.progress" "slider.percentage=25" "drawing=on" "music.playlist.title" "label=Favorites" "music.queue.1" "label=Kaze\\ -\\ Fujii" "music.queue.2" "label=Grace\\ -\\ Fujii"; do
+MUSIC_OUTPUT="$(MUSIC_TRACK_NAME=Kaze MUSIC_ARTIST_NAME=Fujii MUSIC_PLAYER_POSITION=75 MUSIC_TRACK_DURATION=300 NAME=music.now bash "$MUSIC_SCRIPT" --env=localdev --dry-run)"
+for expected in "music.toggle" "label=Kaze\\ -\\ Fujii" "music.progress" "slider.percentage=25" "drawing=on"; do
   if ! grep -Fq "$expected" <<<"$MUSIC_OUTPUT"; then
-    echo "Music 表示スクリプトが曲情報または再生リストを更新していません: $expected" >&2
+    echo "Music 表示スクリプトが曲情報または進捗線を更新していません: $expected" >&2
     echo "$MUSIC_OUTPUT" >&2
     exit 1
   fi
 done
+
+if grep -Fq "music.queue." <<<"$MUSIC_OUTPUT" || grep -Fq "music.playlist.title" <<<"$MUSIC_OUTPUT"; then
+  echo "Music 表示スクリプトが不要な popup 用項目を更新しています。" >&2
+  echo "$MUSIC_OUTPUT" >&2
+  exit 1
+fi
 
 STOPPED_OUTPUT="$(MUSIC_PLAYER_STATE=stopped NAME=music.now bash "$MUSIC_SCRIPT" --env=localdev --dry-run)"
 if ! grep -Fq "music.progress" <<<"$STOPPED_OUTPUT" || ! grep -Fq "drawing=off" <<<"$STOPPED_OUTPUT"; then
@@ -75,23 +88,21 @@ if ! grep -Fq "music.progress" <<<"$STOPPED_OUTPUT" || ! grep -Fq "drawing=off" 
   echo "$STOPPED_OUTPUT" >&2
   exit 1
 fi
-if ! grep -Fq "music.playlist.title label=Music" <<<"$STOPPED_OUTPUT"; then
-  echo "Music 停止中の空欄を含む曲情報を正しく読み取れていません。" >&2
+if ! grep -Fq "label=Not\\ Playing" <<<"$STOPPED_OUTPUT"; then
+  echo "Music 停止中の曲名表示を正しく更新していません。" >&2
   echo "$STOPPED_OUTPUT" >&2
   exit 1
 fi
 
 HOVER_OUTPUT="$(NAME=music.now SENDER=mouse.entered bash "$MUSIC_SCRIPT" --env=localdev --dry-run)"
-if ! grep -Fq -- "--set music.now" <<<"$HOVER_OUTPUT" || ! grep -Fq "popup.drawing=on" <<<"$HOVER_OUTPUT"; then
-  echo "Music 表示がホバーで再生リストを開けません。" >&2
+if grep -Fq "popup.drawing=on" <<<"$HOVER_OUTPUT" || grep -Fq "close-other-popups" <<<"$HOVER_OUTPUT" || grep -Fq "clear-popup-hover" <<<"$HOVER_OUTPUT"; then
+  echo "Music 表示がホバーで popup を開いています。" >&2
   exit 1
 fi
-if ! grep -Fq "close-other-popups music.now" <<<"$HOVER_OUTPUT"; then
-  echo "Music 表示を開いたときに、ほかの popup を閉じていません。" >&2
-  exit 1
-fi
-if ! grep -Fq "clear-popup-hover music.now" <<<"$HOVER_OUTPUT" || ! grep -Fq "music.queue.1 background.drawing=off" <<<"$HOVER_OUTPUT"; then
-  echo "Music 表示を開いたときに、前回残った項目ホバー表示を消していません。" >&2
+
+EXIT_OUTPUT="$(NAME=music.now SENDER=mouse.exited bash "$MUSIC_SCRIPT" --env=localdev --dry-run)"
+if grep -Fq "schedule-popup-close" <<<"$EXIT_OUTPUT" || grep -Fq "popup.drawing=off" <<<"$EXIT_OUTPUT"; then
+  echo "Music 表示がマウス退出で popup を閉じようとしています。" >&2
   exit 1
 fi
 
@@ -101,4 +112,4 @@ if ! grep -Fq "osascript music playpause" <<<"$CONTROL_OUTPUT" || ! grep -Fq "mu
   exit 1
 fi
 
-echo "PASS: SketchyBar は中央に再生中の曲情報だけを表示できます。"
+echo "PASS: SketchyBar は中央に再生中の曲情報だけを表示し、hover popup を開きません。"

@@ -7,6 +7,7 @@ readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 readonly DOTFILES_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 readonly DOTFILES_CONFIG_DIR="$DOTFILES_DIR/.config/sketchybar"
 readonly HOME_CONFIG_DIR="$HOME/.config/sketchybar"
+readonly DESKTOP_ICON_SCRIPT="$SCRIPT_DIR/configure-sketchybar-desktop-icons.sh"
 
 DRY_RUN=false
 
@@ -17,6 +18,7 @@ main() {
   link_sketchybar_config
   install_sketchybar
   hide_native_menu_bar
+  keep_desktop_icons_below_sketchybar
   start_or_reload_sketchybar_service
   log_info "SketchyBar の導入手順が完了しました。"
 }
@@ -29,10 +31,6 @@ parse_arguments() {
         ;;
       --env=localdev)
         # テスト実行時に明示する環境指定。通常の導入処理には影響させない。
-        ;;
-      -h|--help)
-        print_usage
-        exit 0
         ;;
       *)
         fail "未対応の引数です: $1"
@@ -88,6 +86,16 @@ hide_native_menu_bar() {
   run_command killall SystemUIServer
 }
 
+keep_desktop_icons_below_sketchybar() {
+  local script_args=(--config-dir "$DOTFILES_CONFIG_DIR")
+
+  if [[ "$DRY_RUN" == "true" ]]; then
+    script_args+=(--dry-run)
+  fi
+
+  bash "$DESKTOP_ICON_SCRIPT" "${script_args[@]}"
+}
+
 start_or_reload_sketchybar_service() {
   if [[ "$DRY_RUN" == "true" ]]; then
     run_command brew services start "$PACKAGE_NAME"
@@ -127,14 +135,6 @@ run_command() {
   fi
 
   "$@"
-}
-
-print_usage() {
-  cat <<'USAGE'
-Usage: bash .bin/install-sketchybar.sh [--dry-run] [--env=localdev]
-
-SketchyBar を Homebrew で導入し、dotfiles 管理の設定を読み込むようにします。
-USAGE
 }
 
 log_info() {

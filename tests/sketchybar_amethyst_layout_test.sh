@@ -33,10 +33,16 @@ end
 
 bar_height = read_bar_integer(sketchybar_config, "height")
 bar_y_offset = read_bar_integer(sketchybar_config, "y_offset")
+bar_margin = read_bar_integer(sketchybar_config, "margin")
 
 minimum_top_padding = bar_y_offset + bar_height
 unless amethyst_config["screen-padding-top"] >= minimum_top_padding
   warn "Amethyst の上余白が SketchyBar の占有領域を避けていません: screen-padding-top=#{amethyst_config["screen-padding-top"]}, 必要最小値=#{minimum_top_padding}"
+  exit 1
+end
+
+unless amethyst_config["screen-padding-left"] == bar_margin && amethyst_config["screen-padding-right"] == bar_margin
+  warn "SketchyBar の左右マージンが Amethyst の左右余白と揃っていません: margin=#{bar_margin}, screen-padding-left=#{amethyst_config["screen-padding-left"]}, screen-padding-right=#{amethyst_config["screen-padding-right"]}"
   exit 1
 end
 

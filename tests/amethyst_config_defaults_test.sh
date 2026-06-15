@@ -51,8 +51,13 @@ unless missing_keys.empty?
   exit 1
 end
 
-unless config["layouts"].is_a?(Array) && config["layouts"].first == "bsp"
-  warn "Amethyst の既定レイアウトとして bsp が先頭に設定されていません。"
+unless config["layouts"].is_a?(Array) && config["layouts"].first == "tall"
+  warn "Amethyst の既定レイアウトとして tall が先頭に設定されていません。"
+  exit 1
+end
+
+unless config["layouts"].include?("column")
+  warn "縦方向に分割しやすい column レイアウトが有効なレイアウト一覧に含まれていません。"
   exit 1
 end
 

@@ -22,14 +22,7 @@ sketchybar --add item music.now center \
     update_freq=8 \
     script="$PLUGIN_DIR/music_now_playing.sh" \
     click_script="open -a Music" \
-    background.drawing=off \
-    popup.align=center \
-    popup.y_offset=8 \
-    popup.background.color="$BAR_COLOR" \
-    popup.background.border_color="$BORDER_COLOR" \
-    popup.background.border_width=1 \
-    popup.background.corner_radius=8 \
-  --subscribe music.now mouse.entered mouse.exited.global
+    background.drawing=off
 
 sketchybar --add slider music.progress center 132 \
   --set music.progress \
@@ -44,26 +37,6 @@ sketchybar --add slider music.progress center 132 \
     y_offset=-9 \
     padding_left=-144 \
     padding_right=0
-
-sketchybar --add item music.playlist.title popup.music.now \
-  --set music.playlist.title \
-    icon.drawing=off \
-    label="Playlist"
-
-for queue_index in 1 2 3 4 5; do
-  sketchybar --add item "music.queue.$queue_index" popup.music.now \
-    --set "music.queue.$queue_index" \
-      icon.drawing=off \
-      drawing=off \
-      label=""
-done
-
-for popup_item in music.playlist.title music.queue.1 music.queue.2 music.queue.3 music.queue.4 music.queue.5; do
-  sketchybar --set "$popup_item" \
-    background.drawing=off \
-    script="$PLUGIN_DIR/menu_popup_hover.sh" \
-    --subscribe "$popup_item" mouse.entered mouse.exited mouse.exited.global
-done
 
 # overlay 用の進捗線は背景幅へ含めず、曲情報と再生ボタンだけを一つの背景にする。
 sketchybar --add bracket music.status music.toggle music.now \
