@@ -4,6 +4,7 @@
 ## Conversation Guidelines
 - 常に日本語で会話する
 - 作業開始時は、回答・調査・編集の前に必ず `superpowers:using-superpowers` を確認し、タスクに該当する `superpowers:*` スキルを使用する
+- デザインに関する処理の場合はhallmarkスキルを使用する
 - メインエージェントは設計、優先順位、品質、セキュリティ、最終採用可否の判断を担当する
 - 調査、影響範囲確認、重複確認は、可能な限り `gpt-5.3-codex-spark` の `spark-explorer` subagent に委譲する
 - コーディング、テスト修正、局所的な実装作業は、可能な限り `gpt-5.3-codex-spark` の `spark-worker` subagent に委譲する
