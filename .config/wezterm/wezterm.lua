@@ -51,6 +51,11 @@ if os_name:find('darwin') then
   config.initial_cols = 120
   config.initial_rows = 40
 
+  -- macOS のウィンドウ操作ボタンをタブバーへ統合し、上部の表示を一行にまとめる。
+  config.window_decorations = 'INTEGRATED_BUTTONS|RESIZE'
+  config.integrated_title_button_style = 'MacOsNative'
+  config.integrated_title_button_alignment = 'Left'
+
 end
 
 -- Linux固有の設定（WSL以外のLinux環境）
@@ -97,7 +102,5 @@ tab_title.apply(wezterm)
 
 -- 最後に、設定を WezTerm に返す。
 return config
-
-
 
 
