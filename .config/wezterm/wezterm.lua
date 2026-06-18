@@ -1,7 +1,8 @@
--- Pull in the wezterm API
+-- WezTerm の API を読み込み、端末全体の設定を組み立てる。
 local wezterm = require 'wezterm'
+local tab_title = require('tab_title')
 
--- This will hold the configuration.
+-- OS ごとの分岐や見た目の設定をここへ集約する。
 local config = {}
 
 if wezterm.config_builder then
@@ -88,12 +89,14 @@ config.window_padding = {
 }
 
 -- タブバー設定
--- 非表示
-config.enable_tab_bar = false
+-- 単一タブでも常にタブバーを表示し、現在位置を視覚的に確認できるようにする。
+config.enable_tab_bar = true
+config.hide_tab_bar_if_only_one_tab = false
 
--- 最後に、設定をweztermに返す
+tab_title.apply(wezterm)
+
+-- 最後に、設定を WezTerm に返す。
 return config
-
 
 
 
