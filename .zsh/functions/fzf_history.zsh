@@ -41,18 +41,28 @@ hf() {
     if [[ "$pressed_key" == "tab" ]]; then
       # TABキーの場合: コマンドをコマンドラインに挿入するだけ（実行はしない）
       echo -e "\033[1;36mInsert \033[0m➡ \033[1;33m$selected_command\033[0m"
-      # コマンドを履歴に追加
-      print -s "$selected_command"
+      # コマンドを履歴へ追加し、シェルを再起動しても利用できるようにする。
+      hf_add_history "$selected_command"
       # コマンドをコマンドラインに挿入
       print -z "$selected_command"
     elif [[ "$pressed_key" == "enter" ]]; then
       # ENTERキーの場合: コマンドを実行する
       echo -e "\033[1;36mExec \033[0m➡ \033[1;33m$selected_command\033[0m"
-      # コマンドを履歴に追加
-      print -s "$selected_command"
+      # コマンドを履歴へ追加し、シェルを再起動しても利用できるようにする。
+      hf_add_history "$selected_command"
       # コマンドを実行
       eval "$selected_command"
     fi
+  fi
+}
+
+# 選択されたコマンドをシェル内履歴へ追加し、増分を履歴ファイルへ書き出す。
+hf_add_history() {
+  local selected_command="$1"
+
+  print -s -- "$selected_command"
+  if [[ -n "$HISTFILE" ]]; then
+    fc -AI "$HISTFILE"
   fi
 }
 

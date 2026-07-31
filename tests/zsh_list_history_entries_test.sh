@@ -34,11 +34,14 @@ setopt share_history
 : 1710000001:0;echo third
 EOF
 
+# 端末入力由来の不正な文字列が混在しても、後続の通常履歴を失わないことを確認する。
+printf '# invalid-\377-byte\n: 1710000002:0;echo latest\n' >> "$TEMP_HISTORY"
+
 # tac が存在しない macOS 既定環境を想定し、最小の PATH で実行する。
 ACTUAL_OUTPUT="$(
   HISTFILE="$TEMP_HISTORY" PATH="/usr/bin:/bin" zsh "$TARGET_SCRIPT"
 )"
-EXPECTED_OUTPUT=$'echo third\necho second\necho first'
+EXPECTED_OUTPUT=$'echo latest\necho third\necho second\necho first'
 
 if [[ "$ACTUAL_OUTPUT" != "$EXPECTED_OUTPUT" ]]; then
   echo "出力が期待と一致しません。" >&2

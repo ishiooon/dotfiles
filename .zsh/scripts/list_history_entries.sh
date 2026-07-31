@@ -35,13 +35,13 @@ reverse_lines() {
   '
 }
 
-# 履歴ファイルを読み込み、拡張履歴形式のプレフィックスを取り除く。
+# 履歴ファイルをバイト列として読み込み、拡張履歴形式のプレフィックスを取り除く。
 load_history_lines() {
   if [[ ! -f "$HISTFILE" ]]; then
     return 0
   fi
 
-  cut -d';' -f2- "$HISTFILE"
+  LC_ALL=C cut -d';' -f2- "$HISTFILE"
 }
 
 # 履歴として表示しない行を除外する。

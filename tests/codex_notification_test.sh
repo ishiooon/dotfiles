@@ -48,18 +48,23 @@ if ! grep -Fq '"PermissionRequest"' "$HOOKS_FILE"; then
   exit 1
 fi
 
-if ! grep -Fq '"Stop"' "$HOOKS_FILE"; then
-  echo "Codex の作業完了 hook が設定されていません。" >&2
+if grep -Fq '"Stop"' "$HOOKS_FILE"; then
+  echo "Codex 本体の完了時にも通知音が鳴るため、Stop hook を設定してはいけません。" >&2
   exit 1
 fi
 
-if grep -Fq '"SubagentStop"' "$HOOKS_FILE"; then
-  echo "Codex の subagent 完了 hook が設定されているため、subagent 完了でも通知音が鳴ります。" >&2
+if ! grep -Fq '"SubagentStop"' "$HOOKS_FILE"; then
+  echo "Codex の worker 完了を検知する SubagentStop hook が設定されていません。" >&2
   exit 1
 fi
 
-if ! grep -Fq '"command": "bash /Users/ishiooon/dotfiles/.codex/scripts/codex_notify.sh --event=agent-turn-complete"' "$HOOKS_FILE"; then
-  echo "Codex の作業完了 hook が、完了通知スクリプトを呼んでいません。" >&2
+if ! grep -Fq '"matcher": "^spark-worker$"' "$HOOKS_FILE"; then
+  echo "通知音の対象が spark-worker の完了だけに限定されていません。" >&2
+  exit 1
+fi
+
+if ! grep -Fq '"command": "bash /Users/ishiooon/dotfiles/.codex/scripts/codex_notify.sh --event=worker-complete"' "$HOOKS_FILE"; then
+  echo "Codex の worker 完了 hook が、worker 用の通知スクリプトを呼んでいません。" >&2
   exit 1
 fi
 
@@ -68,7 +73,7 @@ if ! grep -Fq '"command": "bash /Users/ishiooon/dotfiles/.codex/scripts/codex_no
   exit 1
 fi
 
-OUTPUT="$(bash "$NOTIFY_SCRIPT" --env=localdev --dry-run)"
+OUTPUT="$(bash "$NOTIFY_SCRIPT" --env=localdev --dry-run --event=agent-turn-complete)"
 
 if ! grep -Fq "osascript display notification" <<<"$OUTPUT"; then
   echo "Codex の通知スクリプトが macOS 通知を出す構成になっていません。" >&2
@@ -76,8 +81,8 @@ if ! grep -Fq "osascript display notification" <<<"$OUTPUT"; then
   exit 1
 fi
 
-if ! grep -Fq "afplay /System/Library/Sounds/Glass.aiff" <<<"$OUTPUT"; then
-  echo "Codex の通知スクリプトが完了音を鳴らす構成になっていません。" >&2
+if grep -Fq "afplay /System/Library/Sounds/Glass.aiff" <<<"$OUTPUT"; then
+  echo "Codex 本体の完了時に通知音が鳴る構成になっています。" >&2
   echo "$OUTPUT" >&2
   exit 1
 fi
@@ -90,18 +95,24 @@ if ! grep -Fq "Codex が認証待ちです。確認してください。" <<<"$A
   exit 1
 fi
 
-if ! grep -Fq "afplay /System/Library/Sounds/Glass.aiff" <<<"$APPROVAL_OUTPUT"; then
-  echo "Codex の認証待ち通知が、作業完了と同じ通知音を鳴らす構成になっていません。" >&2
+if grep -Fq "afplay /System/Library/Sounds/Glass.aiff" <<<"$APPROVAL_OUTPUT"; then
+  echo "Codex の認証待ちでも通知音が鳴る構成になっています。" >&2
   echo "$APPROVAL_OUTPUT" >&2
   exit 1
 fi
 
-SUBAGENT_OUTPUT="$(bash "$NOTIFY_SCRIPT" --env=localdev --dry-run --event=subagent-stop)"
+WORKER_OUTPUT="$(bash "$NOTIFY_SCRIPT" --env=localdev --dry-run --event=worker-complete)"
 
-if [[ -n "$SUBAGENT_OUTPUT" ]]; then
-  echo "Codex の subagent 完了通知が無音になっていません。" >&2
-  echo "$SUBAGENT_OUTPUT" >&2
+if ! grep -Fq "worker の作業が完了しました。確認してください。" <<<"$WORKER_OUTPUT"; then
+  echo "Codex の worker 完了通知が、worker の完了として読める文面になっていません。" >&2
+  echo "$WORKER_OUTPUT" >&2
   exit 1
 fi
 
-echo "PASS: Codex は作業完了時と許可待ち時に通知を出せます。"
+if ! grep -Fq "afplay /System/Library/Sounds/Glass.aiff" <<<"$WORKER_OUTPUT"; then
+  echo "Codex の worker 完了時に通知音が鳴る構成になっていません。" >&2
+  echo "$WORKER_OUTPUT" >&2
+  exit 1
+fi
+
+echo "PASS: Codex は spark-worker の完了時だけ通知音を鳴らします。"

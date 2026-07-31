@@ -48,25 +48,25 @@ assert_ignored ".bash/env.local.bash"
 assert_ignored ".zsh/env.local.zsh"
 assert_ignored ".config/mcphub/servers.json"
 
-# Amethyst の設定ファイルは端末ごとの差分が小さいため、dotfiles で共有する。
-assert_not_ignored ".config/amethyst/amethyst.yml"
+# Amethyst の利用を終了したため、端末固有の設定を再共有しないことを検証する。
+assert_ignored ".config/amethyst/amethyst.yml"
 
 # JankyBorders の見た目設定は個人環境の機密情報を含まないため、dotfiles で共有する。
 assert_not_ignored ".config/borders/bordersrc"
 
-# SketchyBar の見た目設定とプラグインは個人情報を含まず、メニューバー外観の再現性に必要なため共有する。
-assert_not_ignored ".config/sketchybar/sketchybarrc"
-assert_not_ignored ".config/sketchybar/colors.sh"
-assert_not_ignored ".config/sketchybar/items/left.sh"
-assert_not_ignored ".config/sketchybar/items/center.sh"
-assert_not_ignored ".config/sketchybar/items/right.sh"
-assert_not_ignored ".config/sketchybar/plugins/clock.sh"
-assert_not_ignored ".config/sketchybar/plugins/cpu.sh"
-assert_not_ignored ".config/sketchybar/plugins/codex_usage.sh"
-assert_not_ignored ".config/sketchybar/plugins/current_app_menu.sh"
-assert_not_ignored ".config/sketchybar/plugins/lib.sh"
-assert_not_ignored ".config/sketchybar/plugins/memory.sh"
-assert_not_ignored ".config/sketchybar/plugins/music_now_playing.sh"
+# SketchyBar の利用を終了したため、古い設定とプラグインが共有対象へ戻らないことを検証する。
+assert_ignored ".config/sketchybar/sketchybarrc"
+assert_ignored ".config/sketchybar/colors.sh"
+assert_ignored ".config/sketchybar/items/left.sh"
+assert_ignored ".config/sketchybar/items/center.sh"
+assert_ignored ".config/sketchybar/items/right.sh"
+assert_ignored ".config/sketchybar/plugins/clock.sh"
+assert_ignored ".config/sketchybar/plugins/cpu.sh"
+assert_ignored ".config/sketchybar/plugins/codex_usage.sh"
+assert_ignored ".config/sketchybar/plugins/current_app_menu.sh"
+assert_ignored ".config/sketchybar/plugins/lib.sh"
+assert_ignored ".config/sketchybar/plugins/memory.sh"
+assert_ignored ".config/sketchybar/plugins/music_now_playing.sh"
 
 # Codex の SQLite 状態ファイルは会話履歴や実行状態を含むため、必ず除外する。
 assert_ignored ".codex/state_security_test.sqlite"
@@ -109,13 +109,14 @@ assert_not_ignored ".codex/AGENTS.md"
 assert_not_ignored "tests/gitignore_security_entries_test.lua"
 assert_not_ignored "tests/nvim_neo_tree_git_refresh_test.lua"
 
-# dotfiles で管理する Codex Skills の入口は、追跡対象から外してはいけない。
-assert_not_ignored ".agents/skills/superpowers"
+# 利用を終了した Codex Skill は、再び dotfiles の管理対象へ戻らないことを検証する。
+assert_ignored ".agents/skills/superpowers"
+assert_ignored ".agents/skills/hallmark"
 
 # JankyBorders の導入手順は再現性のために dotfiles で共有する。
 assert_not_ignored ".bin/install-janky-borders.sh"
 
-# SketchyBar の導入手順は再現性のために dotfiles で共有する。
-assert_not_ignored ".bin/install-sketchybar.sh"
+# SketchyBar の導入手順は削除対象のため、共有対象へ戻らないことを検証する。
+assert_ignored ".bin/install-sketchybar.sh"
 
 echo "PASS: セキュリティ上コミット不要な状態ファイルは除外され、Lua テストは追跡対象でした。"

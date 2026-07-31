@@ -10,29 +10,12 @@ fi
 # このテストファイルから見たプロジェクトルートを求める。
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 INSTALL_SCRIPT="$ROOT_DIR/.bin/install.sh"
-SOURCE_SKILLS_LINK="$ROOT_DIR/.agents/skills/superpowers"
 
 # 検証対象が存在しない場合は即時失敗し、設定漏れを検知する。
 if [[ ! -f "$INSTALL_SCRIPT" ]]; then
   echo "インストールスクリプトが見つかりません: $INSTALL_SCRIPT" >&2
   exit 1
 fi
-
-# dotfiles 側の skills 入口がシンボリックリンクとして管理されていることを確認する。
-if [[ ! -L "$SOURCE_SKILLS_LINK" ]]; then
-  echo "dotfiles 側の skills 入口が見つかりません: $SOURCE_SKILLS_LINK" >&2
-  exit 1
-fi
-
-# 対象ディレクトリの実体パスを解決し、シンボリックリンク越しの到達先を比較できるようにする。
-resolve_directory() {
-  local target_dir="$1"
-
-  (
-    cd "$target_dir"
-    pwd -P
-  )
-}
 
 # シンボリックリンクの直接のリンク先が想定どおりかを確認する。
 assert_link_target() {
@@ -70,18 +53,12 @@ HOME="$TEST_HOME" PATH="/usr/bin:/bin:/usr/sbin:/sbin" bash "$INSTALL_SCRIPT" >/
 
 assert_link_target "$TEST_HOME/.agents" "$TEST_HOME/dotfiles/.agents"
 
-if [[ ! -d "$TEST_HOME/.agents/skills/superpowers" ]]; then
-  echo "superpowers の skills ディレクトリへ到達できません。" >&2
-  exit 1
-fi
+# 削除した Codex Skill が dotfiles の再インストールで復活しないことを確認する。
+for removed_skill in superpowers hallmark; do
+  if [[ -e "$TEST_HOME/.agents/skills/$removed_skill" || -L "$TEST_HOME/.agents/skills/$removed_skill" ]]; then
+    echo "削除した Codex Skill が残っています: $removed_skill" >&2
+    exit 1
+  fi
+done
 
-ACTUAL_SKILLS_DIR="$(resolve_directory "$TEST_HOME/.agents/skills/superpowers")"
-EXPECTED_SKILLS_DIR="$(resolve_directory "$TEST_HOME/dotfiles/.codex/superpowers/skills")"
-if [[ "$ACTUAL_SKILLS_DIR" != "$EXPECTED_SKILLS_DIR" ]]; then
-  echo "superpowers skills の到達先が期待と一致しません。" >&2
-  echo "期待値: $EXPECTED_SKILLS_DIR" >&2
-  echo "実際値: $ACTUAL_SKILLS_DIR" >&2
-  exit 1
-fi
-
-echo "PASS: .agents は dotfiles 配下で管理され、superpowers skills へ到達できました。"
+echo "PASS: .agents は dotfiles 配下で管理され、削除した Codex Skill は再作成されません。"

@@ -53,33 +53,16 @@ if [[ -e "$TEST_HOME/.aerospace.toml" || -L "$TEST_HOME/.aerospace.toml" ]]; the
   exit 1
 fi
 
-# Amethyst は ~/.amethyst.yml を優先して読むため、dotfiles 内の実体へ直接リンクする。
-if [[ ! -L "$TEST_HOME/.amethyst.yml" ]]; then
-  echo "Amethyst の設定ファイルがシンボリックリンクとして配置されていません。" >&2
+# Amethyst の利用を終了したため、.amethyst.yml のリンクは作成されないことを確認する。
+if [[ -e "$TEST_HOME/.amethyst.yml" || -L "$TEST_HOME/.amethyst.yml" ]]; then
+  echo "不要な Amethyst ルート設定リンクが作成されています。" >&2
   exit 1
 fi
 
-ACTUAL_AMETHYST_TARGET="$(readlink "$TEST_HOME/.amethyst.yml")"
-EXPECTED_AMETHYST_TARGET="$TEST_HOME/dotfiles/.config/amethyst/amethyst.yml"
-if [[ "$ACTUAL_AMETHYST_TARGET" != "$EXPECTED_AMETHYST_TARGET" ]]; then
-  echo "Amethyst の設定ファイルのリンク先が期待と一致しません。" >&2
-  echo "期待値: $EXPECTED_AMETHYST_TARGET" >&2
-  echo "実際値: $ACTUAL_AMETHYST_TARGET" >&2
-  exit 1
-fi
-
+# Amethyst 専用のカスタムレイアウトはインストールで作成しない運用へ移したことを確認する。
 AMETHYST_LAYOUT_LINK="$TEST_HOME/Library/Application Support/Amethyst/Layouts/padded-fullscreen.js"
-if [[ ! -L "$AMETHYST_LAYOUT_LINK" ]]; then
-  echo "Amethyst のカスタムレイアウトがシンボリックリンクとして配置されていません。" >&2
-  exit 1
-fi
-
-ACTUAL_LAYOUT_TARGET="$(readlink "$AMETHYST_LAYOUT_LINK")"
-EXPECTED_LAYOUT_TARGET="$TEST_HOME/dotfiles/.config/amethyst/layouts/padded-fullscreen.js"
-if [[ "$ACTUAL_LAYOUT_TARGET" != "$EXPECTED_LAYOUT_TARGET" ]]; then
-  echo "Amethyst のカスタムレイアウトのリンク先が期待と一致しません。" >&2
-  echo "期待値: $EXPECTED_LAYOUT_TARGET" >&2
-  echo "実際値: $ACTUAL_LAYOUT_TARGET" >&2
+if [[ -e "$AMETHYST_LAYOUT_LINK" || -L "$AMETHYST_LAYOUT_LINK" ]]; then
+  echo "不要な Amethyst カスタムレイアウトリンクが作成されています。" >&2
   exit 1
 fi
 
