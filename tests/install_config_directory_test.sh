@@ -66,4 +66,20 @@ if [[ -e "$AMETHYST_LAYOUT_LINK" || -L "$AMETHYST_LAYOUT_LINK" ]]; then
   exit 1
 fi
 
+# HOME と dotfiles の配置先が異なる場合も、指定した配置先から設定をリンクできることを確認する。
+CUSTOM_HOME="$TEMP_ROOT/custom-home"
+mkdir -p "$CUSTOM_HOME"
+HOME="$CUSTOM_HOME" DOTFILES_INSTALL_ROOT="$ROOT_DIR" PATH="/usr/bin:/bin:/usr/sbin:/sbin" bash "$INSTALL_SCRIPT" >/dev/null
+
+if [[ ! -L "$CUSTOM_HOME/.config" ]]; then
+  echo "指定した dotfiles 配置先から .config をリンクできません。" >&2
+  exit 1
+fi
+
+CUSTOM_CONFIG_TARGET="$(readlink "$CUSTOM_HOME/.config")"
+if [[ "$CUSTOM_CONFIG_TARGET" != "$ROOT_DIR/.config" ]]; then
+  echo "指定した dotfiles 配置先が .config のリンク先へ反映されていません。" >&2
+  exit 1
+fi
+
 echo "PASS: .config は dotfiles の内容としてインストールされました。"

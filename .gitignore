@@ -45,6 +45,7 @@
 
 !/.bin/install.sh
 !/.bin/install-janky-borders.sh
+!/.bin/bootstrap-macos.sh
 !/.bin/install-wordpress-stubs.sh
 .config/nvim/lazy-lock.json
 .config/nvim/intelephense.json

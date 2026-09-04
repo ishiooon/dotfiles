@@ -115,6 +115,7 @@ assert_ignored ".agents/skills/hallmark"
 
 # JankyBorders の導入手順は再現性のために dotfiles で共有する。
 assert_not_ignored ".bin/install-janky-borders.sh"
+assert_not_ignored ".bin/bootstrap-macos.sh"
 
 # SketchyBar の導入手順は削除対象のため、共有対象へ戻らないことを検証する。
 assert_ignored ".bin/install-sketchybar.sh"

@@ -14,6 +14,24 @@ cd ~/dotfiles
 bash .bin/install.sh
 ```
 
+### 新しい Mac での初期構成
+
+まだ dotfiles を clone していない新しい Mac では、次のコマンドで初期構成を開始できます。
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/ishiooon/dotfiles/main/.bin/bootstrap-macos.sh \
+  -o /tmp/bootstrap-macos.sh
+bash /tmp/bootstrap-macos.sh
+```
+
+このスクリプトは、Homebrew、WezTerm、設定で指定している UDEV Gothic NF、Neovim などの関連ツールを導入し、dotfiles を `~/dotfiles` に clone して設定をリンクします。既に `~/dotfiles` が Git リポジトリの場合はその内容を使用し、Git リポジトリではない既存ディレクトリは上書きせずに中断します。
+
+導入前の手順確認には、次のドライランを使用できます。
+
+```bash
+bash /tmp/bootstrap-macos.sh --dry-run
+```
+
 ### 手動インストール
 
 インストールスクリプトを使用せず、手動でセットアップする場合：

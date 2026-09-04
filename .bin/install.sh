@@ -1,6 +1,6 @@
 #!/bin/bash
 # 完全なdotfiles自動セットアップスクリプト
-# nvim中心の開発環境を$HOME/dotfilesから自動展開
+# nvim中心の開発環境を$DOTFILES_DIRから自動展開
 # ===================================================
 
 # エラーハンドリング設定
@@ -10,6 +10,8 @@ trap 'echo "Error occurred at line $LINENO. Installation failed."; exit 1' ERR
 # カラー出力設定
 GREEN='\033[0;32m'
 YELLOW='\033[0;33m'
+# インストーラーを別の配置先から呼び出しても、対象リポジトリを参照できるようにする。
+DOTFILES_DIR="${DOTFILES_INSTALL_ROOT:-$HOME/dotfiles}"
 RED='\033[0;31m'
 NC='\033[0m' # No Color
 
@@ -82,40 +84,40 @@ log_info "Starting dotfiles installation..."
 # ===================================================
 log_info "Setting up shell configuration files..."
 
-create_symlink "$HOME/dotfiles/.bashrc" "$HOME/.bashrc" "file"
-create_symlink "$HOME/dotfiles/.zshrc" "$HOME/.zshrc" "file"
+create_symlink "$DOTFILES_DIR/.bashrc" "$HOME/.bashrc" "file"
+create_symlink "$DOTFILES_DIR/.zshrc" "$HOME/.zshrc" "file"
 
 # ===================================================
 # 2. Shell設定ディレクトリ
 # ===================================================
 log_info "Setting up shell configuration directories..."
 
-create_symlink "$HOME/dotfiles/.bash" "$HOME/.bash" "dir"
-create_symlink "$HOME/dotfiles/.zsh" "$HOME/.zsh" "dir"
+create_symlink "$DOTFILES_DIR/.bash" "$HOME/.bash" "dir"
+create_symlink "$DOTFILES_DIR/.zsh" "$HOME/.zsh" "dir"
 
 # ===================================================
 # 3. 設定ディレクトリ全体 (.config)
 # ===================================================
 log_info "Setting up .config directory..."
 
-create_symlink "$HOME/dotfiles/.config" "$HOME/.config" "dir"
+create_symlink "$DOTFILES_DIR/.config" "$HOME/.config" "dir"
 
 # ===================================================
 # 4. 便利スクリプト・ツール・エージェント設定
 # ===================================================
 log_info "Setting up utility scripts, tools, and agent configuration..."
 
-create_symlink "$HOME/dotfiles/.bin" "$HOME/.bin" "dir"
-create_symlink "$HOME/dotfiles/.claude" "$HOME/.claude" "dir"
+create_symlink "$DOTFILES_DIR/.bin" "$HOME/.bin" "dir"
+create_symlink "$DOTFILES_DIR/.claude" "$HOME/.claude" "dir"
 # Codex 用の追加 Skill やローカル Marketplace を dotfiles 配下で一元管理する。
-create_symlink "$HOME/dotfiles/.agents" "$HOME/.agents" "dir"
+create_symlink "$DOTFILES_DIR/.agents" "$HOME/.agents" "dir"
 
 # ===================================================
 # 5. 設定ファイル
 # ===================================================
 log_info "Setting up configuration files..."
 
-create_symlink "$HOME/dotfiles/.mcp.json" "$HOME/.mcp.json" "file"
+create_symlink "$DOTFILES_DIR/.mcp.json" "$HOME/.mcp.json" "file"
 
 # ===================================================
 # 6. 環境変数設定ファイルの作成
@@ -124,8 +126,8 @@ log_info "Setting up environment configuration files..."
 
 # bash環境変数ファイル
 if [ ! -f "$HOME/.bash/env.local.bash" ]; then
-    if [ -f "$HOME/dotfiles/.bash/env.local.bash.example" ]; then
-        cp "$HOME/dotfiles/.bash/env.local.bash.example" "$HOME/.bash/env.local.bash"
+    if [ -f "$DOTFILES_DIR/.bash/env.local.bash.example" ]; then
+        cp "$DOTFILES_DIR/.bash/env.local.bash.example" "$HOME/.bash/env.local.bash"
         log_info "Created .bash/env.local.bash from example file"
         log_warn "Please edit $HOME/.bash/env.local.bash to add your API keys"
     fi
@@ -133,8 +135,8 @@ fi
 
 # zsh環境変数ファイル  
 if [ ! -f "$HOME/.zsh/env.local.zsh" ]; then
-    if [ -f "$HOME/dotfiles/.zsh/env.local.zsh.example" ]; then
-        cp "$HOME/dotfiles/.zsh/env.local.zsh.example" "$HOME/.zsh/env.local.zsh"
+    if [ -f "$DOTFILES_DIR/.zsh/env.local.zsh.example" ]; then
+        cp "$DOTFILES_DIR/.zsh/env.local.zsh.example" "$HOME/.zsh/env.local.zsh"
         log_info "Created .zsh/env.local.zsh from example file"
         log_warn "Please edit $HOME/.zsh/env.local.zsh to add your API keys"
     fi
