@@ -10,6 +10,11 @@ if [ -x /usr/bin/dircolors ]; then
     alias egrep='egrep --color=auto'
 fi
 
+# Homebrew の GNU Coreutils は macOS で gtac という名前になるため、既存関数から tac として呼び出せるようにする。
+if command -v gtac >/dev/null 2>&1; then
+    alias tac='gtac'
+fi
+
 # いくつかのlsエイリアス
 alias ll='ls -alF'
 alias la='ls -A'

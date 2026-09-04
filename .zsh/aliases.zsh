@@ -1,10 +1,14 @@
 # zsh aliases
 
-# lsのカラーサポートを有効にし、便利なエイリアスを追加
-alias ls='ls --color=auto'
-alias grep='grep --color=auto'
-alias fgrep='fgrep --color=auto'
-alias egrep='egrep --color=auto'
+# macOS の標準コマンドと GNU 系コマンドの差を吸収し、どちらでも色付き表示を使えるようにする。
+if [[ "$OSTYPE" == darwin* ]]; then
+  alias ls='ls -G'
+else
+  alias ls='ls --color=auto'
+  alias grep='grep --color=auto'
+  alias fgrep='fgrep --color=auto'
+  alias egrep='egrep --color=auto'
+fi
 
 # いくつかのlsエイリアス
 alias ll='ls -alF'

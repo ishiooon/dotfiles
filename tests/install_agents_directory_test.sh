@@ -53,6 +53,9 @@ HOME="$TEST_HOME" PATH="/usr/bin:/bin:/usr/sbin:/sbin" bash "$INSTALL_SCRIPT" >/
 
 assert_link_target "$TEST_HOME/.agents" "$TEST_HOME/dotfiles/.agents"
 
+# Codex の説明書とエージェント定義は、認証情報を含む状態全体ではなく管理対象だけをリンクする。
+assert_link_target "$TEST_HOME/.codex/AGENTS.md" "$TEST_HOME/dotfiles/.codex/AGENTS.md"
+assert_link_target "$TEST_HOME/.codex/agents" "$TEST_HOME/dotfiles/.codex/agents"
 # 削除した Codex Skill が dotfiles の再インストールで復活しないことを確認する。
 for removed_skill in superpowers hallmark; do
   if [[ -e "$TEST_HOME/.agents/skills/$removed_skill" || -L "$TEST_HOME/.agents/skills/$removed_skill" ]]; then

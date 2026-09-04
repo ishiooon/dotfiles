@@ -1,6 +1,6 @@
 #!/bin/bash
 # 完全なdotfiles自動セットアップスクリプト
-# nvim中心の開発環境を$DOTFILES_DIRから自動展開
+# dotfiles が管理する開発環境を$DOTFILES_DIRから自動展開
 # ===================================================
 
 # エラーハンドリング設定
@@ -111,6 +111,10 @@ create_symlink "$DOTFILES_DIR/.bin" "$HOME/.bin" "dir"
 create_symlink "$DOTFILES_DIR/.claude" "$HOME/.claude" "dir"
 # Codex 用の追加 Skill やローカル Marketplace を dotfiles 配下で一元管理する。
 create_symlink "$DOTFILES_DIR/.agents" "$HOME/.agents" "dir"
+# Codex の管理対象だけをリンクし、認証情報や履歴を含む ~/.codex 全体は共有しない。
+mkdir -p "$HOME/.codex"
+create_symlink "$DOTFILES_DIR/.codex/AGENTS.md" "$HOME/.codex/AGENTS.md" "file"
+create_symlink "$DOTFILES_DIR/.codex/agents" "$HOME/.codex/agents" "dir"
 
 # ===================================================
 # 5. 設定ファイル

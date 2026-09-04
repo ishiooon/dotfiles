@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
-# 新しい macOS で dotfiles と WezTerm の構成を再現するための初期構成スクリプト。
+# 新しい macOS で dotfiles が管理する全構成を再現するための初期構成スクリプト。
 readonly DEFAULT_REPOSITORY="https://github.com/ishiooon/dotfiles.git"
 readonly DEFAULT_DIRECTORY="$HOME/dotfiles"
-readonly FORMULAE=(neovim starship fzf ripgrep fd lazygit deno gh)
+readonly FORMULAE=(neovim starship fzf ripgrep fd lazygit deno gh node php w3m coreutils)
 readonly CASKS=(wezterm font-udev-gothic-nf)
 DRY_RUN=false
 REPOSITORY="$DEFAULT_REPOSITORY"
@@ -15,7 +15,10 @@ main() {
   ensure_homebrew
   prepare_dotfiles_repository
   install_packages
+  install_php_debug_adapter
   install_dotfiles_configuration
+  install_janky_borders
+  install_neovim_plugins
   print_completion_message
 }
 parse_arguments() {
@@ -97,6 +100,28 @@ install_packages() {
   run_command brew install "${FORMULAE[@]}"
   run_command brew install --cask "${CASKS[@]}"
 }
+install_php_debug_adapter() {
+  local debug_dir="$HOME/vscode-php-debug"
+  if [[ -e "$debug_dir" || -L "$debug_dir" ]]; then
+    [[ -d "$debug_dir/.git" ]] || fail "既存の PHP デバッグ拡張ディレクトリが Git リポジトリではありません: $debug_dir"
+  else
+    run_command git clone "https://github.com/xdebug/vscode-php-debug.git" "$debug_dir"
+  fi
+  run_command npm --prefix "$debug_dir" install
+  run_command npm --prefix "$debug_dir" run build
+}
+install_janky_borders() {
+  local install_script="$DOTFILES_DIR/.bin/install-janky-borders.sh"
+  if [[ "$DRY_RUN" != "true" && ! -x "$install_script" ]]; then
+    fail "JankyBorders のインストールスクリプトが見つかりません: $install_script"
+  fi
+  # bordersrc のリンク作成とサービス起動を既存の専用スクリプトへ委譲する。
+  run_command bash "$install_script"
+}
+install_neovim_plugins() {
+  # Neovim 起動時の lazy.nvim 同期を先に実行し、管理対象プラグインを初回から利用可能にする。
+  run_command nvim --headless '+Lazy! sync' '+qa'
+}
 install_dotfiles_configuration() {
   local install_script="$DOTFILES_DIR/.bin/install.sh"
   if [[ "$DRY_RUN" != "true" && ! -x "$install_script" ]]; then
@@ -118,13 +143,13 @@ run_command() {
 print_usage() {
   cat <<'USAGE'
 Usage: bash .bin/bootstrap-macos.sh [--dry-run] [--directory PATH] [--repository URL] [--env=localdev]
-新しい macOS に dotfiles、WezTerm、UDEV Gothic NF、関連する開発ツールを導入します。
+新しい macOS にシェル、Neovim、Starship、WezTerm、JankyBorders、Codex の管理対象設定と関連ツールを導入します。
 既存の Git リポジトリは上書きせず、そのまま利用します。
 USAGE
 }
 print_completion_message() {
   log_info "macOS の初期構成が完了しました。"
-  log_info "WezTerm を起動すると、dotfiles 管理の設定と UDEV Gothic NFLG が使われます。"
+  log_info "シェル、Neovim、Starship、WezTerm、JankyBorders の設定を利用できます。"
   log_info "API キーが必要な場合は ~/.zsh/env.local.zsh を確認してください。"
 }
 log_info() {

@@ -24,13 +24,22 @@ curl -fsSL https://raw.githubusercontent.com/ishiooon/dotfiles/main/.bin/bootstr
 bash /tmp/bootstrap-macos.sh
 ```
 
-このスクリプトは、Homebrew、WezTerm、設定で指定している UDEV Gothic NF、Neovim などの関連ツールを導入し、dotfiles を `~/dotfiles` に clone して設定をリンクします。既に `~/dotfiles` が Git リポジトリの場合はその内容を使用し、Git リポジトリではない既存ディレクトリは上書きせずに中断します。
+このスクリプトは、Homebrew、シェル設定、Neovim、Starship、WezTerm、UDEV Gothic NF、JankyBorders、Codex の管理対象設定をまとめて導入します。Neovim のプラグインと PHP デバッグ拡張も初回に準備し、dotfiles を `~/dotfiles` に clone して設定をリンクします。既に `~/dotfiles` が Git リポジトリの場合はその内容を使用し、Git リポジトリではない既存ディレクトリは上書きせずに中断します。
 
 導入前の手順確認には、次のドライランを使用できます。
 
 ```bash
 bash /tmp/bootstrap-macos.sh --dry-run
 ```
+
+この「設定をリンクする」とは、設定を二重にコピーするのではなく、ホームディレクトリから dotfiles 内の管理対象を参照することです。対象は次のとおりです。
+
+- `~/.zshrc`、`~/.bashrc`、`.zsh`、`.bash`
+- `~/.config`（Neovim、Starship、WezTerm、JankyBorders、lazygit）
+- `~/.bin`、`~/.claude`、`~/.agents`
+- `~/.codex/AGENTS.md`、`~/.codex/agents`（認証情報や履歴は対象外）
+
+そのため、dotfiles 側の設定を更新すると各アプリケーションへ反映されます。既存の設定は `~/dotbackup/` へ退避します。
 
 ### 手動インストール
 

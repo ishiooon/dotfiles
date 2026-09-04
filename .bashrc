@@ -21,5 +21,8 @@ fi
 export DENO_INSTALL="$HOME/.deno"
 export PATH="$DENO_INSTALL/bin:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
-alias gh="/usr/local/bin/gh"
-. "$HOME/.cargo/env"
+alias gh='command gh'
+# Cargo を別途導入していない Mac でも Bash の起動を失敗させない。
+if [ -f "$HOME/.cargo/env" ]; then
+    . "$HOME/.cargo/env"
+fi

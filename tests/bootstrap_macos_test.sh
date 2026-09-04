@@ -23,12 +23,17 @@ if [[ ! -x "$BOOTSTRAP_SCRIPT" ]]; then
 fi
 
 # 実ホームと Homebrew を変更しないよう、ドライランだけを検証する。
-OUTPUT="$(bash "$BOOTSTRAP_SCRIPT" --env=localdev --dry-run --directory "$ROOT_DIR/dry-run-dotfiles")"
+OUTPUT="$(HOME="$ROOT_DIR/dry-run-home" bash "$BOOTSTRAP_SCRIPT" --env=localdev --dry-run --directory "$ROOT_DIR/dry-run-dotfiles")"
 
 for expected in \
   "git clone https://github.com/ishiooon/dotfiles.git" \
-  "brew install neovim starship fzf ripgrep fd lazygit deno gh" \
+  "brew install neovim starship fzf ripgrep fd lazygit deno gh node php w3m coreutils" \
   "brew install --cask wezterm font-udev-gothic-nf" \
+  "bash $ROOT_DIR/dry-run-dotfiles/.bin/install-janky-borders.sh" \
+  "nvim --headless" \
+  "git clone https://github.com/xdebug/vscode-php-debug.git $ROOT_DIR/dry-run-home/vscode-php-debug" \
+  "npm --prefix $ROOT_DIR/dry-run-home/vscode-php-debug install" \
+  "npm --prefix $ROOT_DIR/dry-run-home/vscode-php-debug run build" \
   "bash $ROOT_DIR/dry-run-dotfiles/.bin/install.sh"; do
   if ! grep -Fq "$expected" <<<"$OUTPUT"; then
     echo "ドライランに期待した初期構成手順が含まれていません: $expected" >&2
