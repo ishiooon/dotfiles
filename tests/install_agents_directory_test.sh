@@ -45,8 +45,12 @@ cleanup() {
 trap cleanup EXIT
 
 TEST_HOME="$TEMP_ROOT/home"
+DOTFILES_FIXTURE="$TEMP_ROOT/dotfiles"
 mkdir -p "$TEST_HOME" "$TEST_HOME/.bash" "$TEST_HOME/.zsh"
-ln -s "$ROOT_DIR" "$TEST_HOME/dotfiles"
+mkdir -p "$DOTFILES_FIXTURE"/{.agents,.bash,.claude,.config,.codex/agents,.zsh}
+cp "$ROOT_DIR/.codex/AGENTS.md" "$DOTFILES_FIXTURE/.codex/AGENTS.md"
+cp "$ROOT_DIR/.codex/agents/"*.toml "$DOTFILES_FIXTURE/.codex/agents/"
+ln -s "$DOTFILES_FIXTURE" "$TEST_HOME/dotfiles"
 
 # 一時 HOME 上でインストールを実行し、.agents を dotfiles 管理に寄せられることを確認する。
 HOME="$TEST_HOME" PATH="/usr/bin:/bin:/usr/sbin:/sbin" bash "$INSTALL_SCRIPT" >/dev/null

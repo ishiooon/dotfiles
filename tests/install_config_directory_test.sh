@@ -25,8 +25,9 @@ cleanup() {
 trap cleanup EXIT
 
 TEST_HOME="$TEMP_ROOT/home"
-mkdir -p "$TEST_HOME"
-ln -s "$ROOT_DIR" "$TEST_HOME/dotfiles"
+DOTFILES_FIXTURE="$TEMP_ROOT/dotfiles"
+mkdir -p "$TEST_HOME" "$DOTFILES_FIXTURE"/{.agents,.bash,.claude,.config,.codex/agents,.zsh}
+ln -s "$DOTFILES_FIXTURE" "$TEST_HOME/dotfiles"
 
 # dotfiles インストーラーの前提に合わせ、最小限の初期ディレクトリを用意する。
 mkdir -p "$TEST_HOME/.bash" "$TEST_HOME/.zsh"
