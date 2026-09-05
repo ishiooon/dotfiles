@@ -32,6 +32,18 @@ bash /tmp/bootstrap-macos.sh
 bash /tmp/bootstrap-macos.sh --dry-run
 ```
 
+すでに dotfiles を clone 済みで、設定リンクだけを再作成したい場合は次のコマンドを実行します。
+
+```bash
+bash ~/dotfiles/.bin/install.sh --env=localdev
+```
+
+この単独インストーラーにも `--dry-run` と失敗時の復元機能があります。
+
+```bash
+bash ~/dotfiles/.bin/install.sh --env=localdev --dry-run
+```
+
 この「設定をリンクする」とは、設定を二重にコピーするのではなく、ホームディレクトリから dotfiles 内の管理対象を参照することです。対象は次のとおりです。
 
 - `~/.zshrc`、`~/.bashrc`、`.zsh`、`.bash`

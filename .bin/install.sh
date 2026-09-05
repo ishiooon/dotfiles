@@ -1,173 +1,264 @@
-#!/bin/bash
-# 完全なdotfiles自動セットアップスクリプト
-# dotfiles が管理する開発環境を$DOTFILES_DIRから自動展開
-# ===================================================
+#!/usr/bin/env bash
+set -Eeuo pipefail
 
-# エラーハンドリング設定
-set -e
-trap 'echo "Error occurred at line $LINENO. Installation failed."; exit 1' ERR
-
-# カラー出力設定
-GREEN='\033[0;32m'
-YELLOW='\033[0;33m'
-# インストーラーを別の配置先から呼び出しても、対象リポジトリを参照できるようにする。
+# dotfiles が管理する設定をホームへ安全にリンクする単独実行用インストーラー。
 DOTFILES_DIR="${DOTFILES_INSTALL_ROOT:-$HOME/dotfiles}"
-RED='\033[0;31m'
-NC='\033[0m' # No Color
+DRY_RUN=false
+BACKUP_DIR=""
+TRANSACTION_STARTED=false
+ROLLBACK_ACTIVE=false
+declare -a BACKUP_TARGETS=()
+declare -a BACKUP_PATHS=()
+declare -a CREATED_PATHS=()
 
-# ログ関数
-log_info() {
-    echo -e "${GREEN}[INFO]${NC} $1"
+main() {
+    trap 'handle_failure "$?" "$LINENO"' ERR
+    parse_arguments "$@"
+    validate_dotfiles
+    if [[ "$DRY_RUN" == "true" ]]; then
+        log_info "[予定] ドライランを開始します。既存設定は変更しません。"
+    else
+        prepare_backup
+    fi
+    install_shell_files
+    install_shell_directories
+    install_config_directory
+    install_tool_directories
+    install_codex_configuration
+    install_mcp_configuration
+    install_environment_files
+    report_path_status
+    print_summary "成功"
+    trap - ERR
 }
 
-log_warn() {
-    echo -e "${YELLOW}[WARN]${NC} $1"
+parse_arguments() {
+    while (($#)); do
+        case "$1" in
+            --dry-run) DRY_RUN=true ;;
+            --env=localdev) ;;
+            -h|--help) print_usage; exit 0 ;;
+            *) fail "未対応の引数です: $1" ;;
+        esac
+        shift
+    done
+}
+
+validate_dotfiles() {
+    local home_dir dotfiles_dir
+    [[ -n "$DOTFILES_DIR" ]] || fail "dotfiles の配置先が空です。"
+    [[ -d "$DOTFILES_DIR" ]] || fail "dotfiles の配置先が見つかりません: $DOTFILES_DIR"
+    home_dir="$(cd "$HOME" && pwd -P)"
+    dotfiles_dir="$(cd "$DOTFILES_DIR" && pwd -P)"
+    [[ "$dotfiles_dir" != "$home_dir" ]] || fail "dotfiles の配置先に HOME 自体は指定できません。"
+}
+
+prepare_backup() {
+    local backup_root="$HOME/dotbackup"
+    mkdir -p "$backup_root"
+    BACKUP_DIR="$(mktemp -d "$backup_root/install-XXXXXX")"
+    TRANSACTION_STARTED=true
+    log_info "[退避] 退避先を作成しました: $BACKUP_DIR"
+}
+
+install_shell_files() {
+    log_info "[開始] シェル設定ファイル"
+    create_symlink "$DOTFILES_DIR/.bashrc" "$HOME/.bashrc"
+    create_symlink "$DOTFILES_DIR/.zshrc" "$HOME/.zshrc"
+    log_info "[完了] シェル設定ファイル"
+}
+
+install_shell_directories() {
+    log_info "[開始] シェル設定ディレクトリ"
+    create_symlink "$DOTFILES_DIR/.bash" "$HOME/.bash"
+    create_symlink "$DOTFILES_DIR/.zsh" "$HOME/.zsh"
+    log_info "[完了] シェル設定ディレクトリ"
+}
+
+install_config_directory() {
+    log_info "[開始] アプリケーション設定"
+    create_symlink "$DOTFILES_DIR/.config" "$HOME/.config"
+    log_info "[完了] アプリケーション設定"
+}
+
+install_tool_directories() {
+    log_info "[開始] 補助ツール設定"
+    create_symlink "$DOTFILES_DIR/.bin" "$HOME/.bin"
+    create_symlink "$DOTFILES_DIR/.claude" "$HOME/.claude"
+    create_symlink "$DOTFILES_DIR/.agents" "$HOME/.agents"
+    log_info "[完了] 補助ツール設定"
+}
+
+install_codex_configuration() {
+    log_info "[開始] Codex 管理対象設定"
+    ensure_codex_directory
+    create_symlink "$DOTFILES_DIR/.codex/AGENTS.md" "$HOME/.codex/AGENTS.md"
+    create_symlink "$DOTFILES_DIR/.codex/agents" "$HOME/.codex/agents"
+    log_info "[完了] Codex 管理対象設定"
+}
+
+install_mcp_configuration() {
+    log_info "[開始] MCP 設定"
+    create_symlink "$DOTFILES_DIR/.mcp.json" "$HOME/.mcp.json"
+    log_info "[完了] MCP 設定"
+}
+
+install_environment_files() {
+    log_info "[開始] ローカル環境変数の雛形"
+    install_environment_file "$DOTFILES_DIR/.bash/env.local.bash.example" "$HOME/.bash/env.local.bash"
+    install_environment_file "$DOTFILES_DIR/.zsh/env.local.zsh.example" "$HOME/.zsh/env.local.zsh"
+    log_info "[完了] ローカル環境変数の雛形"
+}
+
+ensure_codex_directory() {
+    if [[ -e "$HOME/.codex" || -L "$HOME/.codex" ]]; then
+        mkdir -p "$HOME/.codex"
+        return
+    fi
+    if [[ "$DRY_RUN" == "true" ]]; then
+        log_info "[予定] ディレクトリを作成します: $HOME/.codex"
+        return
+    fi
+    mkdir -p "$HOME/.codex"
+    CREATED_PATHS+=("$HOME/.codex")
+    log_info "[作成] $HOME/.codex"
+}
+
+create_symlink() {
+    local source="$1" target="$2" current_target
+    if [[ ! -e "$source" && ! -L "$source" ]]; then
+        log_info "[警告] 管理対象が存在しないためスキップします: $source"
+        return
+    fi
+    if [[ -e "$target" || -L "$target" ]]; then
+        if [[ -L "$target" ]]; then
+            current_target="$(readlink "$target")"
+            if [[ "$current_target" == "$source" ]]; then
+                log_info "[スキップ] 既に正しいリンクです: $target"
+                return
+            fi
+        elif [[ "$DRY_RUN" == "true" ]]; then
+            log_info "[予定] 既存の $target を退避します。"
+        fi
+        if [[ "$DRY_RUN" != "true" ]]; then
+            backup_existing_path "$target"
+        fi
+    fi
+    if [[ "$DRY_RUN" == "true" ]]; then
+        log_info "[予定] ln -s $source $target"
+        return
+    fi
+    ln -s "$source" "$target"
+    CREATED_PATHS+=("$target")
+    log_info "[作成] $target -> $source"
+}
+
+install_environment_file() {
+    local source="$1" target="$2"
+    if [[ ! -f "$source" ]]; then
+        log_info "[警告] 雛形が存在しないためスキップします: $source"
+        return
+    fi
+    if [[ -f "$target" && ! -L "$target" ]]; then
+        log_info "[スキップ] ローカル環境変数は既に存在します: $target"
+        return
+    fi
+    if [[ -e "$target" || -L "$target" ]]; then
+        if [[ "$DRY_RUN" != "true" ]]; then
+            backup_existing_path "$target"
+        fi
+    fi
+    if [[ "$DRY_RUN" == "true" ]]; then
+        log_info "[予定] cp $source $target"
+        return
+    fi
+    mkdir -p "$(dirname "$target")"
+    cp "$source" "$target"
+    CREATED_PATHS+=("$target")
+    log_info "[作成] $target（雛形から作成）"
+    log_info "[警告] APIキーなどの値を必要に応じて設定してください: $target"
+}
+
+report_path_status() {
+    if [[ ":${PATH:-}:" == *":$HOME/.bin:"* ]]; then
+        log_info "[確認] $HOME/.bin は PATH に含まれています。"
+    else
+        log_info "[警告] $HOME/.bin が PATH にありません。シェルを再起動してください。"
+    fi
+}
+
+handle_failure() {
+    set +u
+    local status="$1"
+    [[ "$ROLLBACK_ACTIVE" == "true" ]] && exit "$status"
+    ROLLBACK_ACTIVE=true
+    log_error "[失敗] install.sh の処理を中断しました。"
+    rollback
+    print_summary "失敗"
+    exit "$status"
+}
+
+rollback() {
+    set +e
+    log_info "[復元] 作成途中のリンクと退避済み設定を復元します。"
+    local index path
+    if [[ "$TRANSACTION_STARTED" != "true" ]]; then
+        log_info "[復元] 退避開始前だったため、既存設定には触れません。"
+        return
+    fi
+    for ((index=${#CREATED_PATHS[@]}-1; index>=0; index--)); do
+        path="${CREATED_PATHS[$index]}"
+        rm -rf "$path"
+    done
+    for ((index=${#BACKUP_TARGETS[@]}-1; index>=0; index--)); do
+        path="${BACKUP_TARGETS[$index]}"
+        mkdir -p "$(dirname "$path")"
+        mv "${BACKUP_PATHS[$index]}" "$path"
+    done
+    log_info "[復元] 完了しました。退避先は保持しています: $BACKUP_DIR"
+    set -e
+}
+
+backup_existing_path() {
+    local target="$1"
+    local index="${#BACKUP_TARGETS[@]}"
+    local backup="$BACKUP_DIR/$(printf '%03d' "$index")-${target##*/}"
+    mv "$target" "$backup"
+    BACKUP_TARGETS+=("$target")
+    BACKUP_PATHS+=("$backup")
+    log_info "[退避] $target -> $backup"
+}
+
+print_summary() {
+    set +u
+    local result="$1"
+    printf '[結果] %s\n' "$result"
+    printf '  作成したリンク・ファイル: %d\n' "${#CREATED_PATHS[@]}"
+    printf '  退避した設定: %d\n' "${#BACKUP_TARGETS[@]}"
+    printf '  退避先: %s\n' "${BACKUP_DIR:-なし}"
+    set -u
+}
+
+print_usage() {
+    cat <<'USAGE'
+Usage: bash .bin/install.sh [--dry-run] [--env=localdev]
+
+dotfiles の設定をホームディレクトリへ安全にリンクします。
+既存設定は ~/dotbackup/ 配下へ退避し、失敗時は作成途中の変更を復元します。
+USAGE
+}
+
+log_info() {
+    printf '[INFO] %s\n' "$1"
 }
 
 log_error() {
-    echo -e "${RED}[ERROR]${NC} $1"
+    printf '[ERROR] %s\n' "$1" >&2
 }
 
-# 既存の設定をバックアップ先へ退避し、後から復元できる状態を保つ
-backup_existing_path() {
-    local target="$1"
-    local type="$2"
-
-    log_warn "Backing up existing $type: $(basename "$target")"
-    mv "$target" "$backup_dir/$(basename "$target")"
+fail() {
+    log_error "$1"
+    return 1
 }
 
-# バックアップディレクトリ作成
-backup_dir="$HOME/dotbackup/$(date +%Y%m%d_%H%M%S)"
-mkdir -p "$backup_dir"
-log_info "Backup directory created: $backup_dir"
-
-# シンボリックリンク作成関数
-create_symlink() {
-    local src="$1"
-    local dest="$2"
-    local type="$3"  # file or dir
-    
-    # ソースが存在するかチェック
-    if [ ! -e "$src" ]; then
-        log_warn "Source does not exist: $src - skipping"
-        return
-    fi
-    
-    # 既存ファイル・ディレクトリの処理
-    if [ -e "$dest" ] || [ -L "$dest" ]; then
-        if [ -L "$dest" ]; then
-            # 既にシンボリックリンクの場合
-            local current_target=$(readlink "$dest")
-            if [ "$current_target" = "$src" ]; then
-                log_info "$(basename $dest) is already correctly linked"
-                return
-            else
-                log_warn "Removing existing symbolic link: $dest -> $current_target"
-                rm "$dest"
-            fi
-        else
-            # 通常のファイル・ディレクトリの場合
-            backup_existing_path "$dest" "$type"
-        fi
-    fi
-    
-    # シンボリックリンク作成
-    ln -s "$src" "$dest"
-    log_info "Created symbolic link: $(basename $dest) -> $src"
-}
-
-log_info "Starting dotfiles installation..."
-
-# ===================================================
-# 1. Shell設定ファイル
-# ===================================================
-log_info "Setting up shell configuration files..."
-
-create_symlink "$DOTFILES_DIR/.bashrc" "$HOME/.bashrc" "file"
-create_symlink "$DOTFILES_DIR/.zshrc" "$HOME/.zshrc" "file"
-
-# ===================================================
-# 2. Shell設定ディレクトリ
-# ===================================================
-log_info "Setting up shell configuration directories..."
-
-create_symlink "$DOTFILES_DIR/.bash" "$HOME/.bash" "dir"
-create_symlink "$DOTFILES_DIR/.zsh" "$HOME/.zsh" "dir"
-
-# ===================================================
-# 3. 設定ディレクトリ全体 (.config)
-# ===================================================
-log_info "Setting up .config directory..."
-
-create_symlink "$DOTFILES_DIR/.config" "$HOME/.config" "dir"
-
-# ===================================================
-# 4. 便利スクリプト・ツール・エージェント設定
-# ===================================================
-log_info "Setting up utility scripts, tools, and agent configuration..."
-
-create_symlink "$DOTFILES_DIR/.bin" "$HOME/.bin" "dir"
-create_symlink "$DOTFILES_DIR/.claude" "$HOME/.claude" "dir"
-# Codex 用の追加 Skill やローカル Marketplace を dotfiles 配下で一元管理する。
-create_symlink "$DOTFILES_DIR/.agents" "$HOME/.agents" "dir"
-# Codex の管理対象だけをリンクし、認証情報や履歴を含む ~/.codex 全体は共有しない。
-mkdir -p "$HOME/.codex"
-create_symlink "$DOTFILES_DIR/.codex/AGENTS.md" "$HOME/.codex/AGENTS.md" "file"
-create_symlink "$DOTFILES_DIR/.codex/agents" "$HOME/.codex/agents" "dir"
-
-# ===================================================
-# 5. 設定ファイル
-# ===================================================
-log_info "Setting up configuration files..."
-
-create_symlink "$DOTFILES_DIR/.mcp.json" "$HOME/.mcp.json" "file"
-
-# ===================================================
-# 6. 環境変数設定ファイルの作成
-# ===================================================
-log_info "Setting up environment configuration files..."
-
-# bash環境変数ファイル
-if [ ! -f "$HOME/.bash/env.local.bash" ]; then
-    if [ -f "$DOTFILES_DIR/.bash/env.local.bash.example" ]; then
-        cp "$DOTFILES_DIR/.bash/env.local.bash.example" "$HOME/.bash/env.local.bash"
-        log_info "Created .bash/env.local.bash from example file"
-        log_warn "Please edit $HOME/.bash/env.local.bash to add your API keys"
-    fi
-fi
-
-# zsh環境変数ファイル  
-if [ ! -f "$HOME/.zsh/env.local.zsh" ]; then
-    if [ -f "$DOTFILES_DIR/.zsh/env.local.zsh.example" ]; then
-        cp "$DOTFILES_DIR/.zsh/env.local.zsh.example" "$HOME/.zsh/env.local.zsh"
-        log_info "Created .zsh/env.local.zsh from example file"
-        log_warn "Please edit $HOME/.zsh/env.local.zsh to add your API keys"
-    fi
-fi
-
-# ===================================================
-# 7. PATHへの.binディレクトリ追加確認
-# ===================================================
-log_info "Checking PATH configuration..."
-
-# 現在のシェルに応じてPATHが設定されているかチェック
-if [[ ":$PATH:" != *":$HOME/.bin:"* ]]; then
-    log_warn "~/.bin is not in PATH. Please restart your shell or run 'source ~/.bashrc' or 'source ~/.zshrc'"
-fi
-
-# ===================================================
-# 8. インストール完了
-# ===================================================
-log_info "Installation completed successfully!"
-echo ""
-log_info "Next steps:"
-echo "  1. Edit environment files if needed:"
-echo "     - ~/.bash/env.local.bash (for bash users)"
-echo "     - ~/.zsh/env.local.zsh (for zsh users)"
-echo "  2. Restart your shell or run:"
-echo "     - 'source ~/.bashrc' (for bash)"
-echo "     - 'source ~/.zshrc' (for zsh)"
-echo "  3. Open nvim and run ':Lazy sync' to install plugins"
-echo ""
-log_info "Backup files are stored in: $backup_dir"
+main "$@"
