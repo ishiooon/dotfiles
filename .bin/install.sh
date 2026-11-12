@@ -175,7 +175,7 @@ install_environment_file() {
     mkdir -p "$(dirname "$target")"
     cp "$source" "$target"
     CREATED_PATHS+=("$target")
-    log_info "[作成] $target（雛形から作成）"
+    log_info "[作成] ${target}（雛形から作成）"
     log_info "[警告] APIキーなどの値を必要に応じて設定してください: $target"
 }
 

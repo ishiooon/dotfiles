@@ -81,6 +81,7 @@ link_borders_config() {
 install_janky_borders() {
   # 公式 tap を追加し、JankyBorders の実行ファイルである borders を導入する。
   run_command brew tap "$TAP_NAME"
+  run_command brew trust --formula "$TAP_NAME/$PACKAGE_NAME"
   run_command brew install "$PACKAGE_NAME"
 }
 
