@@ -88,4 +88,31 @@ if HOME="$DRY_HOME" DOTFILES_INSTALL_ROOT="$DRY_HOME/" bash "$INSTALL_SCRIPT" --
   exit 1
 fi
 
-echo "PASS: install.sh は失敗時に復元し、ドライランと配置先検証を安全に実行できます。"
+# macOS 標準 Bash 3.2 と UTF-8 の組み合わせでも、雛形を両方作成して正常終了する。
+# ロケールごとに空の環境を作り、既存ファイルによるスキップで不具合を隠さない。
+for test_locale in C en_US.UTF-8 ja_JP.UTF-8; do
+  SUCCESS_ROOT="$TEMP_ROOT/success-$test_locale"
+  SUCCESS_HOME="$SUCCESS_ROOT/home"
+  SUCCESS_REPO="$SUCCESS_ROOT/dotfiles"
+  mkdir -p "$SUCCESS_HOME"
+  cp -R "$DOTFILES_FIXTURE" "$SUCCESS_REPO"
+  if ! HOME="$SUCCESS_HOME" DOTFILES_INSTALL_ROOT="$SUCCESS_REPO" LC_ALL="$test_locale" \
+    /bin/bash "$INSTALL_SCRIPT" --env=localdev >"$SUCCESS_ROOT/output" 2>&1; then
+    cat "$SUCCESS_ROOT/output" >&2
+    echo "雛形作成を含む初回導入に失敗しました: $test_locale" >&2
+    exit 1
+  fi
+  grep -Fq '[結果] 成功' "$SUCCESS_ROOT/output"
+  cmp "$SUCCESS_HOME/.bash/env.local.bash" "$SUCCESS_REPO/.bash/env.local.bash.example"
+  cmp "$SUCCESS_HOME/.zsh/env.local.zsh" "$SUCCESS_REPO/.zsh/env.local.zsh.example"
+
+  # 再実行時は利用者が入力済みのローカル設定を上書きしない。
+  printf '%s\n' 'export TEST_VALUE=custom' > "$SUCCESS_HOME/.bash/env.local.bash"
+  printf '%s\n' 'export TEST_VALUE=custom' > "$SUCCESS_HOME/.zsh/env.local.zsh"
+  HOME="$SUCCESS_HOME" DOTFILES_INSTALL_ROOT="$SUCCESS_REPO" LC_ALL="$test_locale" \
+    /bin/bash "$INSTALL_SCRIPT" --env=localdev >"$SUCCESS_ROOT/reinstall-output" 2>&1
+  [[ "$(<"$SUCCESS_HOME/.bash/env.local.bash")" == 'export TEST_VALUE=custom' ]]
+  [[ "$(<"$SUCCESS_HOME/.zsh/env.local.zsh")" == 'export TEST_VALUE=custom' ]]
+done
+
+echo "PASS: install.sh は雛形を正常に作成し、再実行時の設定保持と失敗時の復元ができます。"

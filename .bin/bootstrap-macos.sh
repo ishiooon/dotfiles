@@ -3,7 +3,8 @@ set -Eeuo pipefail
 # 新しい macOS で dotfiles が管理する全構成を安全に再現する初期構成スクリプト。
 readonly DEFAULT_REPOSITORY="https://github.com/ishiooon/dotfiles.git"
 readonly DEFAULT_DIRECTORY="$HOME/dotfiles"
-readonly FORMULAE=(neovim starship fzf ripgrep fd lazygit deno gh node php w3m coreutils)
+# Treesitter が言語ごとの解析器を生成できるよう、コマンドを提供する tree-sitter-cli も導入する。
+readonly FORMULAE=(neovim tree-sitter-cli starship fzf ripgrep fd lazygit deno gh node php w3m coreutils)
 # Karabiner も不足パッケージとして記録し、失敗時は今回導入したものだけを削除する。
 readonly CASKS=(wezterm font-udev-gothic-nf karabiner-elements)
 readonly MANAGED_HOME_PATHS=(
@@ -23,7 +24,7 @@ DOTFILES_CREATED=false
 PHP_DEBUG_CREATED=false
 HOMEBREW_CREATED=false
 CODEX_DIRECTORY_EXISTED=false
-BORDERS_PREEXISTING=false
+BORDERS_INSTALL_ATTEMPTED=false
 # 起動前に停止中だと確認できた HUD だけを、復元時の停止対象にする。
 KARABINER_HUD_START_ATTEMPTED=false
 declare -a COMPLETED_STEPS=()
@@ -92,7 +93,8 @@ ensure_required_commands() {
   done
 }
 ensure_homebrew() {
-  if command -v brew >/dev/null 2>&1; then
+  # PATH が未設定でも、標準の配置先にある既存の Homebrew を使う。
+  if command -v brew >/dev/null 2>&1 || load_homebrew_from_standard_path; then
     SKIPPED_ITEMS+=("Homebrew は導入済みです。")
     log_info "[スキップ] Homebrew は導入済みです。"
     return
@@ -107,17 +109,18 @@ ensure_homebrew() {
   log_info "[実行] Homebrew 公式インストールスクリプト"
   HOMEBREW_CREATED=true
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-  load_homebrew_from_standard_path
+  load_homebrew_from_standard_path || fail "Homebrew の導入後に brew コマンドを見つけられませんでした。"
 }
 load_homebrew_from_standard_path() {
-  local brew_path
+  local brew_path brew_environment
   for brew_path in /opt/homebrew/bin/brew /usr/local/bin/brew; do
     if [[ -x "$brew_path" ]]; then
-      eval "$("$brew_path" shellenv)"
+      brew_environment="$("$brew_path" shellenv)" || return 1
+      eval "$brew_environment" || return 1
       return
     fi
   done
-  fail "Homebrew の導入後に brew コマンドを見つけられませんでした。"
+  return 1
 }
 prepare_dotfiles_repository() {
   if [[ -e "$DOTFILES_DIR" || -L "$DOTFILES_DIR" ]]; then
@@ -186,9 +189,6 @@ install_packages() {
     MISSING_ITEMS+=("cask: ${MISSING_CASKS[*]}")
     run_command brew install --cask "${MISSING_CASKS[@]}"
   fi
-  if ! $DRY_RUN && brew list --formula borders >/dev/null 2>&1; then
-    BORDERS_PREEXISTING=true
-  fi
 }
 install_php_debug_adapter() {
   local debug_dir="$HOME/vscode-php-debug"
@@ -222,6 +222,10 @@ install_dotfiles_configuration() {
 install_janky_borders() {
   local install_script="$DOTFILES_DIR/.bin/install-janky-borders.sh"
   [[ "$DRY_RUN" == "true" || -x "$install_script" ]] || fail "JankyBorders のインストールスクリプトが見つかりません: $install_script"
+  # この実行で新規導入を試みた場合だけ、失敗時の削除対象にする。
+  if [[ "$DRY_RUN" != "true" ]] && ! brew list --formula borders >/dev/null 2>&1; then
+    BORDERS_INSTALL_ATTEMPTED=true
+  fi
   run_command bash "$install_script"
 }
 install_karabiner() {
@@ -238,10 +242,14 @@ install_karabiner() {
   run_command bash "$install_script"
 }
 install_neovim_plugins() {
-  run_command nvim --headless '+Lazy! sync' '+qa'
+  # プラグイン同期の失敗を確認して解析器の導入を待ち、失敗を終了コードへ反映して復元処理につなげる。
+  run_command nvim --headless '+Lazy! sync' \
+    '+lua local ok, err = pcall(function() if require("lazy.manage.checker").has_errors() then error("Neovim プラグインの同期に失敗しました。") end; require("config.treesitter").wait_for_parsers(300000) end); if not ok then vim.api.nvim_err_writeln(tostring(err)); vim.cmd("cquit 1") end' \
+    '+qa'
 }
 run_command() {
-  log_info "[実行] $(printf '%q ' "$@")"
+  # macOS 標準の Bash が日本語の引数を途中のバイトで区切らないよう、表示する引用表現だけを C ロケールで作る。
+  log_info "[実行] $(LC_ALL=C; printf '%q ' "$@")"
   if [[ "$DRY_RUN" == "true" ]]; then return 0; fi
   "$@"
 }
@@ -304,7 +312,7 @@ rollback_homebrew() {
       brew uninstall --cask "$package" >/dev/null 2>&1 || record_warning "cask の復元に失敗しました: $package"
     fi
   done
-  if [[ "$BORDERS_PREEXISTING" != "true" ]] && brew list --formula borders >/dev/null 2>&1; then
+  if [[ "$BORDERS_INSTALL_ATTEMPTED" == "true" ]] && brew list --formula borders >/dev/null 2>&1; then
     brew services stop borders >/dev/null 2>&1
     brew uninstall --formula borders >/dev/null 2>&1
   fi

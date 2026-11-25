@@ -1,6 +1,6 @@
-local CODEX_NAME = "codex.nvim"
 local LOCAL_CODEX_DIR_CANDIDATES = {
-  "/Users/ishiooon/develop/codex.nvim",
+  -- Mac の開発版は他の Neovim プラグインと同じディレクトリにまとめる。
+  "/Users/ishiooon/develop/nvim_plugins/codex.nvim",
   "/home/dev_local/dev_plugin/codex.nvim",
 }
 local REMOTE_CODEX_REPO = "ishiooon/codex.nvim"
@@ -15,50 +15,9 @@ local function setup_codex()
   end
 end
 
-local function get_fs_api()
-  return vim.uv or vim.loop
-end
-
-local function find_local_codex_dir()
-  local fs_api = get_fs_api()
-  if not (fs_api and fs_api.fs_stat) then
-    return nil
-  end
-
-  for _, dir in ipairs(LOCAL_CODEX_DIR_CANDIDATES) do
-    -- ローカル開発版が存在する環境では、その作業ツリーを直接読み込みます。
-    local stat = fs_api.fs_stat(dir)
-    if stat ~= nil and stat.type == "directory" then
-      return dir
-    end
-  end
-
-  return nil
-end
-
-local function build_local_spec(local_dir)
-  return {
-    dir = local_dir,
-    name = CODEX_NAME,
+-- 他の開発用プラグインと同じ判定で、既存の候補順序と公開版への切り替えを維持する。
+return {
+  require("config.plugin_source").resolve(REMOTE_CODEX_REPO, LOCAL_CODEX_DIR_CANDIDATES, {
     config = setup_codex,
-  }
-end
-
-local function build_remote_spec()
-  return {
-    REMOTE_CODEX_REPO,
-    name = CODEX_NAME,
-    config = setup_codex,
-  }
-end
-
-local function build_codex_spec()
-  local local_dir = find_local_codex_dir()
-  if local_dir then
-    return build_local_spec(local_dir)
-  end
-
-  return build_remote_spec()
-end
-
-return { build_codex_spec() }
+  }),
+}

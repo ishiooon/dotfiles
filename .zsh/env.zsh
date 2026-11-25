@@ -1,6 +1,16 @@
 # 環境変数の設定（テンプレート）
 # 実際のAPIキーは .zsh/env.local.zsh で設定してください
 
+# Homebrew と利用者用コマンドの検索先を、Bash と共通の設定で準備する。
+source "$HOME/.bin/shell-environment.sh"
+
+# Bun を検索対象に加える。ローカル環境設定から検索順位を変更できる。
+export BUN_INSTALL="$HOME/.bun"
+case ":$PATH:" in
+    *":$BUN_INSTALL/bin:"*) ;;
+    *) export PATH="$BUN_INSTALL/bin:$PATH" ;;
+esac
+
 # ローカル環境変数ファイルが存在する場合は読み込む
 if [[ -f ~/.zsh/env.local.zsh ]]; then
     source ~/.zsh/env.local.zsh
@@ -21,11 +31,3 @@ if [[ -z "$TAVILY_API_KEY" ]]; then
     # 空のキーを設定してエラーを回避（実際の検索は動作しません）
     export TAVILY_API_KEY="disabled"
 fi
-
-# 言語ランタイム
-export DENO_INSTALL="$HOME/.deno"
-export PATH="$DENO_INSTALL/bin:$PATH"
-
-export BUN_INSTALL="$HOME/.bun"
-export PATH="$BUN_INSTALL/bin:$PATH"
-

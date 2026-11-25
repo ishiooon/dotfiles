@@ -24,7 +24,9 @@ curl -fsSL https://raw.githubusercontent.com/ishiooon/dotfiles/main/.bin/bootstr
 bash /tmp/bootstrap-macos.sh
 ```
 
-このスクリプトは、Homebrew、シェル設定、Neovim、Starship、WezTerm、UDEV Gothic NF、JankyBorders、Karabiner-Elements、Codex の管理対象設定をまとめて導入します。Neovim のプラグインと PHP デバッグ拡張も初回に準備し、dotfiles を `~/dotfiles` に clone して設定をリンクします。既に `~/dotfiles` が Git リポジトリの場合はその内容を使用し、Git リポジトリではない既存ディレクトリは上書きせずに中断します。
+このスクリプトは、Homebrew、シェル設定、Neovim、Treesitter 用の `tree-sitter-cli`、Starship、WezTerm、UDEV Gothic NF、JankyBorders、Karabiner-Elements、Codex の管理対象設定をまとめて導入します。Neovim のプラグインと PHP デバッグ拡張も初回に準備し、dotfiles を `~/dotfiles` に clone して設定をリンクします。既に `~/dotfiles` が Git リポジトリの場合はその内容を使用し、Git リポジトリではない既存ディレクトリは上書きせずに中断します。
+
+zsh・Bash の起動時に Homebrew の標準配置先と `~/.bin` をコマンドの検索対象に加えるため、ターミナルを開き直しても導入したコマンドを使えます。初期構成が失敗した場合、JankyBorders の削除は今回新規導入を試みたものだけが対象で、既存の JankyBorders は削除しません。
 
 導入前の手順確認には、次のドライランを使用できます。
 
@@ -100,6 +102,7 @@ ln -s ~/dotfiles/.config/mcphub ~/.config/mcphub
 #### 4. JankyBorders のインストール
 フォーカス中のウィンドウを枠線で見分けるため、JankyBorders の設定を dotfiles で管理します。設定の実体は `.config/borders/bordersrc` です。
 導入前確認は `bash .bin/install-janky-borders.sh --dry-run`、導入は `bash .bin/install-janky-borders.sh`、設定変更後の再読み込みは `brew services restart borders` です。
+導入時は `brew install felixkratz/formulae/borders` と配布元を含む名前を指定します。[Homebrew の信頼ルール](https://docs.brew.sh/Tap-Trust#installing-from-a-tap)に従い、JankyBorders の formula だけを信頼対象にします。
 
 #### 5. Karabiner-Elements のインストール
 `d` 押し込み中は `n m , j k l u i o p` が `1-0` になります。`v` 押し込み中は `n m ,` が `, . /`、`j k l u i o p` が `; ' \\ - = [ ]` になります。`f` と同時に押した `hjkl` / `e` はすぐ矢印・Delete になり、長押し後の連続入力にも対応します。`f` + `b` 長押し中だけ、JIS 配列（return 形状含む）の全キーとレイヤー一覧 HUD（JS 実装）を表示します。`英数` / `かな` は短押しで Enter、長押しで ⌘。`f` + `n` で ABC、`f` + `m` で あいう。`space` は短押しでスペース、長押しで Shift です。レイヤー定義は `.config/karabiner/keymap-layers.json`、Karabiner 本体は `.config/karabiner/karabiner.json`、HUD は `.bin/karabiner-keymap-hud` と `.config/karabiner/scripts/keymap-hud.{js,html}` です。HUD は物理 JIS 配列で表示し、常駐デーモン化して `f+b` で即時に出します。英字入力は入力ソース `ABC`（US）を使えます。初回のみ `bash ~/.bin/karabiner-keymap-hud start` でデーモンを起動してください。

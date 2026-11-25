@@ -55,6 +55,17 @@
 !/.config/mcphub
 !/.config/wezterm
 !/.config/starship.toml
+# Raycast の独自レビュー手順4件を共有し、配布された拡張本体と端末が生成するデータを除外する。
+!/.config/raycast/
+/.config/raycast/**
+!/.config/raycast/extensions/
+!/.config/raycast/extensions/89648e03-cceb-4205-9f40-75fcb039a4c6/
+!/.config/raycast/extensions/89648e03-cceb-4205-9f40-75fcb039a4c6/skills/
+!/.config/raycast/extensions/89648e03-cceb-4205-9f40-75fcb039a4c6/skills/github-pull-request-review/
+!/.config/raycast/extensions/89648e03-cceb-4205-9f40-75fcb039a4c6/skills/github-pull-request-review/SKILL.md
+!/.config/raycast/extensions/89648e03-cceb-4205-9f40-75fcb039a4c6/skills/github-pull-request-review/TOOLS.md
+!/.config/raycast/extensions/89648e03-cceb-4205-9f40-75fcb039a4c6/skills/github-pull-request-review/UPSTREAM.md
+!/.config/raycast/extensions/89648e03-cceb-4205-9f40-75fcb039a4c6/skills/github-pull-request-review/VALIDATION.md
 /.config/git
 # Karabiner が端末ごとに書き出す自動バックアップは共有しない。
 /.config/karabiner/automatic_backups/
@@ -72,6 +83,8 @@
 !/.bin/karabiner-keymap-hud
 !/.bin/bootstrap-macos.sh
 !/.bin/install-wordpress-stubs.sh
+# シェルの共通環境設定を、新しい端末への設定配布に含める。
+!/.bin/shell-environment.sh
 .config/nvim/lazy-lock.json
 .config/nvim/intelephense.json
 .config/lazygit/state.yml

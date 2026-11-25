@@ -1,6 +1,9 @@
 # 環境変数の設定（テンプレート）
 # 実際のAPIキーは .bash/env.local.bash で設定してください
 
+# Homebrew と利用者用コマンドの検索先を、zsh と共通の設定で準備する。
+source "$HOME/.bin/shell-environment.sh"
+
 # ローカル環境変数ファイルが存在する場合は読み込む
 if [[ -f ~/.bash/env.local.bash ]]; then
     source ~/.bash/env.local.bash
@@ -21,7 +24,3 @@ if [[ -z "$TAVILY_API_KEY" ]]; then
     # 空のキーを設定してエラーを回避（実際の検索は動作しません）
     export TAVILY_API_KEY="disabled"
 fi
-
-# PATH設定
-export PATH="$HOME/.local/bin:$PATH"
-

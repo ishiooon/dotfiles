@@ -22,13 +22,13 @@ if [[ ! -x "$BOOTSTRAP_SCRIPT" ]]; then
   exit 1
 fi
 
-# 実ホームと Homebrew を変更しないよう、ドライランだけを検証する。
+# 実ホームと Homebrew を変更せず、Treesitter と Karabiner の導入が含まれることを確認する。
 OUTPUT="$(HOME="$ROOT_DIR/dry-run-home" bash "$BOOTSTRAP_SCRIPT" --env=localdev --dry-run --directory "$ROOT_DIR/dry-run-dotfiles")"
 
 for expected in \
   "git clone https://github.com/ishiooon/dotfiles.git" \
-  "brew install neovim starship fzf ripgrep fd lazygit deno gh node php w3m coreutils" \
-  "brew install --cask wezterm font-udev-gothic-nf" \
+  "brew install neovim tree-sitter-cli starship fzf ripgrep fd lazygit deno gh node php w3m coreutils" \
+  "brew install --cask wezterm font-udev-gothic-nf karabiner-elements" \
   "bash $ROOT_DIR/dry-run-dotfiles/.bin/install-janky-borders.sh" \
   "bash $ROOT_DIR/dry-run-dotfiles/.bin/install-karabiner.sh" \
   "nvim --headless" \

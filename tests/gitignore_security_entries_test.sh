@@ -48,6 +48,22 @@ assert_ignored ".bash/env.local.bash"
 assert_ignored ".zsh/env.local.zsh"
 assert_ignored ".config/mcphub/servers.json"
 
+# Raycast のレビュー手順4件を共有し、配布された拡張本体や端末が生成するデータを除外する。
+raycast_extension=".config/raycast/extensions/89648e03-cceb-4205-9f40-75fcb039a4c6"
+raycast_review_skill="$raycast_extension/skills/github-pull-request-review"
+assert_not_ignored "$raycast_review_skill/SKILL.md"
+assert_not_ignored "$raycast_review_skill/TOOLS.md"
+assert_not_ignored "$raycast_review_skill/UPSTREAM.md"
+assert_not_ignored "$raycast_review_skill/VALIDATION.md"
+assert_ignored "$raycast_review_skill/example.md"
+assert_ignored "$raycast_extension/plugin.json"
+assert_ignored "$raycast_extension/package.json"
+assert_ignored "$raycast_extension/dispatch-workflow.js"
+assert_ignored "$raycast_extension/dispatch-workflow.js.map"
+assert_ignored "$raycast_extension/node_modules/example/index.js"
+assert_ignored ".config/raycast/extensions/node_modules"
+assert_ignored ".config/raycast/node-compile-cache/example"
+
 # Amethyst の利用を終了したため、端末固有の設定を再共有しないことを検証する。
 assert_ignored ".config/amethyst/amethyst.yml"
 

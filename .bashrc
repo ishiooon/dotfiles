@@ -18,9 +18,7 @@ if [ -f ~/.bash_aliases ]; then
     . ~/.bash_aliases
 fi
 
-export DENO_INSTALL="$HOME/.deno"
-export PATH="$DENO_INSTALL/bin:$PATH"
-export PATH="$HOME/.local/bin:$PATH"
+# コマンドの検索先は env.bash で設定済みのため、ここでは追加しない。
 alias gh='command gh'
 # Cargo を別途導入していない Mac でも Bash の起動を失敗させない。
 if [ -f "$HOME/.cargo/env" ]; then

@@ -2,7 +2,7 @@
 set -euo pipefail
 
 readonly TAP_NAME="FelixKratz/formulae"
-readonly PACKAGE_NAME="borders"
+readonly PACKAGE_NAME="felixkratz/formulae/borders"
 readonly SERVICE_NAME="borders"
 readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 readonly DOTFILES_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
@@ -79,9 +79,9 @@ link_borders_config() {
 }
 
 install_janky_borders() {
-  # 公式 tap を追加し、JankyBorders の実行ファイルである borders を導入する。
+  # 完全名での導入は Homebrew の信頼要件を満たし、この formula だけを信頼する。
+  # https://docs.brew.sh/Tap-Trust#installing-from-a-tap
   run_command brew tap "$TAP_NAME"
-  run_command brew trust --formula "$TAP_NAME/$PACKAGE_NAME"
   run_command brew install "$PACKAGE_NAME"
 }
 

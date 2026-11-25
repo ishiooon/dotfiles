@@ -1,13 +1,12 @@
+-- 開発版が無い Mac では本人の公開版を使い、呼吸ガイドの既存設定を維持する。
 return {
-  {
-    -- "ishiooon/box-breathing.nvim",
-    dir = "~/dev_plugin/box-breathing.nvim",
-    config = {
-      -- オプションの設定（省略可能）
-      -- Optional configuration
-      duration = 4,  -- 各辺の移動時間（秒） / Movement duration per edge (seconds)
-      animation_interval = 50,  -- アニメーションの更新間隔（ミリ秒） / Animation update interval (milliseconds)
-    }
-  }
+    require("config.plugin_source").resolve("ishiooon/box-breathing.nvim", {
+        -- 開発用の Neovim プラグインをまとめた配置から読み込む。
+        "~/develop/nvim_plugins/box-breathing.nvim",
+    }, {
+        opts = {
+            duration = 4, -- 画面の各辺を移動する時間を4秒にする。
+            animation_interval = 50, -- アニメーションを50ミリ秒ごとに更新する。
+        },
+    }),
 }
-
