@@ -16,17 +16,28 @@ let definition = '{"model":"Torabo </script>"}';
 sandbox.readText = () => definition;
 const calls = [];
 const browser = vm.createContext({
-  window: { showKeymap: (profile) => calls.push(profile) },
+  window: { showKeymap: (profile, layers) => calls.push({ profile, layers: layers && JSON.stringify(layers) }) },
   buildToraboKeymap: (config) => ({ name: config.model })
 });
 vm.runInContext(sandbox.keymapDisplayScript("show torabo", "torabo-tsuki-s.json"), browser);
-assert.deepEqual(calls, ["torabo"]);
+assert.equal(calls.at(-1).profile, "torabo");
 assert.equal(browser.window.__TORABO_KEYMAP__.name, "Torabo </script>");
 vm.runInContext(sandbox.keymapDisplayScript("show", "torabo-tsuki-s.json"), browser);
-assert.deepEqual(calls, ["torabo", "jis"]);
+assert.equal(calls.at(-1).profile, "jis");
+vm.runInContext(sandbox.keymapDisplayScript("show jis", "torabo-tsuki-s.json"), browser);
+assert.equal(calls.at(-1).profile, "jis");
+// 外付けでFを保持した場合は、従来のFレイヤーを内蔵の定義から独立して渡す。
+const external = fs.readFileSync(root + "/.config/karabiner/keymap-layers-external.json", "utf8");
+sandbox.readText = (path) => {
+  assert.equal(path, "keymap-layers-external.json");
+  return external;
+};
+vm.runInContext(sandbox.keymapDisplayScript("show external", "torabo-tsuki-s.json"), browser);
+assert.deepEqual(calls.at(-1), { profile: "external", layers: JSON.stringify(JSON.parse(external)) });
 definition = "設定が壊れている";
+sandbox.readText = () => definition;
 vm.runInContext(sandbox.keymapDisplayScript("show torabo", "torabo-tsuki-s.json"), browser);
-assert.deepEqual(calls, ["torabo", "jis", "jis"]);
+assert.equal(calls.at(-1).profile, "jis");
 const html = sandbox.buildHtmlDocument("<head></head>", '{"label":"</script>"}', "function buildToraboKeymap() {}");
 assert.equal((html.match(/<\/script>/g) || []).length, 2);
 console.log("成功: 内蔵・Torabo用の表示指示を選び、データ不良時は内蔵表示に戻ります。");

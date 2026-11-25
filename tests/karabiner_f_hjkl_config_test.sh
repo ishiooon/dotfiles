@@ -55,8 +55,8 @@ for layer_id in base f d v c x; do
     exit 1
   fi
 done
-if ! grep -Fq '"z": "z/⌃"' "$LAYERS_FILE"; then
-  echo "ベースレイヤーに z hold=Control の表示がありません。" >&2
+if ! grep -Fq '"control": "z/⌃"' "$LAYERS_FILE"; then
+  echo "ベースレイヤーに control tap=z hold=Control の表示がありません。" >&2
   exit 1
 fi
 
@@ -98,7 +98,8 @@ for expected in \
   '"key_code": "up_arrow"' \
   '"key_code": "right_arrow"' \
   '"key_code": "delete_or_backspace"' \
-  'karabiner-keymap-hud show' \
+  'karabiner-keymap-hud show jis' \
+  'karabiner-keymap-hud show torabo' \
   'karabiner-keymap-hud hide' \
   '"mandatory": [' \
   'left_command' \
@@ -113,8 +114,9 @@ for expected in \
   'left_shift' \
   'spacebar' \
   '"name": "d_held"' \
+  '"key_code": "w"' \
   '"key_code": "d"' \
-  '"key_code": "comma"' \
+  '"key_code": "semicolon"' \
   '"key_code": "1"' \
   '"key_code": "0"' \
   'd layer' \
@@ -126,7 +128,7 @@ for expected in \
   'x layer' \
   '"key_code": "z"' \
   'left_control' \
-  'z hold=Control' \
+  'control tap=z hold=Control' \
   '"key_code": "escape"' \
   '"key_code": "delete_forward"' \
   'launchpad' \
@@ -143,8 +145,12 @@ for expected in \
 done
 
 # プロファイルでルールが有効化されていることを確認する。
-if ! grep -Fq 'karabiner-keymap-hud show' "$CONFIG_FILE"; then
-  echo "Karabiner プロファイルに f+m HUD ルールが有効化されていません。" >&2
+if ! grep -Fq 'karabiner-keymap-hud show jis' "$CONFIG_FILE"; then
+  echo "Karabiner プロファイルに内蔵向け HUD（show jis）ルールがありません。" >&2
+  exit 1
+fi
+if ! grep -Fq '"kana": "␣/⇧"' "$LAYERS_FILE" || ! grep -Fq '"command_r": "↩/⌘"' "$LAYERS_FILE"; then
+  echo "ベースレイヤーに右あいう=␣/⇧・右command=↩/⌘ の表示がありません。" >&2
   exit 1
 fi
 if ! grep -Fq 'japanese_eisuu' "$CONFIG_FILE" || ! grep -Fq 'japanese_kana' "$CONFIG_FILE"; then

@@ -3,7 +3,7 @@
 // 常駐 HUD デーモン（JS）。
 // Usage:
 //   osascript -l JavaScript keymap-hud.js daemon <htmlPath> <jsonPath> <pidPath> <cmdPath>
-// cmdPath の表示指示に従い、内蔵キーボードまたは Torabo-tsuki のキー一覧を表示する。
+// cmdPath の表示指示に従い、内蔵・外付け・Torabo-tsuki のキー一覧を表示する。
 
 ObjC.import("Cocoa");
 ObjC.import("WebKit");
@@ -56,6 +56,14 @@ function batterySubtitle(path) {
 
 function keymapDisplayScript(command, path, batteryPath) {
   const showJis = 'window.showKeymap("jis")';
+  if (command === "show external") {
+    try {
+      // 形状や凡例は内蔵JISと共有し、外付けのレイヤー定義を読み直す。
+      const layers = JSON.parse(readText(path.replace(/[^/]+$/, "keymap-layers-external.json")));
+      if (Array.isArray(layers) && layers.length) return `window.showKeymap("external", ${JSON.stringify(layers)})`;
+    } catch (error) {}
+    return showJis;
+  }
   if (command !== "show torabo") return showJis;
   try {
     // 表示のたびにToraboの表示用JSONと、保存された電池残量を読み込む。
@@ -135,7 +143,7 @@ function run(argv) {
       return;
     }
     lastCmd = cmd;
-    if (cmd === "show" || cmd === "show torabo") {
+    if (["show", "show jis", "show external", "show torabo"].includes(cmd)) {
       // 表示内容を切り替えてからパネルを開く。電池は同ディレクトリのキャッシュを読む。
       const batteryPath = cmdPath.replace(/[^/]+$/, "torabo-battery.json");
       webView.evaluateJavaScriptCompletionHandler(

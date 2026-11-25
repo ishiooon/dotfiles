@@ -20,26 +20,42 @@ printf 'idle\n' >"$state/command"
 export HUD_TEST_PROCESS="/usr/bin/osascript -l JavaScript $root/.config/karabiner/scripts/keymap-hud.js daemon $root/.config/karabiner/scripts/keymap-hud.html $root/.config/karabiner/keymap-layers.json $state/daemon.pid $state/command"
 
 # 起動済みのHUDと遅いコンパイラーを模擬し、macOSの画面や実機には触れない。
-cat >"$BASH_ENV" <<'SH'
-kill() { [[ "$*" == '-0 12345' ]]; }
-ps() { printf '%s\n' "$HUD_TEST_PROCESS"; }
-function /usr/bin/swiftc() {
-  local last=""
-  for last; do :; done
-  printf 'compile\n' >>"$HUD_TEST_FIXTURE/compilations"
-  for attempt in {1..100}; do
-    [[ ! -d "$HUD_TEST_FIXTURE" ]] && return 1
-    [[ -f "$HUD_TEST_FIXTURE/release" ]] && break
-    sleep 0.05
-  done
-  [[ -f "$HUD_TEST_FIXTURE/release" ]] || return 1
-  cat >"$last" <<'READER'
+# 絶対パス呼び出しを避けるため、swiftc / codesign は PATH 上のスタブにする。
+mkdir -p "$fixture/bin"
+cat >"$fixture/bin/swiftc" <<'SH'
+#!/usr/bin/env bash
+set -euo pipefail
+# -o の直後だけを出力先にする（末尾の Info.plist 引数と取り違えない）。
+out=""
+prev=""
+for arg; do
+  if [[ "$prev" == "-o" ]]; then out="$arg"; fi
+  prev="$arg"
+done
+[[ -n "$out" ]] || exit 1
+printf 'compile\n' >>"$HUD_TEST_FIXTURE/compilations"
+for attempt in {1..100}; do
+  [[ ! -d "$HUD_TEST_FIXTURE" ]] && exit 1
+  [[ -f "$HUD_TEST_FIXTURE/release" ]] && break
+  sleep 0.05
+done
+[[ -f "$HUD_TEST_FIXTURE/release" ]] || exit 1
+cat >"$out" <<'READER'
 #!/usr/bin/env bash
 printf 'read\n' >>"$HUD_TEST_FIXTURE/reads"
 printf '%s\n' '{"right":80,"left":30}'
 READER
-  chmod +x "$last"
-}
+chmod +x "$out"
+SH
+cat >"$fixture/bin/codesign" <<'SH'
+#!/usr/bin/env bash
+exit 0
+SH
+chmod +x "$fixture/bin/swiftc" "$fixture/bin/codesign"
+export PATH="$fixture/bin:$PATH"
+cat >"$BASH_ENV" <<'SH'
+kill() { [[ "$*" == '-0 12345' ]]; }
+ps() { printf '%s\n' "$HUD_TEST_PROCESS"; }
 SH
 cat >"$KARABINER_HUD_HIDUTIL" <<'SH'
 #!/usr/bin/env bash

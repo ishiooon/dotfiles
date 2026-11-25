@@ -105,20 +105,25 @@ ln -s ~/dotfiles/.config/mcphub ~/.config/mcphub
 導入時は `brew install felixkratz/formulae/borders` と配布元を含む名前を指定します。[Homebrew の信頼ルール](https://docs.brew.sh/Tap-Trust#installing-from-a-tap)に従い、JankyBorders の formula だけを信頼対象にします。
 
 #### 5. Karabiner-Elements のインストール
-`d` 押し込み中は `n m , j k l u i o p` が `1-0` になります。`v` 押し込み中は `n m ,` が `, . /`、`j k l u i o p` が `; ' \\ - = [ ]` になります。`f` と同時に押した `hjkl` / `e` はすぐ矢印・Delete になり、長押し後の連続入力にも対応します。`f` + `b` 長押し中だけ、JIS 配列（return 形状含む）の全キーとレイヤー一覧 HUD（JS 実装）を表示します。`英数` / `かな` は短押しで Enter、長押しで ⌘。`f` + `n` で ABC、`f` + `m` で あいう。`space` は短押しでスペース、長押しで Shift です。レイヤー定義は `.config/karabiner/keymap-layers.json`、Karabiner 本体は `.config/karabiner/karabiner.json`、HUD は `.bin/karabiner-keymap-hud` と `.config/karabiner/scripts/keymap-hud.{js,html}` です。HUD は物理 JIS 配列で表示し、常駐デーモン化して `f+b` で即時に出します。英字入力は入力ソース `ABC`（US）を使えます。初回のみ `bash ~/.bin/karabiner-keymap-hud start` でデーモンを起動してください。
 
-| キー | 動作 |
+Macの内蔵JISでは文字キーを上と外側へ移します。以下は移動前の物理キーで書いています。
+
+| 物理キー | 動作 |
 | --- | --- |
-| `f` + `h` | ← |
-| `f` + `j` | ↓ |
-| `f` + `k` | ↑ |
-| `f` + `l` | → |
-| `f` + `e` | Delete |
-| `f` + `m` | キーマップ一覧を表示（押している間） |
+| `e` 長押し＋ `f` | 内蔵のキー一覧を表示 |
+| `e` 長押し＋ `o` / `p` / `@` / `[` | 左 / 下 / 上 / 右 |
+| `e` 長押し＋ `;` / `:` | 英数（ABC）/ かな（あいう） |
+| `w` / `d` / `s` / `a` 長押し | 数字 / 記号 / ファンクションキー / メディア |
 
-`Command + Tab` 中は、物理の `Command` を維持したまま矢印だけを送るルールを使います。`Command` を押したまま `f` を押し、`hjkl` で移動してください。
+内蔵の右かなとスペースは短押しでスペース、長押しでShift。左英数と右Commandは短押しでEnter、長押しでCommand。左CommandはOptionとして使います。Command＋Tab中は、Commandを保持したまま物理 `e` と矢印に対応するキーを使います。
+
+ほかの外付けキーボードでは従来の `f/d/v/c/x` レイヤーを使い、Fを保持してBを押すと外付け用のキー一覧が出ます。Toraboで同じ操作をすると専用のキー一覧が出ます。キー一覧はBに対応するキーを離すと閉じます。
+
+内蔵・外付けの表示は [内蔵JISの定義](.config/karabiner/keymap-layers.json) と [外付けのレイヤー定義](.config/karabiner/keymap-layers-external.json) で管理します。[Karabinerの設定](.config/karabiner/karabiner.json) と同じ割り当てを反映してください。
 
 導入前確認は `bash .bin/install-karabiner.sh --dry-run`、導入は `bash .bin/install-karabiner.sh` です。初回はシステム設定で Input Monitoring とアクセシビリティの許可が必要です。許可後に Karabiner-Elements を起動すると設定が有効になります。
+
+更新前からキー一覧が起動している場合は、`~/.bin/karabiner-keymap-hud stop` で終了します。次の表示操作で新しい定義を読み込みます。
 
 #### Torabo-tsuki (S) のキーマップ編集
 

@@ -15,17 +15,24 @@ from pathlib import Path
 
 # 数字と記号の出力は、設定ファイルの値ではなく利用者向けのキー配列から定義する。
 LAYER_OUTPUTS = {
-    "d": {
-        "n": "1", "m": "2", "comma": "3", "j": "4", "k": "5",
-        "l": "6", "u": "7", "i": "8", "o": "9", "p": "0",
+    # 内蔵キーボードのレイヤーは、移動後の文字の位置から開く。
+    "w": {
+        "semicolon": "1", "quote": "2", "backslash": "3", "p": "4", "open_bracket": "5",
+        "close_bracket": "6", "hyphen": "7", "equal_sign": "8", "international3": "9",
+        "return_or_enter": "0",
     },
-    "v": {
-        "n": "comma", "m": "period", "comma": "slash", "j": "semicolon",
-        "k": "quote", "l": "backslash", "u": "hyphen", "i": "equal_sign",
-        "o": "open_bracket", "p": "close_bracket", "h": "grave_accent_and_tilde",
-        "y": "international3",
+    "d": {
+        "semicolon": "comma", "quote": "period", "backslash": "slash", "p": "semicolon",
+        "open_bracket": "quote", "close_bracket": "backslash", "hyphen": "hyphen",
+        "equal_sign": "equal_sign", "international3": "open_bracket",
+        "return_or_enter": "close_bracket", "o": "grave_accent_and_tilde",
+        "0": "international3",
     },
 }
+BUILT_IN = {"is_built_in_keyboard": True, "is_keyboard": True}
+EXTERNAL = {"is_built_in_keyboard": False, "is_keyboard": True}
+TORABO = {**EXTERNAL, "vendor_id": 65261, "product_id": 48301}
+LOGICAL_HOLDS = {"e": "f", "w": "d", "d": "v", "s": "c", "a": "x"}
 SIDED_MODIFIERS = ("command", "control", "option", "shift")
 ACCEPTED_MODIFIERS = (
     (), ("caps_lock",), ("left_shift",), ("right_shift",),
@@ -47,13 +54,63 @@ def main():
     for layer, outputs in LAYER_OUTPUTS.items():
         for key, output in outputs.items():
             verify_chord(manipulators, layer, key, output)
-    print("成功: d/v の同時押しで数字と記号を入力でき、通常のショートカットも維持されます。")
+    verify_device_scope(manipulators)
+    verify_command_layer(manipulators)
+    print("成功: キーボードごとにレイヤーが適用され、通常のショートカットとアプリ切り替えを保ちます。")
+
+
+def verify_device_scope(manipulators):
+    # 違うキーボードを併用しても、通常入力と右 Shift の左隣の出力が混ざらない。
+    for device, expected in ((BUILT_IN, ("q", "p", "vk_none")), (EXTERNAL, ("1", "return_or_enter", "hyphen")),
+                             (TORABO, ("1", "return_or_enter", "international1"))):
+        for key, output in zip(("1", "return_or_enter", "international1"), expected):
+            match = first_match(manipulators, (key,), device)
+            assert (key_codes(match) or [key]) == [output], (device, key, output)
+
+    for key, logical in LOGICAL_HOLDS.items():
+        for modifier in ("left_control", "left_option", "right_command"):
+            match = first_match(manipulators, (key,), BUILT_IN, (modifier,))
+            outputs = key_codes(match) or [event["key_code"] for event in match.get("to_if_alone", [])]
+            assert outputs == [logical], f"{modifier}+{key} で論理配置の {logical} を入力できません。"
+    assert key_codes(first_match(manipulators, ("d", "n"), EXTERNAL)) == ["1"]
+    assert key_codes(first_match(manipulators, ("v", "n"), EXTERNAL)) == ["comma"]
+    assert not first_match(manipulators, ("w", "semicolon"), EXTERNAL)
+    assert not first_match(manipulators, ("d", "n"), TORABO)
+    external_hold = variable_values(first_match(manipulators, ("d",), EXTERNAL))
+    internal_hold = variable_values(first_match(manipulators, ("w",), BUILT_IN))
+    assert key_codes(first_match(manipulators, ("semicolon",), BUILT_IN, variables=external_hold)) == ["n"]
+    assert not first_match(manipulators, ("n",), EXTERNAL, variables=internal_hold)
+
+
+def verify_command_layer(manipulators):
+    # 右 Command を先に押してから移動レイヤーに入ると、矢印と逆方向のアプリ切り替えが使える。
+    right_command = first_match(manipulators, ("right_command",), BUILT_IN)
+    right_command_state = variable_values(right_command)
+    assert key_codes(right_command) == ["right_command"]
+    assert right_command["to_if_alone"] == [{"key_code": "return_or_enter"}]
+    for modifiers in ((), ("right_command",)):
+        hold = first_match(manipulators, ("e",), BUILT_IN, modifiers, right_command_state)
+        active = {**right_command_state, **variable_values(hold)}
+        arrow = first_match(manipulators, ("o",), BUILT_IN, modifiers, active)
+        assert key_codes(arrow) == ["left_arrow"]
+        switch = first_match(manipulators, ("tab",), BUILT_IN, modifiers, active)
+        assert switch["to"] == [{"key_code": "tab", "modifiers": ["left_command"]}]
+        space = first_match(manipulators, ("spacebar",), BUILT_IN, modifiers, active)
+        assert key_codes(space) == ["left_shift"] and "to_if_alone" not in space
+        kana = first_match(manipulators, ("japanese_kana",), BUILT_IN, modifiers, active)
+        assert kana["to_if_alone"] == [{"key_code": "spacebar"}]
+        for shift in (space, kana):
+            backwards = first_match(manipulators, ("tab",), BUILT_IN, modifiers,
+                                    {**active, **variable_values(shift)})
+            assert backwards["to"] == [{"key_code": "tab", "modifiers": ["left_command", "left_shift"]}]
+    chord = first_match(manipulators, ("e", "o"), BUILT_IN, ("right_command",), allow_first_key=True)
+    assert key_codes(chord) == ["left_arrow"], "Command と移動レイヤーの同時押しが単独の保持より先に必要です。"
 
 
 def verify_chord(manipulators, layer, key, output):
     # Shift の記号入力を維持し、左右の Command、Control、Option では同時押しを変換しない。
     expected = {"key_code": output}
-    if (layer, key) == ("v", "h"):
+    if (layer, key) == ("d", "o"):
         expected["modifiers"] = ["left_shift"]
     for modifiers in ACCEPTED_MODIFIERS:
         result = chord_outputs(manipulators, (layer, key), modifiers)
@@ -70,15 +127,45 @@ def verify_chord(manipulators, layer, key, output):
 
 
 def chord_outputs(manipulators, keys, modifiers):
-    # キーが順に押されて重なった場合に一致するルールについて、変数設定を除いたキー出力を求める。
-    chord = tuple(keys)
-    for manipulator in manipulators:
-        source = manipulator["from"]
-        inputs = tuple(event.get("key_code") for event in source.get("simultaneous", ()))
-        if inputs != chord or not modifiers_match(source.get("modifiers", {}), modifiers):
+    match = first_match(manipulators, keys, BUILT_IN, modifiers)
+    return [event for event in match.get("to", []) if "key_code" in event]
+
+
+def first_match(manipulators, keys, device, modifiers=(), variables=None, allow_first_key=False):
+    # Karabiner と同じ順序で条件を照合し、必要に応じて同時押しの先頭キーも候補にする。
+    for entry in manipulators:
+        source = entry["from"]
+        inputs = tuple(event["key_code"] for event in source.get("simultaneous", ()))
+        if not inputs:
+            inputs = (source.get("key_code"),)
+        if inputs not in (keys, keys[:1] if allow_first_key else keys):
             continue
-        return [event for event in manipulator["to"] if "key_code" in event]
-    return []
+        if modifiers_match(source.get("modifiers", {}), modifiers) and conditions_match(entry, device, variables or {}):
+            return entry
+    return {}
+
+
+def conditions_match(entry, device, variables):
+    for condition in entry.get("conditions", []):
+        kind = condition["type"]
+        if kind in ("device_if", "device_unless"):
+            found = any(all(device.get(key) == value for key, value in identifier.items() if key != "description")
+                        for identifier in condition["identifiers"])
+        elif kind in ("variable_if", "variable_unless"):
+            found = variables.get(condition["name"], 0) == condition["value"]
+        else:
+            raise AssertionError(f"未対応の条件 {kind}")
+        if found != kind.endswith("_if"):
+            return False
+    return True
+
+
+def key_codes(entry):
+    return [event["key_code"] for event in entry.get("to", []) if "key_code" in event]
+
+
+def variable_values(entry):
+    return {item["name"]: item["value"] for event in entry.get("to", []) if (item := event.get("set_variable"))}
 
 
 def modifiers_match(specification, modifiers):

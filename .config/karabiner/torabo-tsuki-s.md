@@ -2,7 +2,7 @@
 
 ZMK版のキー割り当ては [torabo_tsuki.keymap](../torabo-zmk/config/torabo_tsuki.keymap) で管理します。MacでToraboのキー一覧を開くたびに、表示用の [torabo-tsuki-s.json](torabo-tsuki-s.json) を読み込みます。キーを変更するときは [ZMKの手順](../torabo-zmk/README.md) に沿って、ファームウェアのキーマップとMacの表示用データの両方を更新します。変更を依頼するときは「Toraboの数字レイヤーで、右手小指側のキーを0に」など、レイヤーと物理キーと希望する動作を伝えてください。
 
-Toraboでは `f` を長押ししてから `b` を押すと、移動レイヤーのB位置が表示用の `F24` を送り、Karabinerがキー一覧を開きます。同じ `f` 保持中の `n` が英数（ABC）、`m` がかな（あいう）です。ZMKでは `LANG2` と `LANG1` を使います。内蔵キーボードの `f + b`、`f + n`、`f + m` でも同じ操作ができます。
+Toraboでは `f` を長押ししてから `b` を押すと、移動レイヤーのB位置が表示用の `F24` を送り、Karabinerがキー一覧を開きます。同じ `f` 保持中の `n` が英数（ABC）、`m` がかな（あいう）です。ZMKでは `LANG2` と `LANG1` を使います。Macの内蔵JISでは、物理 `e` を保持して `f` で内蔵のキー一覧、`;` で英数、`:` でかなに切り替えます。
 
 ## BMP/Vial版の設定を編集する
 

@@ -14,16 +14,21 @@ readonly CMD_FILE="$STATE_DIR/command"
 readonly LOG_FILE="$STATE_DIR/hud.log"
 readonly HIDUTIL="${KARABINER_HUD_HIDUTIL:-/usr/bin/hidutil}"
 readonly BATTERY_SWIFT="${KARABINER_TORABO_BATTERY_SWIFT:-$DOTFILES_DIR/.config/karabiner/scripts/torabo-battery.swift}"
+readonly BATTERY_PLIST="${KARABINER_TORABO_BATTERY_PLIST:-$DOTFILES_DIR/.config/karabiner/scripts/torabo-battery-Info.plist}"
 readonly BATTERY_BIN="$STATE_DIR/torabo-battery"
 readonly BATTERY_JSON="$STATE_DIR/torabo-battery.json"
 readonly BATTERY_LOCK="$STATE_DIR/torabo-battery.lock"
 
 usage() {
   cat <<'USAGE'
-Usage: karabiner-keymap-hud show|hide|status|start|stop
+Usage: karabiner-keymap-hud show [jis|external|torabo] | hide | status | start | stop
 
 f + b で使用するキー一覧を表示または非表示にします。
-Torabo 接続時は直近の電池残量も見出しに出します。
+  show        … Torabo 接続中なら Torabo、なければ内蔵 JIS
+  show jis    … 常に内蔵 JIS（上・外側ずらし）
+  show external … 常に外付けキーボードの従来配列
+  show torabo … 常に Torabo-tsuki
+Torabo 表示時は直近の電池残量も見出しに出します。
 USAGE
 }
 
@@ -71,34 +76,62 @@ start_daemon() {
   }
 }
 
+# Bluetooth 利用説明をバイナリに埋め込み、Karabiner 経由でも権限ダイアログを出せるようにする。
+compile_battery_bin() {
+  local binary_tmp="$1"
+  # PATH 上の swiftc/codesign を使い、テストのスタブ差し替えにも対応する。
+  swiftc -module-cache-path "$STATE_DIR/swift-cache" -O "$BATTERY_SWIFT" -o "$binary_tmp" \
+    -Xlinker -sectcreate -Xlinker __TEXT -Xlinker __info_plist -Xlinker "$BATTERY_PLIST" || return 1
+  # 安定した識別子で署名し、Privacy の Bluetooth 一覧に残りやすくする。
+  codesign --force --sign - --identifier jp.k-mass.torabo-battery "$binary_tmp" || return 1
+}
+
 # ビルドと取得を別プロセスで行い、取得結果を一度に置き換える。
+# 失敗時は直近の成功結果を残し、Abort（権限不足）でも表示が空に戻らないようにする。
 refresh_battery_async() {
   (
     mkdir "$BATTERY_LOCK" 2>/dev/null || exit 0
     local binary_tmp="" output_tmp=""
     trap 'rm -f -- "$binary_tmp" "$output_tmp"; rmdir "$BATTERY_LOCK"' EXIT
     trap 'exit 1' HUP INT TERM
-    [[ -f "$BATTERY_SWIFT" ]] || exit 0
-    if [[ ! -x "$BATTERY_BIN" || "$BATTERY_SWIFT" -nt "$BATTERY_BIN" ]]; then
+    [[ -f "$BATTERY_SWIFT" && -f "$BATTERY_PLIST" ]] || exit 0
+    if [[ ! -x "$BATTERY_BIN" || "$BATTERY_SWIFT" -nt "$BATTERY_BIN" || "$BATTERY_PLIST" -nt "$BATTERY_BIN" ]]; then
       binary_tmp="$(mktemp "$STATE_DIR/torabo-battery-bin.XXXXXX")" || exit 1
-      /usr/bin/swiftc -module-cache-path "$STATE_DIR/swift-cache" -O "$BATTERY_SWIFT" -o "$binary_tmp" || exit 1
+      compile_battery_bin "$binary_tmp" || exit 1
       mv -f "$binary_tmp" "$BATTERY_BIN" || exit 1
+      binary_tmp=""
     fi
     output_tmp="$(mktemp "$STATE_DIR/torabo-battery-data.XXXXXX")" || exit 1
-    if "$BATTERY_BIN" >"$output_tmp"; then
+    if "$BATTERY_BIN" >"$output_tmp" 2>>"$LOG_FILE"; then
       mv -f "$output_tmp" "$BATTERY_JSON"
+      output_tmp=""
     else
-      rm -f "$BATTERY_JSON"
+      printf '[battery] read failed (exit %s); keeping previous cache if any\n' "$?" >>"$LOG_FILE"
     fi
   ) </dev/null >>"$LOG_FILE" 2>&1 &
   disown || true
 }
 
 show_hud() {
+  local mode="${1:-auto}"
   start_daemon
+
+  case "$mode" in
+    jis)
+      # 常駐デーモンは show / show torabo を見る。JIS強制は show を書く。
+      printf 'show\n' >"$CMD_FILE"
+      return
+      ;;
+    external)
+      printf 'show external\n' >"$CMD_FILE"
+      return
+      ;;
+  esac
+
+  # 自動選択でToraboが見つからないときは内蔵JISを表示する。
   local connection
   connection="$(torabo_connection)" || connection=""
-  if [[ -z "$connection" ]]; then
+  if [[ "$mode" == auto && -z "$connection" ]]; then
     printf 'show\n' >"$CMD_FILE"
     return
   fi
@@ -155,7 +188,16 @@ status_hud() {
 
 main() {
   case "${1:-}" in
-    show) show_hud ;;
+    show)
+      case "${2:-}" in
+        "") show_hud auto ;;
+        jis|external|torabo) show_hud "$2" ;;
+        *)
+          usage >&2
+          exit 1
+          ;;
+      esac
+      ;;
     hide) hide_hud ;;
     start) start_daemon ;;
     stop) stop_daemon ;;

@@ -84,6 +84,15 @@ assert.match(heading.textContent, /JIS/);
 assert.equal(layers.children.length, 6, '切断後はJISの base/f/d/v/c/x レイヤーへ戻る');
 assert.ok(body.classes.has('jis-keymap-compact'), 'JISに戻ると6層用の寸法に戻る');
 
+// 外付けでは従来のFレイヤーを描き、次に内蔵を開くと移動後のEレイヤーへ戻る。
+const external = JSON.parse(fs.readFileSync(path.join(process.argv[2], 'keymap-layers-external.json'), 'utf8'));
+assert.equal(window.showKeymap('external', external), 'external');
+assert.match(heading.textContent, /外付け/);
+assert.equal(layers.children.length, 6);
+assert.match(layers.children[1].children[0].children[0].textContent, /f 押し込み中/);
+assert.equal(window.showKeymap('jis'), 'jis');
+assert.match(layers.children[1].children[0].children[0].textContent, /e 押し込み中/);
+
 const manyLayers = openKeymap({ ...options, layers: Array.from({ length: 16 }, (_, index) => ({
   name: `レイヤー${index}`, bindings: { left: '<設定>', right: 'F12' },
 })) });

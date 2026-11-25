@@ -51,12 +51,24 @@ final class Reader: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate {
     func start() {
         central = CBCentralManager(delegate: self, queue: nil,
                                    options: [CBCentralManagerOptionShowPowerAlertKey: false])
-        DispatchQueue.main.asyncAfter(deadline: .now() + 3) { self.emit() }
+        // 初回の Bluetooth 許可ダイアログや GATT 応答待ちの余裕を見る。
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5) { self.emit() }
     }
 
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
         if central.state == .unknown || central.state == .resetting { return }
         guard central.state == .poweredOn else { emit(); return }
+        if #available(macOS 10.15, *) {
+            // 未許可のまま読みに行くと Karabiner 経由で Abort することがある。
+            switch CBCentralManager.authorization {
+            case .denied, .restricted:
+                FileHandle.standardError.write(Data("bluetooth authorization denied\n".utf8))
+                emit()
+                return
+            default:
+                break
+            }
+        }
         guard target == nil else { return }
         let candidates = central.retrieveConnectedPeripherals(withServices: [bas])
             .filter { $0.name?.caseInsensitiveCompare("Torabo-tsuki S") == .orderedSame }

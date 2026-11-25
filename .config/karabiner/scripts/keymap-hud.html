@@ -167,6 +167,24 @@
       border-color: rgba(169, 182, 101, 0.4);
       color: #1d2021;
     }
+    .key.shifted {
+      background: linear-gradient(180deg, #5a524c 0%, #45403d 100%);
+      border-color: rgba(168, 153, 132, 0.35);
+      color: var(--fg0);
+    }
+    .key.shifted .action { color: var(--fg0); }
+    .key.dead {
+      background: #000;
+      border-color: #000;
+      box-shadow: none;
+      color: transparent;
+    }
+    .key.dead .shift,
+    .key.dead .base,
+    .key.dead .action,
+    .key.dead .kana,
+    .key.dead .glyph,
+    .key.dead .word { display: none; }
     .key .shift {
       position: absolute;
       top: 3px;
@@ -250,6 +268,25 @@
       letter-spacing: 0.02em;
       pointer-events: none;
     }
+    .key.jis-return .action {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 2;
+      margin: 0;
+      font-size: 14px;
+      font-weight: 750;
+      color: var(--fg0);
+      line-height: 1;
+      pointer-events: none;
+    }
+    .key.jis-return.mapped .action {
+      color: #1d2021;
+    }
+    .key.jis-return.shifted .action {
+      color: var(--fg0);
+    }
     .key.bracket-close {
       z-index: 3;
       position: relative;
@@ -314,6 +351,8 @@
     }
     .swatch.holder { background: #a04300; }
     .swatch.mapped { background: #556340; }
+    .swatch.shifted { background: #5a524c; }
+    .swatch.dead { background: #000; border: 1px solid #333; }
     .swatch.normal { background: #3c3836; }
     /* 分割配列はキーの座標を保ち、レイヤー数が多い場合も全体が画面の幅と高さに収まるようにする。 */
     .torabo-keymap .shell { width: min(1240px, 100vw); }
@@ -376,19 +415,70 @@
       return wrap;
     }
 
+    function isDeadBinding(value) {
+      return value === "∅" || value === "" || value === null;
+    }
+
+    function baseDeadKeys(def) {
+      const base = (def.layers || []).find((layer) => layer.id === "base");
+      const dead = new Set();
+      if (!base || !base.bindings) return dead;
+      for (const [key, value] of Object.entries(base.bindings)) {
+        if (isDeadBinding(value)) dead.add(key);
+      }
+      return dead;
+    }
+
+    function baseBindings(def) {
+      const base = (def.layers || []).find((layer) => layer.id === "base");
+      return (base && base.bindings) || {};
+    }
+
     function createKey(key, layer, def, options = {}) {
       if (key === "arrow_cluster") return createArrowCluster();
 
       const bindings = layer.bindings || {};
-      const mapped = bindings[key];
+      const isHoldLayer = layer.id !== "base";
+      const hideUnassigned = isHoldLayer && !options.external;
+      const isHoldKey = key === (layer.hold || layer.id);
+      const layerMapped = Object.prototype.hasOwnProperty.call(bindings, key) ? bindings[key] : undefined;
+      const baseMapped = baseBindings(def)[key];
+      const fromLayer = layerMapped !== undefined && !isDeadBinding(layerMapped);
+      const fromBaseShift = !fromLayer && baseMapped !== undefined && !isDeadBinding(baseMapped);
+
+      // 押し込み中: レイヤー割当 → 移動後のみ。出力なし・未割当・押し込みキー自体は文字なし。
+      let mapped;
+      let dead = false;
+      if (fromLayer) {
+        mapped = layerMapped;
+      } else if (isHoldKey) {
+        mapped = undefined;
+      } else if (baseDeadKeys(def).has(key) || isDeadBinding(baseMapped)) {
+        dead = true;
+      } else if (fromBaseShift) {
+        mapped = baseMapped;
+      } else if (hideUnassigned) {
+        dead = true;
+      } else {
+        mapped = undefined;
+      }
+
       const keyEl = document.createElement("div");
       keyEl.className = "key";
       keyEl.style.cssText = widthStyle((def.key_widths && def.key_widths[key]) || 1);
       if (options.jisReturn) keyEl.classList.add("jis-return");
       if (key === "]") keyEl.classList.add("bracket-close");
       if (key === "space") keyEl.classList.add("space");
-      if (key === layer.id) keyEl.classList.add("holder");
-      if (mapped) keyEl.classList.add("mapped");
+      if (isHoldKey) keyEl.classList.add("holder");
+      if (dead) {
+        keyEl.classList.add("dead");
+        if (options.jisReturn) {
+          keyEl.style.background = "#000";
+          keyEl.replaceChildren();
+        }
+        return keyEl;
+      }
+      if (mapped) keyEl.classList.add(fromLayer || layer.id === "base" ? "mapped" : "shifted");
 
       const mods = new Set([
         "esc", "delete", "tab", "control", "shift_l", "shift_r", "return",
@@ -397,26 +487,19 @@
       ]);
       if (mods.has(key)) keyEl.classList.add("mod");
 
-      // 出力キーに対応する Shift 記号があるなら上段に出す（数字・,./ など）
-      const mappedShift = mapped && ((def.us_shift_labels && def.us_shift_labels[mapped]) || (def.shift_labels && def.shift_labels[mapped]));
-      const shift = !mappedShift && def.shift_labels && def.shift_labels[key];
-      if (shift) {
-        const shiftEl = document.createElement("div");
-        shiftEl.className = "shift";
-        shiftEl.textContent = shift;
-        keyEl.appendChild(shiftEl);
-      }
-
       const glyph = def.key_glyphs && def.key_glyphs[key];
       if (options.jisReturn) {
         // Apple JIS return: top full-width, bottom left inset ~19% (official asset ratio).
         const gid = `retGrad-${layer.id}-${Math.random().toString(36).slice(2, 7)}`;
+        const layered = fromLayer || layer.id === "base";
+        const fillTop = mapped ? (layered ? "#6f8250" : "#5a524c") : "#45403d";
+        const fillBot = mapped ? (layered ? "#556340" : "#45403d") : "#3c3836";
         keyEl.innerHTML = `
           <svg class="return-svg" viewBox="0 0 100 132" preserveAspectRatio="none" aria-hidden="true">
             <defs>
               <linearGradient id="${gid}" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stop-color="#45403d"/>
-                <stop offset="100%" stop-color="#3c3836"/>
+                <stop offset="0%" stop-color="${fillTop}"/>
+                <stop offset="100%" stop-color="${fillBot}"/>
               </linearGradient>
             </defs>
             <path fill="url(#${gid})" stroke="#1d2021" stroke-width="1.2" stroke-linejoin="round"
@@ -436,51 +519,56 @@
             <path fill="none" stroke="rgba(212,190,152,0.14)" stroke-width="1"
               d="M 6 2.2 H 94 Q 97.5 2.2 97.5 5.5 V 8"/>
           </svg>`;
-        const g = document.createElement("div");
-        g.className = "glyph";
-        g.textContent = glyph || "↩";
-        const w = document.createElement("div");
-        w.className = "word";
-        w.textContent = "return";
-        keyEl.appendChild(g);
-        keyEl.appendChild(w);
+        if (mapped) {
+          const action = document.createElement("div");
+          action.className = "action";
+          action.textContent = mapped;
+          keyEl.appendChild(action);
+        } else if (!hideUnassigned) {
+          const action = document.createElement("div");
+          action.className = "action";
+          action.textContent = glyph || "↩";
+          keyEl.appendChild(action);
+        }
         return keyEl;
       }
 
+      // 移動後の出力（またはレイヤー割り当て）だけを表示する
       if (mapped) {
-        const label = document.createElement("div");
-        label.className = mappedShift ? "shift" : "base";
-        label.textContent = mappedShift || displayName(key, def);
-        keyEl.appendChild(label);
         const action = document.createElement("div");
         action.className = "action";
         action.textContent = mapped;
         if (mapped.length > 8) keyEl.dataset.longLabel = "";
         keyEl.appendChild(action);
-      } else if (key !== "space") {
+      } else if (!hideUnassigned && key !== "space") {
         const name = displayName(key, def);
         if (!name && !glyph) {
           keyEl.style.visibility = "hidden";
           return keyEl;
         }
         const label = document.createElement("div");
-        if (glyph && key !== "eisuu" && key !== "kana" && key !== "fn") {
-          label.textContent = `${glyph} ${name}`;
+        // glyph と label が同じ（⌫⌫ など）にならないよう一つだけ出す
+        if (glyph && name && glyph !== name && key !== "eisuu" && key !== "kana" && key !== "fn") {
+          label.textContent = glyph;
           label.style.fontSize = "10px";
         } else {
-          label.textContent = name;
+          label.textContent = glyph || name;
         }
         keyEl.appendChild(label);
       }
       return keyEl;
     }
 
-    function renderLayer(layer, def) {
+    function renderLayer(layer, def, external) {
       const bindings = layer.bindings || {};
-      const summary = Object.keys(bindings).length === 0
+      const summaryEntries = Object.keys(bindings)
+        .filter((key) => !isDeadBinding(bindings[key]))
+        .sort()
+        .map((key) => `${displayName(key, def)}→${bindings[key]}`);
+      const summary = summaryEntries.length === 0
         ? "JIS 形状 · US 刻印"
-        : Object.keys(bindings).sort().map((key) => `${displayName(key, def)}→${bindings[key]}`).join("   ");
-      const board = createBoard(`${layer.name}  ·  ${layer.trigger}`, summary, layer.id === "f");
+        : summaryEntries.join("   ");
+      const board = createBoard(`${layer.name}  ·  ${layer.trigger}`, summary, Boolean(layer.hold));
 
       const keyboard = document.createElement("div");
       keyboard.className = "keyboard";
@@ -489,10 +577,10 @@
         rowEl.className = "row";
         const extras = (def.row_extras && def.row_extras[String(rowIndex)]) || [];
         for (const key of row) {
-          rowEl.appendChild(createKey(key, layer, def));
+          rowEl.appendChild(createKey(key, layer, def, { external }));
           for (const extra of extras) {
             if (extra.after === key && !extra.placeholder) {
-              rowEl.appendChild(createKey(extra.key, layer, def, { jisReturn: extra.key === "return" }));
+              rowEl.appendChild(createKey(extra.key, layer, def, { external, jisReturn: extra.key === "return" }));
             }
           }
         }
@@ -504,7 +592,9 @@
       legend.className = "legend";
       legend.innerHTML = `
         <span><i class="swatch holder"></i>レイヤーキー</span>
-        <span><i class="swatch mapped"></i>リマップ</span>
+        <span><i class="swatch mapped"></i>レイヤー割当</span>
+        <span><i class="swatch shifted"></i>移動後</span>
+        <span><i class="swatch dead"></i>出力なし</span>
         <span><i class="swatch normal"></i>通常</span>
       `;
       board.appendChild(legend);
@@ -512,11 +602,13 @@
     }
 
     // 常駐処理から表示する配列を受け取り、現在の画面を差し替える。
-    function showKeymap(profile) {
+    function showKeymap(profile, externalLayers) {
       const root = document.getElementById("layers");
       const title = document.querySelector("#keymap-title");
       const sub = document.querySelector("#keymap-sub");
-      const def = window.__KEYMAP_LAYERS__;
+      const jis = window.__KEYMAP_LAYERS__;
+      const external = profile === "external" && Array.isArray(externalLayers) && externalLayers.length > 0;
+      const def = external ? { ...jis, layers: externalLayers } : jis;
       const split = profile === "torabo" ? window.__TORABO_KEYMAP__ : null;
       const useSplit = Boolean(split && Array.isArray(split.keys) && split.keys.length &&
         split.keys.every((key) => key && Number.isFinite(key.x) && Number.isFinite(key.y)) &&
@@ -536,10 +628,10 @@
         return "torabo";
       }
       if (!def) throw new Error("JISの配列データがありません。");
-      title.textContent = "Keymap Layers · JIS shape / US legends";
-      if (sub) sub.textContent = "f + b で表示 · 離すと閉じる · Gruvbox Material";
-      for (const layer of def.layers) root.appendChild(renderLayer(layer, def));
-      return "jis";
+      title.textContent = external ? "外付けキーボード · JIS 配列" : "内蔵キーボード · JIS 配列";
+      if (sub) sub.textContent = external ? "f + b で表示 · 離すと閉じる" : "物理 e + f で表示 · 離すと閉じる";
+      for (const layer of def.layers) root.appendChild(renderLayer(layer, def, external));
+      return external ? "external" : "jis";
     }
 
     function renderToraboKeymap(root, definition) {

@@ -73,6 +73,22 @@ expect_display failure show
 expect_display disconnected show
 KARABINER_HUD_HIDUTIL="$fixture/見つからない" expect_display usb show
 
+# Mac の f+b 相当（show jis）は Torabo 接続中でもデーモンへは show（JIS）を渡す
+HUD_TEST_DEVICES=usb bash "$launcher" show jis
+[[ "$(cat "$state_dir/command")" == show ]] || {
+  echo "show jis が Torabo 接続中でもデーモン向け show になりません。" >&2
+  exit 1
+}
+HUD_TEST_DEVICES=disconnected bash "$launcher" show torabo
+[[ "$(cat "$state_dir/command")" == 'show torabo' ]] || {
+  echo "show torabo が未接続でも Torabo 指定になりません。" >&2
+  exit 1
+}
+
+# 外付けの旧配列はTorabo接続中でも外付け専用の表示指示を渡す。
+HUD_TEST_DEVICES=usb bash "$launcher" show external
+[[ "$(cat "$state_dir/command")" == 'show external' ]]
+
 bash "$launcher" hide
 [[ "$(cat "$state_dir/command")" == hide ]]
 [[ "$(bash "$launcher" status)" == 'running pid=12345 cmd=hide' ]]
