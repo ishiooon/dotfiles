@@ -54,10 +54,11 @@ chmod +x "$KARABINER_HUD_HIDUTIL"
 
 # 連続した表示操作で、接続・切断や取得失敗が毎回の表示先に反映される。
 launcher="$root/.bin/karabiner-keymap-hud"
+display_command() { head -n 1 "$state_dir/command"; }
 expect_display() {
   local devices="$1" expected="$2" actual
   HUD_TEST_DEVICES="$devices" bash "$launcher" show
-  actual="$(cat "$state_dir/command")"
+  actual="$(display_command)"
   if [[ "$actual" != "$expected" ]]; then
     printf '機器一覧が %s の場合の表示指示は %s のはずですが、%s でした。\n' "$devices" "$expected" "$actual" >&2
     exit 1
@@ -75,25 +76,32 @@ KARABINER_HUD_HIDUTIL="$fixture/見つからない" expect_display usb show
 
 # Mac の f+b 相当（show jis）は Torabo 接続中でもデーモンへは show（JIS）を渡す
 HUD_TEST_DEVICES=usb bash "$launcher" show jis
-[[ "$(cat "$state_dir/command")" == show ]] || {
+[[ "$(display_command)" == show ]] || {
   echo "show jis が Torabo 接続中でもデーモン向け show になりません。" >&2
   exit 1
 }
 HUD_TEST_DEVICES=disconnected bash "$launcher" show torabo
-[[ "$(cat "$state_dir/command")" == 'show torabo' ]] || {
+[[ "$(display_command)" == 'show torabo' ]] || {
   echo "show torabo が未接続でも Torabo 指定になりません。" >&2
   exit 1
 }
 
 # 外付けの旧配列はTorabo接続中でも外付け専用の表示指示を渡す。
 HUD_TEST_DEVICES=usb bash "$launcher" show external
-[[ "$(cat "$state_dir/command")" == 'show external' ]]
+[[ "$(display_command)" == 'show external' ]]
 
 bash "$launcher" hide
-[[ "$(cat "$state_dir/command")" == hide ]]
+[[ "$(display_command)" == hide ]]
 [[ "$(bash "$launcher" status)" == 'running pid=12345 cmd=hide' ]]
 
 # 同じランチャーを ~/.bin と配置元のどちらから呼んでも、起動済みの画面を参照する。
 ln -s "$root/.bin" "$fixture/linked-bin"
 [[ "$(bash "$fixture/linked-bin/karabiner-keymap-hud" status)" == 'running pid=12345 cmd=hide' ]] || exit 1
+
+# ~/.config の設定がシンボリックリンクでも、配置元で実行中の画面を引き継ぐ。
+ln -s "$root/.config/karabiner" "$fixture/linked-config"
+KARABINER_KEYMAP_HUD_JS="$fixture/linked-config/scripts/keymap-hud.js" \
+  KARABINER_KEYMAP_HUD_HTML="$fixture/linked-config/scripts/keymap-hud.html" \
+  KARABINER_KEYMAP_LAYERS_JSON="$fixture/linked-config/keymap-layers.json" \
+  bash "$launcher" status | grep -Fxq 'running pid=12345 cmd=hide'
 printf '%s\n' '成功: Toraboの接続時は専用表示を選び、切断・取得失敗時は内蔵表示を維持します。'

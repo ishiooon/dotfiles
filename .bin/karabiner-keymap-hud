@@ -3,11 +3,19 @@ set -euo pipefail
 
 # 常駐 JS HUD を show/hide する。初回だけ起動し、以降は即時表示。
 # ~/.bin とリポジトリのどちらから呼んでも、同じパスで常駐プログラムを参照する。
+physical_path() {
+  if [[ -x /bin/realpath ]] && /bin/realpath "$1" 2>/dev/null; then
+    return
+  fi
+  # realpath がない macOS でも、設定ディレクトリを経由するシンボリックリンクを解決する。
+  (cd -P -- "$(dirname -- "$1")" && printf '%s/%s\n' "$PWD" "${1##*/}")
+}
+
 readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 readonly DOTFILES_DIR="$(cd "$SCRIPT_DIR/.." && pwd -P)"
-readonly HUD_JS="${KARABINER_KEYMAP_HUD_JS:-$DOTFILES_DIR/.config/karabiner/scripts/keymap-hud.js}"
-readonly HUD_HTML="${KARABINER_KEYMAP_HUD_HTML:-$DOTFILES_DIR/.config/karabiner/scripts/keymap-hud.html}"
-readonly LAYERS_JSON="${KARABINER_KEYMAP_LAYERS_JSON:-$DOTFILES_DIR/.config/karabiner/keymap-layers.json}"
+readonly HUD_JS="$(physical_path "${KARABINER_KEYMAP_HUD_JS:-$DOTFILES_DIR/.config/karabiner/scripts/keymap-hud.js}")"
+readonly HUD_HTML="$(physical_path "${KARABINER_KEYMAP_HUD_HTML:-$DOTFILES_DIR/.config/karabiner/scripts/keymap-hud.html}")"
+readonly LAYERS_JSON="$(physical_path "${KARABINER_KEYMAP_LAYERS_JSON:-$DOTFILES_DIR/.config/karabiner/keymap-layers.json}")"
 readonly STATE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/karabiner-keymap-hud"
 readonly PID_FILE="$STATE_DIR/daemon.pid"
 readonly CMD_FILE="$STATE_DIR/command"
@@ -60,20 +68,60 @@ wait_until_ready() {
   return 1
 }
 
+# 開始・停止が重なったとき、PID確認から処理完了までを一度に一つだけ行う。
+with_daemon_lock() {
+  mkdir -p "$STATE_DIR"
+  (
+    /usr/bin/lockf -t 5 9
+    "$@"
+  ) 9>"$STATE_DIR/daemon.lock"
+}
+
 start_daemon() {
+  local child
   if is_running; then
     return 0
   fi
-  mkdir -p "$STATE_DIR"
-  : >"$LOG_FILE"
-  printf 'idle\n' >"$CMD_FILE"
+  # 指示を受け取ってから画面を準備する間にキーが離されても、現在の指示を維持する。
+  (set -o noclobber; printf 'idle\n' >"$CMD_FILE") 2>/dev/null || true
+  rm -f "$PID_FILE"
   /usr/bin/nohup /usr/bin/osascript -l JavaScript "$HUD_JS" \
-    daemon "$HUD_HTML" "$LAYERS_JSON" "$PID_FILE" "$CMD_FILE" >>"$LOG_FILE" 2>&1 &
-  disown || true
+    daemon "$HUD_HTML" "$LAYERS_JSON" "$PID_FILE" "$CMD_FILE" </dev/null >>"$LOG_FILE" 2>&1 9>&- &
+  child=$!
   wait_until_ready || {
+    # 準備が間に合わなかった子を回収してから、別の起動要求にロックを明け渡す。
+    kill "$child" 2>/dev/null || true
+    wait "$child" 2>/dev/null || true
     printf '[ERROR] HUD デーモンの起動に失敗しました。詳細: %s\n' "$LOG_FILE" >&2
-    exit 1
+    return 1
   }
+  disown "$child" || true
+}
+
+# 起動をキー操作の処理から切り離し、待機中に次のキー操作が来ても準備を続ける。
+start_in_background() {
+  if ! is_running; then
+    /usr/bin/nohup "$SCRIPT_DIR/karabiner-keymap-hud" start </dev/null >>"$LOG_FILE" 2>&1 &
+    disown || true
+  fi
+}
+
+# 指示を識別子付きで置き換える。機器検索の完了など、元の指示が有効な間だけ書き込む場合もある。
+write_command() {
+  local command="$1" expected="${2:-}" temporary request
+  mkdir -p "$STATE_DIR" || return 1
+  (
+    /usr/bin/lockf -t 3 8 || exit 1
+    if [[ -n "$expected" && ( ! -f "$CMD_FILE" || "$(<"$CMD_FILE")" != "$expected" ) ]]; then
+      exit 3
+    fi
+    temporary="$(mktemp "$STATE_DIR/command.XXXXXXXXXXXX")" || exit 1
+    trap 'rm -f -- "$temporary"' EXIT
+    printf -v request '%s\n%s' "$command" "${temporary##*.}"
+    printf '%s\n' "$request" >"$temporary" || exit 1
+    mv -f "$temporary" "$CMD_FILE" || exit 1
+    printf '%s\n' "$request"
+  ) 8>"$STATE_DIR/command.lock"
 }
 
 # Bluetooth 利用説明をバイナリに埋め込み、Karabiner 経由でも権限ダイアログを出せるようにする。
@@ -113,29 +161,24 @@ refresh_battery_async() {
 }
 
 show_hud() {
-  local mode="${1:-auto}"
-  start_daemon
-
+  local mode="$1" pending connection selected
   case "$mode" in
-    jis)
-      # 常駐デーモンは show / show torabo を見る。JIS強制は show を書く。
-      printf 'show\n' >"$CMD_FILE"
-      return
-      ;;
-    external)
-      printf 'show external\n' >"$CMD_FILE"
-      return
-      ;;
+    jis) write_command show >/dev/null ;;
+    external|torabo) write_command "show $mode" >/dev/null ;;
+    auto) pending="$(write_command 'show auto')" ;;
   esac
 
-  # 自動選択でToraboが見つからないときは内蔵JISを表示する。
-  local connection
+  start_in_background
+  [[ "$mode" == auto || "$mode" == torabo ]] || return 0
+  # 機器一覧の取得時には、キー解放による非表示の指示が先に届くことがある。
   connection="$(torabo_connection)" || connection=""
-  if [[ "$mode" == auto && -z "$connection" ]]; then
-    printf 'show\n' >"$CMD_FILE"
-    return
+  if [[ "$mode" == auto ]]; then
+    selected=show
+    if [[ -n "$connection" ]]; then
+      selected='show torabo'
+    fi
+    write_command "$selected" "$pending" >/dev/null || { [[ "$?" == 3 ]]; return; }
   fi
-  printf 'show torabo\n' >"$CMD_FILE"
   if [[ "$connection" == zmk-ble ]]; then
     refresh_battery_async
   fi
@@ -156,18 +199,14 @@ torabo_connection() {
 }
 
 hide_hud() {
-  if ! is_running; then
-    printf 'idle\n' >"$CMD_FILE" 2>/dev/null || true
-    exit 0
-  fi
-  printf 'hide\n' >"$CMD_FILE"
+  write_command hide >/dev/null
 }
 
 stop_daemon() {
-  local pid
+  local pid pending
+  pending="$(write_command quit)"
   if is_running; then
     # この設定の常駐プログラムだけに終了を通知し、残っている場合だけ停止する。
-    printf 'quit\n' >"$CMD_FILE"
     pid="$(<"$PID_FILE")"
     sleep 0.1
     if is_hud_process "$pid"; then
@@ -175,12 +214,12 @@ stop_daemon() {
     fi
   fi
   rm -f "$PID_FILE"
-  printf 'idle\n' >"$CMD_FILE" 2>/dev/null || true
+  write_command idle "$pending" >/dev/null || [[ "$?" == 3 ]]
 }
 
 status_hud() {
   if is_running; then
-    printf 'running pid=%s cmd=%s\n' "$(<"$PID_FILE")" "$(tr -d '\n' <"$CMD_FILE" 2>/dev/null || true)"
+    printf 'running pid=%s cmd=%s\n' "$(<"$PID_FILE")" "$(head -n 1 "$CMD_FILE" 2>/dev/null || true)"
   else
     printf 'stopped\n'
   fi
@@ -199,8 +238,8 @@ main() {
       esac
       ;;
     hide) hide_hud ;;
-    start) start_daemon ;;
-    stop) stop_daemon ;;
+    start) with_daemon_lock start_daemon ;;
+    stop) with_daemon_lock stop_daemon ;;
     status) status_hud ;;
     build) printf 'js hud daemon ready\n' ;;
     -h|--help) usage ;;

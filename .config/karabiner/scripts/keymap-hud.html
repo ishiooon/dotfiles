@@ -384,6 +384,72 @@
       font-size: clamp(8px, calc(var(--torabo-unit) * 0.32), 11px);
     }
     .torabo-geometry .key[data-long-label] { font-size: clamp(7px, calc(var(--torabo-unit) * 0.28), 9px); }
+
+    /* 内蔵の図は横幅と縦のキー間隔を同じピッチにし、6枚を表示枠に収める。 */
+    .macbook-jis .shell { width: min(1240px, 100vw); padding: 14px 16px; }
+    .macbook-jis .header { margin-bottom: 10px; }
+    .macbook-jis h1 { color: #efc98c; }
+    .macbook-jis .sub { color: var(--fg0); }
+    .macbook-jis .layers { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+    .macbook-jis .board { padding: 8px 12px; background: #292726; }
+    .macbook-jis .board-head { margin-bottom: 5px; }
+    .macbook-keyboard {
+      --key-gap: 3px;
+      position: relative;
+      width: min(100%, 465px, calc((100vh - 210px) / 3 * var(--columns) / var(--rows)));
+      aspect-ratio: var(--columns) / var(--rows);
+      margin: 0 auto;
+      container-type: inline-size;
+    }
+    .macbook-keyboard .key {
+      position: absolute;
+      width: calc(var(--key-width) - var(--key-gap));
+      height: calc(var(--key-height) - var(--key-gap));
+      left: var(--key-left);
+      top: var(--key-top);
+      padding: 0 1px;
+      border: 1px solid #4a4440;
+      border-radius: 4px;
+      background: #3a3532;
+      color: #eee1cc;
+      box-shadow: 0 1px 1px #1b1918;
+      text-align: center;
+    }
+    .macbook-keyboard .key.mapped { background: #444c35; border-color: #606a49; }
+    .macbook-keyboard .key.holder { background: #8d4625; border-color: #cb8758; color: #fff5e7; }
+    .macbook-keyboard .key.dead { background: #201e1d; border-color: #393532; box-shadow: none; }
+    .macbook-keyboard .key .action {
+      max-width: 100%;
+      color: inherit;
+      font-family: inherit;
+      font-size: clamp(7px, 2.28cqw, 10.5px);
+      font-weight: 650;
+      line-height: 1.02;
+      margin-top: 0;
+      white-space: pre;
+    }
+    .macbook-keyboard .key[data-long-label] .action {
+      font-family: inherit;
+      font-size: clamp(6px, 1.57cqw, 8px);
+    }
+    .macbook-keyboard .key[data-long-label="two-lines"] .action {
+      max-width: none;
+      transform: scaleX(0.87);
+    }
+    .macbook-keyboard .key[data-key$="_arrow"] .action { font-size: clamp(6px, 1.85cqw, 8.5px); }
+    .macbook-keyboard .key.jis-return {
+      /* 上段の左端だけが1/4キー分張り出し、上下の右端は同じ位置に来る。 */
+      clip-path: polygon(0 0, 100% 0, 100% 100%, 17% 100%, 17% 50%, 0 50%);
+      margin: 0;
+      overflow: hidden;
+      z-index: 1;
+    }
+    .macbook-keyboard .key.jis-return .action {
+      position: static;
+      transform: none;
+      margin-left: 12%;
+      color: inherit;
+    }
   </style>
 </head>
 <body>
@@ -601,6 +667,68 @@
       return board;
     }
 
+    // 内蔵JISは物理位置を固定し、押し込み中のレイヤーに割り当てた出力だけを刻印に出す。
+    function renderMacBookLayer(layer, def) {
+      const geometry = def.macbook_jis;
+      const base = baseBindings(def);
+      const holdLabel = layer.hold ? String(base[layer.hold] || layer.id).toUpperCase() : "";
+      const board = createBoard(holdLabel ? `${holdLabel} 押し込み中` : "通常入力", "", Boolean(holdLabel));
+      const keyboard = document.createElement("div");
+      keyboard.className = "macbook-keyboard";
+      keyboard.style.setProperty("--columns", geometry.columns);
+      keyboard.style.setProperty("--rows", geometry.rows.length);
+      const addKey = (key, x, y, width, height = 1) => {
+        const holder = key === layer.hold;
+        const fallback = geometry.labels[key] ?? def.key_glyphs?.[key] ??
+          (/^f\d+$/.test(key) ? key.toUpperCase() : displayName(key, def));
+        const binding = holder ? holdLabel :
+          (holdLabel ? layer.bindings?.[key] : (base[key] ?? fallback));
+        const label = binding == null || isDeadBinding(binding) ? "" : binding;
+        const cap = document.createElement("div");
+        cap.className = "key";
+        cap.dataset.key = key;
+        if (key === "return") cap.classList.add("jis-return");
+        if (holder) cap.classList.add("holder");
+        else if (!label && (holdLabel || isDeadBinding(binding))) cap.classList.add("dead");
+        else if (label && (holdLabel || Object.hasOwn(base, key))) cap.classList.add("mapped");
+        cap.style.setProperty("--key-left", `${x / geometry.columns * 100}%`);
+        cap.style.setProperty("--key-top", `${y / geometry.rows.length * 100}%`);
+        cap.style.setProperty("--key-width", `${width / geometry.columns * 100}%`);
+        cap.style.setProperty("--key-height", `${height / geometry.rows.length * 100}%`);
+        if (label) {
+          const action = document.createElement("span");
+          action.className = "action";
+          // 長い刻印だけを2行にし、狭いキーでも文字が途中で切れないようにする。
+          const lines = label === "Launchpad" ? "Launch\npad" : label.replace(" ", "\n");
+          action.textContent = lines;
+          if (lines.includes("\n")) cap.dataset.longLabel = "two-lines";
+          else if (label.length > 4 || label.length > 2 && /[^\u0000-\u007f]/.test(label)) {
+            cap.dataset.longLabel = "";
+          }
+          cap.appendChild(action);
+        }
+        keyboard.appendChild(cap);
+      };
+
+      geometry.rows.forEach((row, y) => {
+        let x = 0;
+        for (const entry of row) {
+          const [key, width] = Array.isArray(entry) ? entry : [entry, 1];
+          if (key === "arrow_cluster") {
+            addKey("up_arrow", x + 1, y, 1, 0.5);
+            addKey("left_arrow", x, y + 0.5, 1, 0.5);
+            addKey("down_arrow", x + 1, y + 0.5, 1, 0.5);
+            addKey("right_arrow", x + 2, y + 0.5, 1, 0.5);
+          } else if (key) {
+            addKey(key, x, y, width, key === "return" ? 2 : 1);
+          }
+          x += width;
+        }
+      });
+      board.appendChild(keyboard);
+      return board;
+    }
+
     // 常駐処理から表示する配列を受け取り、現在の画面を差し替える。
     function showKeymap(profile, externalLayers) {
       const root = document.getElementById("layers");
@@ -613,7 +741,9 @@
       const useSplit = Boolean(split && Array.isArray(split.keys) && split.keys.length &&
         split.keys.every((key) => key && Number.isFinite(key.x) && Number.isFinite(key.y)) &&
         Array.isArray(split.layers) && split.layers.length && split.layers.every((layer) => layer && typeof layer.name === "string"));
+      const useMacBook = !useSplit && !external && Boolean(def?.macbook_jis);
       document.body.classList.toggle("torabo-keymap", useSplit);
+      document.body.classList.toggle("macbook-jis", useMacBook);
       document.body.classList.toggle("jis-keymap-compact", !useSplit && def?.layers?.length > 4);
       root.replaceChildren();
       if (useSplit) {
@@ -628,6 +758,12 @@
         return "torabo";
       }
       if (!def) throw new Error("JISの配列データがありません。");
+      if (useMacBook) {
+        title.textContent = `${def.model} · JIS配列`;
+        if (sub) sub.textContent = "F + B を離すと閉じる";
+        for (const layer of def.layers) root.appendChild(renderMacBookLayer(layer, def));
+        return "jis";
+      }
       title.textContent = external ? "外付けキーボード · JIS 配列" : "内蔵キーボード · JIS 配列";
       if (sub) sub.textContent = external ? "f + b で表示 · 離すと閉じる" : "物理 e + f で表示 · 離すと閉じる";
       for (const layer of def.layers) root.appendChild(renderLayer(layer, def, external));

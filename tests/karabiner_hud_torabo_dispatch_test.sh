@@ -40,5 +40,65 @@ vm.runInContext(sandbox.keymapDisplayScript("show torabo", "torabo-tsuki-s.json"
 assert.equal(calls.at(-1).profile, "jis");
 const html = sandbox.buildHtmlDocument("<head></head>", '{"label":"</script>"}', "function buildToraboKeymap() {}");
 assert.equal((html.match(/<\/script>/g) || []).length, 2);
+
+// Cocoa の画面と WebView の完了通知を模擬し、保留中にキーを離した場合を再現する。
+const timerCallbacks = [];
+const webCallbacks = [];
+const writes = [];
+let command = "show\nrequest-1\n";
+let opened = 0;
+let closed = 0;
+const configuration = { alloc: { init: {} } };
+const panel = {
+  setLevel() {}, setAlphaValue() {}, setOpaque() {}, setBackgroundColor() {}, setHasShadow() {},
+  setIgnoresMouseEvents() {}, setCollectionBehavior() {}, setContentView() {},
+  get orderFrontRegardless() { opened++; }, orderOut() { closed++; }
+};
+const webView = {
+  setValueForKey() {}, setOpaque() {}, loadHTMLStringBaseURL() {},
+  evaluateJavaScriptCompletionHandler(_, callback) { webCallbacks.push(callback); }
+};
+sandbox.$ = {
+  NSProcessInfo: { processInfo: { processIdentifier: 12 } },
+  NSApplication: { sharedApplication: { setActivationPolicy() {}, run() {} } },
+  NSPanel: { alloc: { initWithContentRectStyleMaskBackingDefer() { return panel; } } },
+  NSColor: { clearColor: {} }, NSMakeRect() {},
+  WKWebViewConfiguration: configuration,
+  WKWebView: { alloc: { initWithFrameConfiguration() { return webView; } } },
+  NSURL: { URLWithString() {} },
+  NSTimer: { scheduledTimerWithTimeIntervalRepeatsBlock(_, __, callback) { timerCallbacks.push(callback); } }
+};
+sandbox.readText = (path) => ({ html: "<head></head>", layers: "[]", command })[path] || "";
+sandbox.writeText = (path, text) => writes.push([path, text]);
+sandbox.run(["daemon", "html", "layers", "pid", "command"]);
+assert.deepEqual(writes, [["pid", "12\n"]]);
+command = "hide\nrequest-2\n";
+webCallbacks.shift()();
+assert.equal(opened, 0, "次の監視時刻より先に描画が完了しても、キー解放後は表示しません。");
+timerCallbacks.shift()();
+assert.equal(closed, 2);
+assert.deepEqual(writes, [["pid", "12\n"]], "非表示の指示をほかのプロセスからも読める状態に保ちます。");
+
+// 同じ配列を開き直すときは、直前に閉じた表示の完了通知を無視する。
+command = "show\nrequest-3\n";
+timerCallbacks.shift()();
+command = "hide\nrequest-4\n";
+timerCallbacks.shift()();
+command = "show\nrequest-5\n";
+timerCallbacks.shift()();
+webCallbacks.shift()();
+assert.equal(opened, 0);
+// JXA では WebView のエラーなしを表す Objective-C の nil も真として評価される。
+webCallbacks.shift()(null, { isNil: () => true });
+assert.equal(opened, 1);
+
+// 初回描画に失敗した場合は、同じ指示が最新である間だけ次の監視で描画し直す。
+command = "show external\nrequest-6\n";
+timerCallbacks.shift()();
+webCallbacks.shift()(null, { isNil: () => false });
+assert.equal(opened, 1);
+timerCallbacks.shift()();
+webCallbacks.shift()(null, { isNil: () => true });
+assert.equal(opened, 2);
 console.log("成功: 内蔵・Torabo用の表示指示を選び、データ不良時は内蔵表示に戻ります。");
 JS

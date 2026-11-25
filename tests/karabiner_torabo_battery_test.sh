@@ -75,6 +75,10 @@ launcher, fixture, state = map(Path, sys.argv[1:])
 def call(command):
     subprocess.run(["bash", launcher, command], check=True, timeout=2)
 
+# 表示先の後ろにある識別子は無視し、電池残量の取得前後で画面への指示だけを確認する。
+def display_command():
+    return (state / "command").read_text().splitlines()[0]
+
 def wait_for(path):
     end = time.monotonic() + 5
     while not path.exists():
@@ -83,18 +87,18 @@ def wait_for(path):
 
 # コンパイル待ちの状態でも表示が戻り、同じ残量取得が並走しないことを確認する。
 call("show")
-assert (state / "command").read_text() == "show torabo\n"
+assert display_command() == "show torabo"
 wait_for(fixture / "compilations")
 call("show")
 call("hide")
-assert (state / "command").read_text() == "hide\n"
+assert display_command() == "hide"
 (fixture / "release").touch()
 result = state / "torabo-battery.json"
 wait_for(result)
 assert json.loads(result.read_text()) == {"right": 80, "left": 30}
 assert (fixture / "compilations").read_text() == "compile\n"
 assert (fixture / "reads").read_text() == "read\n"
-assert (state / "command").read_text() == "hide\n"
+assert display_command() == "hide"
 PY
 
 # 実機を使わず、GATTの特性表示形式に基づいて左右を判別する。

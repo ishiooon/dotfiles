@@ -95,8 +95,6 @@ function run(argv) {
   let toraboModel = "";
   try { toraboModel = readText(modelPath); } catch (error) {}
   const documentHtml = buildHtmlDocument(html, jsonText, toraboModel);
-  writeText(pidPath, `${$.NSProcessInfo.processInfo.processIdentifier}\n`);
-  writeText(cmdPath, "idle\n");
 
   const app = $.NSApplication.sharedApplication;
   app.setActivationPolicy($.NSApplicationActivationPolicyAccessory);
@@ -134,33 +132,41 @@ function run(argv) {
   panel.setContentView(webView);
   panel.center;
   panel.orderOut(null);
+  // 起動を通知しても、ランチャーが先に受け取った表示・非表示の指示は書き換えない。
+  writeText(pidPath, `${$.NSProcessInfo.processInfo.processIdentifier}\n`);
 
-  let lastCmd = "idle";
+  let lastRequest = "";
 
   function applyCommand(raw) {
-    const cmd = String(raw || "").trim();
-    if (!cmd || cmd === lastCmd) {
+    const request = String(raw || "").trim();
+    if (!request || request === lastRequest) {
       return;
     }
-    lastCmd = cmd;
+    lastRequest = request;
+    const cmd = request.split("\n", 1)[0];
     if (["show", "show jis", "show external", "show torabo"].includes(cmd)) {
       // 表示内容を切り替えてからパネルを開く。電池は同ディレクトリのキャッシュを読む。
       const batteryPath = cmdPath.replace(/[^/]+$/, "torabo-battery.json");
       webView.evaluateJavaScriptCompletionHandler(
         keymapDisplayScript(cmd, configDir + "torabo-tsuki-s.json", batteryPath),
-        function () {
-          // 読み込み中にキーが離された場合は、すでに非表示になったパネルを開き直さない。
-          if (lastCmd === cmd) {
+        function (_, error) {
+          try {
+            // 次の監視より先に描画が完了する場合も、最新の指示が同じ表示要求のときだけ開く。
+            if (lastRequest !== request || readText(cmdPath).trim() !== request) return;
+            // JXA の Objective-C オブジェクトは、nil の場合も真として評価される。
+            if (error && !error.isNil()) {
+              // 初回は HTML の読み込みが終わってから、同じ表示要求を再試行する。
+              lastRequest = "";
+              return;
+            }
             panel.setAlphaValue(1);
             panel.orderFrontRegardless;
-          }
+          } catch (readError) {}
         }
       );
     } else if (cmd === "hide") {
       panel.setAlphaValue(0);
       panel.orderOut(null);
-      writeText(cmdPath, "idle\n");
-      lastCmd = "idle";
     } else if (cmd === "quit") {
       panel.orderOut(null);
       app.terminate(null);
